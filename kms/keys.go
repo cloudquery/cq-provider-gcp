@@ -14,9 +14,9 @@ type CryptoKey struct {
 
 	PrimaryAlgorithm string
 
-	CaviumCerts          []*CryptoKeyCertificateChainsCaviumCerts          `gorm:"constraint:OnDelete:CASCADE;foreignKey:ID"`
-	GoogleCardCerts      []*CryptoKeyCertificateChainsGoogleCardCerts      `gorm:"constraint:OnDelete:CASCADE;foreignKey:ID"`
-	GooglePartitionCerts []*CryptoKeyCertificateChainsGooglePartitionCerts `gorm:"constraint:OnDelete:CASCADE;foreignKey:ID"`
+	CaviumCerts          []*KeyCertChainsCaviumCerts           `gorm:"constraint:OnDelete:CASCADE;"`
+	GoogleCardCerts      []*CryptoKeyCertChainsGoogleCardCerts `gorm:"constraint:OnDelete:CASCADE;"`
+	GooglePartitionCerts []*KeyCertChainsGooglePartitionCerts  `gorm:"constraint:OnDelete:CASCADE;"`
 
 	PrimaryAttestationContent string
 	PrimaryAttestationFormat  string
@@ -46,34 +46,34 @@ func (CryptoKey) TableName() string {
 	return "gcp_kms_crypto_keys"
 }
 
-type CryptoKeyCertificateChainsCaviumCerts struct {
-	ID                           uint `gorm:"primarykey"`
+type KeyCertChainsCaviumCerts struct {
+	CryptoKeyID                  uint `gorm:"primarykey"`
 	CryptoKeyCertificateChainsID uint
 	Value                        string
 }
 
-func (CryptoKeyCertificateChainsCaviumCerts) TableName() string {
-	return "gcp_kms_crypto_key_certificate_chains_cavium_certs"
+func (KeyCertChainsCaviumCerts) TableName() string {
+	return "gcp_kms_key_cert_chains_cavium_certs"
 }
 
-type CryptoKeyCertificateChainsGoogleCardCerts struct {
-	ID                           uint `gorm:"primarykey"`
+type CryptoKeyCertChainsGoogleCardCerts struct {
+	CryptoKeyID                  uint `gorm:"primarykey"`
 	CryptoKeyCertificateChainsID uint
 	Value                        string
 }
 
-func (CryptoKeyCertificateChainsGoogleCardCerts) TableName() string {
-	return "gcp_kms_crypto_key_certificate_chains_google_card_certs"
+func (CryptoKeyCertChainsGoogleCardCerts) TableName() string {
+	return "gcp_kms_key_cert_chains_google_card_certs"
 }
 
-type CryptoKeyCertificateChainsGooglePartitionCerts struct {
-	ID                           uint `gorm:"primarykey"`
+type KeyCertChainsGooglePartitionCerts struct {
+	CryptoKeyID                  uint `gorm:"primarykey"`
 	CryptoKeyCertificateChainsID uint
 	Value                        string
 }
 
-func (CryptoKeyCertificateChainsGooglePartitionCerts) TableName() string {
-	return "gcp_kms_crypto_key_certificate_chains_google_partition_certs"
+func (KeyCertChainsGooglePartitionCerts) TableName() string {
+	return "gcp_kms_key_cert_chains_google_partition_certs"
 }
 
 func (c *Client) transformCryptoKeys(values []*cloudkms.CryptoKey) []*CryptoKey {
@@ -112,30 +112,30 @@ func (c *Client) transformCryptoKeys(values []*cloudkms.CryptoKey) []*CryptoKey 
 	}
 	return tValues
 }
-func (c *Client) transformCryptoKeyCertificateChainsCaviumCerts(values []string) []*CryptoKeyCertificateChainsCaviumCerts {
-	var tValues []*CryptoKeyCertificateChainsCaviumCerts
+func (c *Client) transformCryptoKeyCertificateChainsCaviumCerts(values []string) []*KeyCertChainsCaviumCerts {
+	var tValues []*KeyCertChainsCaviumCerts
 	for _, v := range values {
-		tValues = append(tValues, &CryptoKeyCertificateChainsCaviumCerts{
+		tValues = append(tValues, &KeyCertChainsCaviumCerts{
 			Value: v,
 		})
 	}
 	return tValues
 }
 
-func (c *Client) transformCryptoKeyCertificateChainsGoogleCardCerts(values []string) []*CryptoKeyCertificateChainsGoogleCardCerts {
-	var tValues []*CryptoKeyCertificateChainsGoogleCardCerts
+func (c *Client) transformCryptoKeyCertificateChainsGoogleCardCerts(values []string) []*CryptoKeyCertChainsGoogleCardCerts {
+	var tValues []*CryptoKeyCertChainsGoogleCardCerts
 	for _, v := range values {
-		tValues = append(tValues, &CryptoKeyCertificateChainsGoogleCardCerts{
+		tValues = append(tValues, &CryptoKeyCertChainsGoogleCardCerts{
 			Value: v,
 		})
 	}
 	return tValues
 }
 
-func (c *Client) transformCryptoKeyCertificateChainsGooglePartitionCerts(values []string) []*CryptoKeyCertificateChainsGooglePartitionCerts {
-	var tValues []*CryptoKeyCertificateChainsGooglePartitionCerts
+func (c *Client) transformCryptoKeyCertificateChainsGooglePartitionCerts(values []string) []*KeyCertChainsGooglePartitionCerts {
+	var tValues []*KeyCertChainsGooglePartitionCerts
 	for _, v := range values {
-		tValues = append(tValues, &CryptoKeyCertificateChainsGooglePartitionCerts{
+		tValues = append(tValues, &KeyCertChainsGooglePartitionCerts{
 			Value: v,
 		})
 	}
@@ -144,12 +144,12 @@ func (c *Client) transformCryptoKeyCertificateChainsGooglePartitionCerts(values 
 
 var CryptoKeyTables = []interface{}{
 	&CryptoKey{},
-	&CryptoKeyCertificateChainsCaviumCerts{},
-	&CryptoKeyCertificateChainsGoogleCardCerts{},
-	&CryptoKeyCertificateChainsGooglePartitionCerts{},
+	&KeyCertChainsCaviumCerts{},
+	&CryptoKeyCertChainsGoogleCardCerts{},
+	&KeyCertChainsGooglePartitionCerts{},
 }
 
-func (c *Client) CryptoKeys(_ interface{}) error {
+func (c *Client) cryptoKeys(_ interface{}) error {
 	c.log.Info("fetching crypto keys", zap.String("project", c.projectID))
 	c.db.Where("project_id", c.projectID).Delete(CryptoKeyTables...)
 	locations, err := c.getAllKmsLocations()
@@ -192,7 +192,6 @@ func (c *Client) getCryptoKeys(key *cloudkms.KeyRing) error {
 	return nil
 }
 
-
 func (c *Client) getLocationKeyRings(location *cloudkms.Location) ([]*cloudkms.KeyRing, error) {
 	var keys []*cloudkms.KeyRing
 	call := c.svc.Projects.Locations.KeyRings.List(location.Name)
@@ -212,7 +211,6 @@ func (c *Client) getLocationKeyRings(location *cloudkms.Location) ([]*cloudkms.K
 	}
 	return keys, nil
 }
-
 
 func (c *Client) getAllKmsLocations() ([]*cloudkms.Location, error) {
 

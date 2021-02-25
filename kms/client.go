@@ -38,7 +38,7 @@ func NewClient(db *database.Database, log *zap.Logger, projectID string) (resour
 func (c *Client) CollectResource(resource string, config interface{}) error {
 	switch strings.ToLower(resource) {
 	case "keys":
-		return c.CryptoKeys(config)
+		return c.cryptoKeys(config)
 	default:
 		return fmt.Errorf("unsupported resource .%s", resource)
 	}
