@@ -14,6 +14,7 @@ func ComputeSslCertificates() *schema.Table {
 		Resolver:     fetchComputeSslCertificates,
 		Multiplex:    client.ProjectMultiplex,
 		DeleteFilter: client.DeleteProjectFilter,
+		IgnoreError:  client.IgnoreErrorHandler,
 		Columns: []schema.Column{
 			{
 				Name:     "project_id",

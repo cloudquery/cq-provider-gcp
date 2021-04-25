@@ -14,6 +14,7 @@ func StorageBucket() *schema.Table {
 		Resolver:     fetchStorageBuckets,
 		Multiplex:    client.ProjectMultiplex,
 		DeleteFilter: client.DeleteProjectFilter,
+		IgnoreError:  client.IgnoreErrorHandler,
 		Columns: []schema.Column{
 			{
 				Name:     "project_id",
@@ -435,7 +436,9 @@ func fetchStorageBucketCors(_ context.Context, _ schema.ClientMeta, parent *sche
 
 func fetchStorageBucketLifecycleRules(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	bucket := parent.Item.(*storage.Bucket)
-	res <- bucket.Lifecycle.Rule
+	if bucket.Lifecycle != nil {
+		res <- bucket.Lifecycle.Rule
+	}
 	return nil
 }
 func fetchStorageBucketDefaultObjectAcls(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {

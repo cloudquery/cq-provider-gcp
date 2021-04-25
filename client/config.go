@@ -2,9 +2,9 @@ package client
 
 // Config defines Provider Configuration
 type Config struct {
-	ProjectFilter string   `yaml:"project_filter"`
-	ProjectIDs    []string `yaml:"project_ids"`
-	Resources     []Resource
+	ProjectFilter string     `yaml:"project_filter"`
+	ProjectIDs    []string   `yaml:"project_ids"`
+	Resources     []Resource `yaml:"resources"`
 }
 
 type Resource struct {

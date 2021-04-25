@@ -15,6 +15,7 @@ func KmsKeyring() *schema.Table {
 		Resolver:             fetchKmsKeyrings,
 		Multiplex:            client.ProjectMultiplex,
 		DeleteFilter:         client.DeleteProjectFilter,
+		IgnoreError:          client.IgnoreErrorHandler,
 		PostResourceResolver: client.AddGcpMetadata,
 		Columns: []schema.Column{
 			{
@@ -39,6 +40,7 @@ func KmsKeyring() *schema.Table {
 			{
 				Name:                 "gcp_kms_keyring_crypto_keys",
 				Resolver:             fetchKmsKeyringCryptoKeys,
+				IgnoreError:          client.IgnoreErrorHandler,
 				PostResourceResolver: client.AddGcpMetadata,
 				Columns: []schema.Column{
 					{

@@ -14,6 +14,7 @@ func ComputeDisks() *schema.Table {
 		Resolver:     fetchComputeDisks,
 		Multiplex:    client.ProjectMultiplex,
 		DeleteFilter: client.DeleteProjectFilter,
+		IgnoreError:  client.IgnoreErrorHandler,
 		Columns: []schema.Column{
 			{
 				Name:     "project_id",

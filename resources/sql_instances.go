@@ -10,9 +10,10 @@ import (
 
 func SQLInstances() *schema.Table {
 	return &schema.Table{
-		Name:      "gcp_sql_instances",
-		Resolver:  fetchSqlInstances,
-		Multiplex: client.ProjectMultiplex,
+		Name:        "gcp_sql_instances",
+		Resolver:    fetchSqlInstances,
+		Multiplex:   client.ProjectMultiplex,
+		IgnoreError: client.IgnoreErrorHandler,
 		Columns: []schema.Column{
 			{
 				Name:     "project_id",
@@ -638,11 +639,15 @@ func fetchSqlInstanceIpAddresses(_ context.Context, _ schema.ClientMeta, parent 
 }
 func fetchSqlInstanceSettingsDenyMaintenancePeriods(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	db := parent.Item.(*sql.DatabaseInstance)
-	res <- db.Settings.DenyMaintenancePeriods
+	if db.Settings != nil {
+		res <- db.Settings.DenyMaintenancePeriods
+	}
 	return nil
 }
 func fetchSqlInstanceSettingsIpConfigurationAuthorizedNetworks(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	db := parent.Item.(*sql.DatabaseInstance)
-	res <- db.Settings.IpConfiguration.AuthorizedNetworks
+	if db.Settings != nil && db.Settings.IpConfiguration != nil {
+		res <- db.Settings.IpConfiguration.AuthorizedNetworks
+	}
 	return nil
 }

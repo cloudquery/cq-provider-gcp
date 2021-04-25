@@ -14,6 +14,7 @@ func ComputeImages() *schema.Table {
 		Resolver:     fetchComputeImages,
 		Multiplex:    client.ProjectMultiplex,
 		DeleteFilter: client.DeleteProjectFilter,
+		IgnoreError:  client.IgnoreErrorHandler,
 		Columns: []schema.Column{
 			{
 				Name:     "project_id",

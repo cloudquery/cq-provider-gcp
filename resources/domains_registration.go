@@ -16,6 +16,7 @@ func DomainsRegistration() *schema.Table {
 		Resolver:     fetchDomainsRegistrations,
 		Multiplex:    client.ProjectMultiplex,
 		DeleteFilter: client.DeleteProjectFilter,
+		IgnoreError:  client.IgnoreErrorHandler,
 		Columns: []schema.Column{
 			{
 				Name:     "project_id",
@@ -356,6 +357,9 @@ func fetchDomainsRegistrations(ctx context.Context, meta schema.ClientMeta, _ *s
 }
 func resolveDomainsRegistrationCustomDNSDsRecords(_ context.Context, _ schema.ClientMeta, resource *schema.Resource, _ schema.Column) error {
 	reg := resource.Item.(*domains.Registration)
+	if reg.DnsSettings == nil || reg.DnsSettings.CustomDns == nil {
+		return nil
+	}
 	data, err := json.Marshal(reg.DnsSettings.CustomDns.DsRecords)
 	if err != nil {
 		return fmt.Errorf("failed to marshal custom_dns_ds_records. %w", err)
@@ -375,6 +379,8 @@ func resolveDomainsRegistrationGoogleDomainsDNSDsRecords(_ context.Context, _ sc
 }
 func fetchDomainsRegistrationGlueRecords(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	reg := parent.Item.(*domains.Registration)
-	res <- reg.DnsSettings.GlueRecords
+	if reg.DnsSettings != nil {
+		res <- reg.DnsSettings.GlueRecords
+	}
 	return nil
 }

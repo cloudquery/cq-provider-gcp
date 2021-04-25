@@ -14,6 +14,7 @@ func ComputeBackendServices() *schema.Table {
 		Resolver:     fetchComputeBackendServices,
 		Multiplex:    client.ProjectMultiplex,
 		DeleteFilter: client.DeleteProjectFilter,
+		IgnoreError:  client.IgnoreErrorHandler,
 		Columns: []schema.Column{
 			{
 				Name:     "project_id",
@@ -486,7 +487,6 @@ func fetchComputeBackendServices(ctx context.Context, meta schema.ClientMeta, _ 
 }
 func resolveComputeBackendServiceCdnPolicyBypassCacheOnRequestHeaders(_ context.Context, _ schema.ClientMeta, resource *schema.Resource, _ schema.Column) error {
 	r := resource.Item.(*compute.BackendService)
-
 	headers := make([]string, len(r.CdnPolicy.BypassCacheOnRequestHeaders))
 	for i, v := range r.CdnPolicy.BypassCacheOnRequestHeaders {
 		headers[i] = v.HeaderName
@@ -501,6 +501,8 @@ func fetchComputeBackendServiceBackends(_ context.Context, _ schema.ClientMeta, 
 }
 func fetchComputeBackendServiceCdnNegativeCachingPolicies(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	r := parent.Item.(*compute.BackendService)
-	res <- r.CdnPolicy.NegativeCachingPolicy
+	if r.CdnPolicy != nil {
+		res <- r.CdnPolicy.NegativeCachingPolicy
+	}
 	return nil
 }

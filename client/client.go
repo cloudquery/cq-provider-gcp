@@ -45,10 +45,10 @@ func (c Client) withProject(project string) *Client {
 
 func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, error) {
 	providerConfig := config.(*Config)
-
 	projects := providerConfig.ProjectIDs
+	var err error
 	if len(providerConfig.ProjectIDs) == 0 {
-		projects, err := getProjects(logger, providerConfig.ProjectFilter)
+		projects, err = getProjects(logger, providerConfig.ProjectFilter)
 		if err != nil {
 			return nil, err
 		}
@@ -62,7 +62,6 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 		return nil, err
 	}
 	client := NewGcpClient(logger, projects, services)
-
 	return client, nil
 }
 func validateProjects(projects []string) error {

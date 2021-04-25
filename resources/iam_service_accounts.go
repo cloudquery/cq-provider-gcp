@@ -13,6 +13,7 @@ func IamServiceAccounts() *schema.Table {
 		Resolver:     fetchIamServiceAccounts,
 		Multiplex:    client.ProjectMultiplex,
 		DeleteFilter: client.DeleteProjectFilter,
+		IgnoreError:  client.IgnoreErrorHandler,
 		Columns: []schema.Column{
 			{
 				Name: "description",

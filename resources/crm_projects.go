@@ -9,8 +9,9 @@ import (
 
 func CrmProjects() *schema.Table {
 	return &schema.Table{
-		Name:     "gcp_crm_projects",
-		Resolver: fetchCrmProjects,
+		Name:        "gcp_crm_projects",
+		Resolver:    fetchCrmProjects,
+		IgnoreError: client.IgnoreErrorHandler,
 		Columns: []schema.Column{
 			{
 				Name: "create_time",

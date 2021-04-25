@@ -14,6 +14,7 @@ func ComputeSubnetworks() *schema.Table {
 		Resolver:     fetchComputeSubnetworks,
 		Multiplex:    client.ProjectMultiplex,
 		DeleteFilter: client.DeleteProjectFilter,
+		IgnoreError:  client.IgnoreErrorHandler,
 		Columns: []schema.Column{
 			{
 				Name:     "project_id",
