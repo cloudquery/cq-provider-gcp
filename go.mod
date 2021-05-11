@@ -12,4 +12,3 @@ require (
 	github.com/thoas/go-funk v0.8.1-0.20210502090430-efae847b30ab
 	google.golang.org/api v0.44.0
 )
-
