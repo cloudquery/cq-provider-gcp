@@ -5,6 +5,7 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	crm "google.golang.org/api/cloudresourcemanager/v3"
 )
 
 func CrmProjects() *schema.Table {
@@ -63,17 +64,22 @@ func CrmProjects() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchCrmProjects(ctx context.Context, meta schema.ClientMeta, _ *schema.Resource, res chan interface{}) error {
+	var resp *crm.ListProjectsResponse
+	var err error
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	call := c.Services.Crm.Projects.List().Context(ctx)
 	for {
 		call.PageToken(nextPageToken)
-		resp, err := call.Do()
-		if err != nil {
-			return err
+		// Google API when quota exceeded can return both QuotaExceeded and Forbidden
+		retryErr := c.RetryWithDefaultBackoffIgnoreErrors(ctx, func() (bool, error) {
+			resp, err = call.Do()
+			return true, err
+		}, map[int]bool{client.QuotaExceeded: true, client.Forbidden: true})
+		if retryErr != nil {
+			return retryErr
 		}
 		res <- resp.Projects
-
 		if resp.NextPageToken == "" {
 			break
 		}
