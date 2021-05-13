@@ -75,7 +75,7 @@ func fetchCrmProjects(ctx context.Context, meta schema.ClientMeta, _ *schema.Res
 		retryErr := c.RetryWithDefaultBackoffIgnoreErrors(ctx, func() (bool, error) {
 			resp, err = call.Do()
 			return true, err
-		}, map[int]bool{client.QuotaExceeded: true, client.Forbidden: true})
+		}, map[int]bool{client.QuotaExceeded: true})
 		if retryErr != nil {
 			return retryErr
 		}
