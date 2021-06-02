@@ -33,6 +33,7 @@ func Provider() *provider.Provider {
 			"sql.instances":            SQLInstances(),
 			"domains.registrations":    DomainsRegistration(),
 			"crm.projects":             CrmProjects(),
+			"bigquery.datasets":        BigqueryDatasets(),
 		},
 		Config: func() provider.Config {
 			return &client.Config{}

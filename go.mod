@@ -1,5 +1,7 @@
 module github.com/cloudquery/cq-provider-gcp
 
+replace github.com/cloudquery/cq-provider-sdk => ../cq-provider-sdk
+
 go 1.16
 
 require (
@@ -7,6 +9,7 @@ require (
 	github.com/cloudquery/faker/v3 v3.7.4
 	github.com/googleapis/gax-go/v2 v2.0.5
 	github.com/hashicorp/go-hclog v0.16.1
+	github.com/hashicorp/terraform-exec v0.13.3 // indirect
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/spf13/cast v1.3.0
 	github.com/thoas/go-funk v0.8.1-0.20210502090430-efae847b30ab

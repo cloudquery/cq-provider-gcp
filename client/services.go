@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 
+	"google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/cloudfunctions/v1"
 	kms "google.golang.org/api/cloudkms/v1"
 	"google.golang.org/api/cloudresourcemanager/v3"
@@ -22,6 +23,7 @@ type Services struct {
 	CloudFunctions *cloudfunctions.Service
 	Domain         *domains.Service
 	Compute        *compute.Service
+	BigQuery       *bigquery.Service
 }
 
 func initServices(ctx context.Context) (*Services, error) {
@@ -58,6 +60,10 @@ func initServices(ctx context.Context) (*Services, error) {
 	if err != nil {
 		return nil, err
 	}
+	bigquerySvc, err := bigquery.NewService(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Services{
 		Kms:            kmsSvc,
@@ -68,5 +74,6 @@ func initServices(ctx context.Context) (*Services, error) {
 		CloudFunctions: cfCsvc,
 		Domain:         domainSvc,
 		Compute:        computeSvc,
+		BigQuery:       bigquerySvc,
 	}, nil
 }
