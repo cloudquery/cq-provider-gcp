@@ -84,9 +84,13 @@ func createBigqueryDatasets() (*bigquery.Service, error) {
 
 	mux.GET("/projects/testProject/datasets/testDataset/tables", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		resp := &bigquery.TableList{
+
 			Tables: []*bigquery.TableListTables{
 				{
 					Id: id,
+					TableReference: &bigquery.TableReference{
+						TableId: id,
+					},
 				},
 			},
 		}
