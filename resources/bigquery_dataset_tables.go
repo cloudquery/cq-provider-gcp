@@ -14,6 +14,11 @@ func BigqueryDatasetTables() *schema.Table {
 		Resolver: fetchBigqueryDatasetTables,
 		Columns: []schema.Column{
 			{
+				Name:     "dataset_id",
+				Type:     schema.TypeUUID,
+				Resolver: schema.ParentIdResolver,
+			},
+			{
 				Name:     "clustering_fields",
 				Type:     schema.TypeStringArray,
 				Resolver: schema.PathResolver("Clustering.Fields"),
@@ -337,7 +342,7 @@ func fetchBigqueryDatasetTables(ctx context.Context, meta schema.ClientMeta, par
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.BigQuery.Tables.List(c.ProjectId, p.Id)
+		call := c.Services.BigQuery.Tables.List(c.ProjectId, p.DatasetReference.DatasetId).Context(ctx).PageToken(nextPageToken)
 		call.PageToken(nextPageToken)
 		output, err := call.Do()
 		if err != nil {
@@ -345,7 +350,7 @@ func fetchBigqueryDatasetTables(ctx context.Context, meta schema.ClientMeta, par
 		}
 
 		for _, t := range output.Tables {
-			call := c.Services.BigQuery.Tables.Get(c.ProjectId, p.Id, t.Id)
+			call := c.Services.BigQuery.Tables.Get(c.ProjectId, p.DatasetReference.DatasetId, t.TableReference.TableId)
 			table, err := call.Do()
 			if err != nil {
 				return err

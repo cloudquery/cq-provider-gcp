@@ -10,10 +10,11 @@ import (
 
 func SQLInstances() *schema.Table {
 	return &schema.Table{
-		Name:        "gcp_sql_instances",
-		Resolver:    fetchSqlInstances,
-		Multiplex:   client.ProjectMultiplex,
-		IgnoreError: client.IgnoreErrorHandler,
+		Name:         "gcp_sql_instances",
+		Resolver:     fetchSqlInstances,
+		Multiplex:    client.ProjectMultiplex,
+		DeleteFilter: client.DeleteProjectFilter,
+		IgnoreError:  client.IgnoreErrorHandler,
 		Columns: []schema.Column{
 			{
 				Name:     "project_id",
@@ -609,7 +610,7 @@ func fetchSqlInstances(ctx context.Context, meta schema.ClientMeta, _ *schema.Re
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Sql.Instances.List(c.ProjectId).Context(ctx)
+		call := c.Services.Sql.Instances.List(c.ProjectId).Context(ctx).PageToken(nextPageToken)
 		call.PageToken(nextPageToken)
 		output, err := call.Do()
 		if err != nil {

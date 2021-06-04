@@ -25,6 +25,7 @@ func createStorageTestServer() (*storage.Service, error) {
 	if err := faker.FakeData(&bucket); err != nil {
 		return nil, err
 	}
+	bucket.Name = "testBucket"
 	mux := httprouter.New()
 	mux.GET("/b", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		resp := &storage.Buckets{Items: []*storage.Bucket{&bucket}}
@@ -38,6 +39,24 @@ func createStorageTestServer() (*storage.Service, error) {
 			return
 		}
 	})
+
+	var policy storage.Policy
+	if err := faker.FakeData(&policy); err != nil {
+		return nil, err
+	}
+	mux.GET("/b/testBucket/iam", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		resp := &policy
+		b, err := json.Marshal(resp)
+		if err != nil {
+			http.Error(w, "unable to marshal request: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		if _, err := w.Write(b); err != nil {
+			http.Error(w, "failed to write", http.StatusBadRequest)
+			return
+		}
+	})
+
 	ts := httptest.NewServer(mux)
 	svc, err := storage.NewService(ctx, option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
 	if err != nil {

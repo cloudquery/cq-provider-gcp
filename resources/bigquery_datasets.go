@@ -8,9 +8,10 @@ import (
 
 func BigqueryDatasets() *schema.Table {
 	return &schema.Table{
-		Name:      "gcp_bigquery_datasets",
-		Resolver:  fetchBigqueryDatasets,
-		Multiplex: client.ProjectMultiplex,
+		Name:         "gcp_bigquery_datasets",
+		Resolver:     fetchBigqueryDatasets,
+		Multiplex:    client.ProjectMultiplex,
+		DeleteFilter: client.DeleteProjectFilter,
 		Columns: []schema.Column{
 			{
 				Name:     "project_id",
@@ -91,7 +92,7 @@ func fetchBigqueryDatasets(ctx context.Context, meta schema.ClientMeta, parent *
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.BigQuery.Datasets.List(c.ProjectId)
+		call := c.Services.BigQuery.Datasets.List(c.ProjectId).Context(ctx).PageToken(nextPageToken)
 		call.PageToken(nextPageToken)
 		output, err := call.Do()
 		if err != nil {

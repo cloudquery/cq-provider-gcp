@@ -2,7 +2,7 @@ package resources
 
 import (
 	"context"
-
+	"fmt"
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	"google.golang.org/api/storage/v1"
@@ -13,8 +13,8 @@ func StorageBucket() *schema.Table {
 		Name:         "gcp_storage_buckets",
 		Resolver:     fetchStorageBuckets,
 		Multiplex:    client.ProjectMultiplex,
-		DeleteFilter: client.DeleteProjectFilter,
 		IgnoreError:  client.IgnoreErrorHandler,
+		DeleteFilter: client.DeleteProjectFilter,
 		Columns: []schema.Column{
 			{
 				Name:     "project_id",
@@ -78,11 +78,11 @@ func StorageBucket() *schema.Table {
 				Type: schema.TypeJSON,
 			},
 			{
-				Name: "location_type",
+				Name: "location",
 				Type: schema.TypeString,
 			},
 			{
-				Name: "location",
+				Name: "location_type",
 				Type: schema.TypeString,
 			},
 			{
@@ -175,33 +175,6 @@ func StorageBucket() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:     "gcp_storage_bucket_cors",
-				Resolver: fetchStorageBucketCors,
-				Columns: []schema.Column{
-					{
-						Name:     "bucket_id",
-						Type:     schema.TypeUUID,
-						Resolver: schema.ParentIdResolver,
-					},
-					{
-						Name: "max_age_seconds",
-						Type: schema.TypeBigInt,
-					},
-					{
-						Name: "method",
-						Type: schema.TypeStringArray,
-					},
-					{
-						Name: "origin",
-						Type: schema.TypeStringArray,
-					},
-					{
-						Name: "response_header",
-						Type: schema.TypeStringArray,
-					},
-				},
-			},
-			{
 				Name:     "gcp_storage_bucket_acls",
 				Resolver: fetchStorageBucketAcls,
 				Columns: []schema.Column{
@@ -241,6 +214,103 @@ func StorageBucket() *schema.Table {
 					},
 					{
 						Name: "kind",
+						Type: schema.TypeString,
+					},
+					{
+						Name:     "project_team_project_number",
+						Type:     schema.TypeString,
+						Resolver: schema.PathResolver("ProjectTeam.ProjectNumber"),
+					},
+					{
+						Name:     "project_team",
+						Type:     schema.TypeString,
+						Resolver: schema.PathResolver("ProjectTeam.Team"),
+					},
+					{
+						Name: "role",
+						Type: schema.TypeString,
+					},
+					{
+						Name: "self_link",
+						Type: schema.TypeString,
+					},
+				},
+			},
+			{
+				Name:     "gcp_storage_bucket_cors",
+				Resolver: fetchStorageBucketCors,
+				Columns: []schema.Column{
+					{
+						Name:     "bucket_id",
+						Type:     schema.TypeUUID,
+						Resolver: schema.ParentIdResolver,
+					},
+					{
+						Name: "max_age_seconds",
+						Type: schema.TypeBigInt,
+					},
+					{
+						Name: "method",
+						Type: schema.TypeStringArray,
+					},
+					{
+						Name: "origin",
+						Type: schema.TypeStringArray,
+					},
+					{
+						Name: "response_header",
+						Type: schema.TypeStringArray,
+					},
+				},
+			},
+			{
+				Name:     "gcp_storage_bucket_default_object_acls",
+				Resolver: fetchStorageBucketDefaultObjectAcls,
+				Columns: []schema.Column{
+					{
+						Name:     "bucket_id",
+						Type:     schema.TypeUUID,
+						Resolver: schema.ParentIdResolver,
+					},
+					{
+						Name: "bucket",
+						Type: schema.TypeString,
+					},
+					{
+						Name: "domain",
+						Type: schema.TypeString,
+					},
+					{
+						Name: "email",
+						Type: schema.TypeString,
+					},
+					{
+						Name: "entity",
+						Type: schema.TypeString,
+					},
+					{
+						Name: "entity_id",
+						Type: schema.TypeString,
+					},
+					{
+						Name: "etag",
+						Type: schema.TypeString,
+					},
+					{
+						Name: "generation",
+						Type: schema.TypeBigInt,
+					},
+					{
+						Name:     "resource_id",
+						Type:     schema.TypeString,
+						Resolver: schema.PathResolver("Id"),
+					},
+					{
+						Name: "kind",
+						Type: schema.TypeString,
+					},
+					{
+						Name: "object",
 						Type: schema.TypeString,
 					},
 					{
@@ -335,8 +405,76 @@ func StorageBucket() *schema.Table {
 				},
 			},
 			{
-				Name:     "gcp_storage_bucket_default_object_acls",
-				Resolver: fetchStorageBucketDefaultObjectAcls,
+				Name:     "gcp_storage_bucket_policies",
+				Resolver: fetchStorageBucketPolicies,
+				Columns: []schema.Column{
+					{
+						Name:     "bucket_id",
+						Type:     schema.TypeUUID,
+						Resolver: schema.ParentIdResolver,
+					},
+					{
+						Name: "etag",
+						Type: schema.TypeString,
+					},
+					{
+						Name: "kind",
+						Type: schema.TypeString,
+					},
+					{
+						Name: "resource_id",
+						Type: schema.TypeString,
+					},
+					{
+						Name: "version",
+						Type: schema.TypeBigInt,
+					},
+				},
+				Relations: []*schema.Table{
+					{
+						Name:     "gcp_storage_bucket_policy_bindings",
+						Resolver: fetchStorageBucketPolicyBindings,
+						Columns: []schema.Column{
+							{
+								Name:     "bucket_policy_id",
+								Type:     schema.TypeUUID,
+								Resolver: schema.ParentIdResolver,
+							},
+							{
+								Name:     "condition_description",
+								Type:     schema.TypeString,
+								Resolver: schema.PathResolver("Condition.Description"),
+							},
+							{
+								Name:     "condition_expression",
+								Type:     schema.TypeString,
+								Resolver: schema.PathResolver("Condition.Expression"),
+							},
+							{
+								Name:     "condition_location",
+								Type:     schema.TypeString,
+								Resolver: schema.PathResolver("Condition.Location"),
+							},
+							{
+								Name:     "condition_title",
+								Type:     schema.TypeString,
+								Resolver: schema.PathResolver("Condition.Title"),
+							},
+							{
+								Name: "members",
+								Type: schema.TypeStringArray,
+							},
+							{
+								Name: "role",
+								Type: schema.TypeString,
+							},
+						},
+					},
+				},
+			},
+			{
+				Name:     "gcp_storage_bucket_acls",
+				Resolver: fetchStorageBucketAcls,
 				Columns: []schema.Column{
 					{
 						Name:     "bucket_id",
@@ -403,11 +541,11 @@ func StorageBucket() *schema.Table {
 // ====================================================================================================================
 //                                               Table Resolver Functions
 // ====================================================================================================================
-func fetchStorageBuckets(_ context.Context, meta schema.ClientMeta, _ *schema.Resource, res chan interface{}) error {
+func fetchStorageBuckets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Storage.Buckets.List(c.ProjectId)
+		call := c.Services.Storage.Buckets.List(c.ProjectId).Context(ctx).PageToken(nextPageToken)
 		call.PageToken(nextPageToken)
 		output, err := call.Do()
 		if err != nil {
@@ -421,28 +559,47 @@ func fetchStorageBuckets(_ context.Context, meta schema.ClientMeta, _ *schema.Re
 	}
 	return nil
 }
-
-func fetchStorageBucketAcls(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchStorageBucketAcls(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	bucket := parent.Item.(*storage.Bucket)
 	res <- bucket.Acl
 	return nil
 }
-
-func fetchStorageBucketCors(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchStorageBucketCors(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	bucket := parent.Item.(*storage.Bucket)
 	res <- bucket.Cors
 	return nil
 }
-
-func fetchStorageBucketLifecycleRules(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchStorageBucketDefaultObjectAcls(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	bucket := parent.Item.(*storage.Bucket)
+	res <- bucket.DefaultObjectAcl
+	return nil
+}
+func fetchStorageBucketLifecycleRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	bucket := parent.Item.(*storage.Bucket)
 	if bucket.Lifecycle != nil {
 		res <- bucket.Lifecycle.Rule
 	}
 	return nil
 }
-func fetchStorageBucketDefaultObjectAcls(_ context.Context, _ schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	bucket := parent.Item.(*storage.Bucket)
-	res <- bucket.DefaultObjectAcl
+func fetchStorageBucketPolicies(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(*storage.Bucket)
+	if !ok {
+		fmt.Errorf("expected *storage.Bucket but got %T", p)
+	}
+	c := meta.(*client.Client)
+	call := c.Services.Storage.Buckets.GetIamPolicy(p.Name).Context(ctx)
+	output, err := call.Do()
+	if err != nil {
+		return err
+	}
+	res <- output
+	return nil
+}
+func fetchStorageBucketPolicyBindings(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	p, ok := parent.Item.(*storage.Policy)
+	if !ok {
+		fmt.Errorf("expected *storage.Policy but got %T", p)
+	}
+	res <- p.Bindings
 	return nil
 }

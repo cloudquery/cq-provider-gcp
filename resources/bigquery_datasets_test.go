@@ -43,13 +43,19 @@ func TestBigqueryDatasets(t *testing.T) {
 func createBigqueryDatasets() (*bigquery.Service, error) {
 	id := "testDataset"
 	mux := httprouter.New()
+	var dataset bigquery.Dataset
+	if err := faker.FakeData(&dataset); err != nil {
+		return nil, err
+	}
+	dataset.Id = id
+	dataset.DatasetReference = &bigquery.DatasetReference{
+		DatasetId: id,
+	}
 	mux.GET("/projects/testProject/datasets", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		resp := &bigquery.DatasetList{
 			Datasets: []*bigquery.DatasetListDatasets{
 				{
-					DatasetReference: &bigquery.DatasetReference{
-						DatasetId: id,
-					},
+					DatasetReference: dataset.DatasetReference,
 				},
 			},
 		}
@@ -64,13 +70,7 @@ func createBigqueryDatasets() (*bigquery.Service, error) {
 		}
 	})
 
-	var dataset bigquery.Dataset
-	if err := faker.FakeData(&dataset); err != nil {
-		return nil, err
-	}
-	dataset.Id = id
 	mux.GET("/projects/testProject/datasets/testDataset", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-
 		b, err := json.Marshal(&dataset)
 		if err != nil {
 			http.Error(w, "unable to marshal request: "+err.Error(), http.StatusBadRequest)
@@ -103,6 +103,9 @@ func createBigqueryDatasets() (*bigquery.Service, error) {
 
 	var table bigquery.Table
 	table.Id = id
+	table.TableReference = &bigquery.TableReference{
+		TableId: id,
+	}
 	if err := faker.FakeData(&table.Model); err != nil {
 		return nil, err
 	}
