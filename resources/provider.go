@@ -26,6 +26,7 @@ func Provider() *provider.Provider {
 			"compute.subnetworks":      ComputeSubnetworks(),
 			"compute.firewalls":        ComputeFirewalls(),
 			"compute.forwarding_rules": ComputeForwardingRules(),
+			"compute.projects":         ComputeProjects(),
 			"cloudfunctions.functions": CloudfunctionsFunction(),
 			"iam.project_roles":        IamRoles(),
 			"iam.service_accounts":     IamServiceAccounts(),
