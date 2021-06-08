@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 	"fmt"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	"google.golang.org/api/storage/v1"
@@ -584,7 +585,7 @@ func fetchStorageBucketLifecycleRules(ctx context.Context, meta schema.ClientMet
 func fetchStorageBucketPolicies(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(*storage.Bucket)
 	if !ok {
-		fmt.Errorf("expected *storage.Bucket but got %T", p)
+		return fmt.Errorf("expected *storage.Bucket but got %T", p)
 	}
 	c := meta.(*client.Client)
 	call := c.Services.Storage.Buckets.GetIamPolicy(p.Name).Context(ctx)
@@ -598,7 +599,7 @@ func fetchStorageBucketPolicies(ctx context.Context, meta schema.ClientMeta, par
 func fetchStorageBucketPolicyBindings(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(*storage.Policy)
 	if !ok {
-		fmt.Errorf("expected *storage.Policy but got %T", p)
+		return fmt.Errorf("expected *storage.Policy but got %T", p)
 	}
 	res <- p.Bindings
 	return nil

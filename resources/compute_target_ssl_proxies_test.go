@@ -18,14 +18,14 @@ import (
 	"google.golang.org/api/option"
 )
 
-func TestComputeProjects(t *testing.T) {
+func TestComputeTargetSslProxies(t *testing.T) {
 	resource := providertest.ResourceTestData{
-		Table: ComputeProjects(),
+		Table: ComputeTargetSslProxies(),
 		Config: client.Config{
 			ProjectIDs: []string{"testProject"},
 		},
 		Configure: func(logger hclog.Logger, _ interface{}) (schema.ClientMeta, error) {
-			computeSvc, err := createComputeProjects()
+			computeSvc, err := createTargetSslProxies()
 			if err != nil {
 				return nil, err
 			}
@@ -40,17 +40,19 @@ func TestComputeProjects(t *testing.T) {
 	providertest.TestResource(t, Provider, resource)
 }
 
-func createComputeProjects() (*compute.Service, error) {
-	id := "testProject"
-	mux := httprouter.New()
-	var project compute.Project
-	if err := faker.FakeData(&project); err != nil {
+func createTargetSslProxies() (*compute.Service, error) {
+	ctx := context.Background()
+	var proxy compute.TargetSslProxy
+	if err := faker.FakeData(&proxy); err != nil {
 		return nil, err
 	}
-	project.Name = id
-
-	mux.GET("/projects/testProject", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		resp := &project
+	mux := httprouter.New()
+	mux.GET("/projects/testProject/global/targetSslProxies", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		resp := &compute.TargetSslProxyList{
+			Items: []*compute.TargetSslProxy{
+				&proxy,
+			},
+		}
 		b, err := json.Marshal(resp)
 		if err != nil {
 			http.Error(w, "unable to marshal request: "+err.Error(), http.StatusBadRequest)
@@ -61,9 +63,8 @@ func createComputeProjects() (*compute.Service, error) {
 			return
 		}
 	})
-
 	ts := httptest.NewServer(mux)
-	svc, err := compute.NewService(context.Background(), option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
+	svc, err := compute.NewService(ctx, option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
 	if err != nil {
 		return nil, err
 	}
