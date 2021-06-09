@@ -72,8 +72,10 @@ func fetchComputeTargetSslProxies(ctx context.Context, meta schema.ClientMeta, p
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Compute.TargetSslProxies.List(c.ProjectId).Context(ctx)
-		call.PageToken(nextPageToken)
+		call := c.Services.Compute.TargetSslProxies.
+			List(c.ProjectId).
+			Context(ctx).
+			PageToken(nextPageToken)
 		output, err := call.Do()
 		if err != nil {
 			return err

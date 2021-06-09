@@ -222,7 +222,10 @@ func fetchComputeDisks(ctx context.Context, meta schema.ClientMeta, _ *schema.Re
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Compute.Disks.AggregatedList(c.ProjectId).Context(ctx).PageToken(nextPageToken)
+		call := c.Services.Compute.Disks.
+			AggregatedList(c.ProjectId).
+			Context(ctx).
+			PageToken(nextPageToken)
 		output, err := call.Do()
 		if err != nil {
 			return err

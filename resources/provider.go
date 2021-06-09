@@ -35,6 +35,7 @@ func Provider() *provider.Provider {
 			"dns.policies":                 DNSPolicies(),
 			"iam.project_roles":            IamRoles(),
 			"iam.service_accounts":         IamServiceAccounts(),
+			"logging.metrics":              LoggingMetrics(),
 			"storage.buckets":              StorageBucket(),
 			"sql.instances":                SQLInstances(),
 			"domains.registrations":        DomainsRegistration(),

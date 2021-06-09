@@ -2,15 +2,16 @@ package client
 
 import (
 	"context"
-	"google.golang.org/api/dns/v1"
 
 	"google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/cloudfunctions/v1"
 	kms "google.golang.org/api/cloudkms/v1"
 	"google.golang.org/api/cloudresourcemanager/v3"
 	"google.golang.org/api/compute/v1"
+	"google.golang.org/api/dns/v1"
 	domains "google.golang.org/api/domains/v1beta1"
 	"google.golang.org/api/iam/v1"
+	"google.golang.org/api/logging/v2"
 	sql "google.golang.org/api/sqladmin/v1beta4"
 	"google.golang.org/api/storage/v1"
 )
@@ -26,6 +27,7 @@ type Services struct {
 	Compute        *compute.Service
 	BigQuery       *bigquery.Service
 	Dns            *dns.Service
+	Logging        *logging.Service
 }
 
 func initServices(ctx context.Context) (*Services, error) {
@@ -70,6 +72,10 @@ func initServices(ctx context.Context) (*Services, error) {
 	if err != nil {
 		return nil, err
 	}
+	loggingSvc, err := logging.NewService(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Services{
 		Kms:            kmsSvc,
@@ -82,5 +88,6 @@ func initServices(ctx context.Context) (*Services, error) {
 		Compute:        computeSvc,
 		BigQuery:       bigquerySvc,
 		Dns:            dnsSvc,
+		Logging:        loggingSvc,
 	}, nil
 }

@@ -214,8 +214,10 @@ func fetchDnsManagedZones(ctx context.Context, meta schema.ClientMeta, parent *s
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Dns.ManagedZones.List(c.ProjectId).Context(ctx).PageToken(nextPageToken)
-		call.PageToken(nextPageToken)
+		call := c.Services.Dns.ManagedZones.
+			List(c.ProjectId).
+			Context(ctx).
+			PageToken(nextPageToken)
 		output, err := call.Do()
 		if err != nil {
 			return err

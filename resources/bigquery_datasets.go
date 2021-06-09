@@ -93,15 +93,19 @@ func fetchBigqueryDatasets(ctx context.Context, meta schema.ClientMeta, parent *
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.BigQuery.Datasets.List(c.ProjectId).Context(ctx).PageToken(nextPageToken)
-		call.PageToken(nextPageToken)
+		call := c.Services.BigQuery.Datasets.
+			List(c.ProjectId).
+			Context(ctx).
+			PageToken(nextPageToken)
 		output, err := call.Do()
 		if err != nil {
 			return err
 		}
 
 		for _, d := range output.Datasets {
-			call := c.Services.BigQuery.Datasets.Get(c.ProjectId, d.DatasetReference.DatasetId).Context(ctx)
+			call := c.Services.BigQuery.Datasets.
+				Get(c.ProjectId, d.DatasetReference.DatasetId).
+				Context(ctx)
 			dataset, err := call.Do()
 			if err != nil {
 				return err
