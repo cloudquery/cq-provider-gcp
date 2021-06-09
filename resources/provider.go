@@ -32,6 +32,7 @@ func Provider() *provider.Provider {
 			"compute.ssl_policies":         ComputeSslPolicies(),
 			"cloudfunctions.functions":     CloudfunctionsFunction(),
 			"dns.managed_zones":            DNSManagedZones(),
+			"dns.policies":                 DNSPolicies(),
 			"iam.project_roles":            IamRoles(),
 			"iam.service_accounts":         IamServiceAccounts(),
 			"storage.buckets":              StorageBucket(),

@@ -3,10 +3,6 @@ package resources
 import (
 	"context"
 	"encoding/json"
-	"net/http"
-	"net/http/httptest"
-	"testing"
-
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/logging"
 	"github.com/cloudquery/cq-provider-sdk/provider/providertest"
@@ -16,18 +12,21 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"google.golang.org/api/dns/v1"
 	"google.golang.org/api/option"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 )
 
-func createDnsManagedZones() (*dns.Service, error) {
+func createDnsPolicies() (*dns.Service, error) {
 	ctx := context.Background()
-	var zone dns.ManagedZone
-	if err := faker.FakeData(&zone); err != nil {
+	var policy dns.Policy
+	if err := faker.FakeData(&policy); err != nil {
 		return nil, err
 	}
 	mux := httprouter.New()
-	mux.GET("/dns/v1/projects/testProject/managedZones", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		resp := &dns.ManagedZonesListResponse{
-			ManagedZones: []*dns.ManagedZone{&zone},
+	mux.GET("/dns/v1/projects/testProject/policies", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		resp := &dns.PoliciesListResponse{
+			Policies: []*dns.Policy{&policy},
 		}
 		b, err := json.Marshal(resp)
 		if err != nil {
@@ -48,14 +47,14 @@ func createDnsManagedZones() (*dns.Service, error) {
 	return svc, nil
 }
 
-func TestDnsManagedZones(t *testing.T) {
+func TestDnsPolicies(t *testing.T) {
 	resource := providertest.ResourceTestData{
-		Table: DNSManagedZones(),
+		Table: DNSPolicies(),
 		Config: client.Config{
 			ProjectIDs: []string{"testProject"},
 		},
 		Configure: func(logger hclog.Logger, _ interface{}) (schema.ClientMeta, error) {
-			dnsSvc, err := createDnsManagedZones()
+			dnsSvc, err := createDnsPolicies()
 			if err != nil {
 				return nil, err
 			}
