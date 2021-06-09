@@ -6,7 +6,7 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+	compute "google.golang.org/api/compute/v1"
 )
 
 func ComputeSslPolicies() *schema.Table {
@@ -120,7 +120,6 @@ func fetchComputeSslPolicies(ctx context.Context, meta schema.ClientMeta, parent
 	}
 	return nil
 }
-
 func fetchComputeSslPolicyWarnings(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(*compute.SslPolicy)
 	if !ok {
@@ -129,7 +128,6 @@ func fetchComputeSslPolicyWarnings(ctx context.Context, meta schema.ClientMeta, 
 	res <- p.Warnings
 	return nil
 }
-
 func resolveComputeSslPolicyWarningData(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(*compute.SslPolicyWarnings)
 	if !ok {
