@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"google.golang.org/api/monitoring/v3"
 
 	"google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/cloudfunctions/v1"
@@ -28,6 +29,7 @@ type Services struct {
 	BigQuery       *bigquery.Service
 	Dns            *dns.Service
 	Logging        *logging.Service
+	Monitoring     *monitoring.Service
 }
 
 func initServices(ctx context.Context) (*Services, error) {
@@ -76,6 +78,10 @@ func initServices(ctx context.Context) (*Services, error) {
 	if err != nil {
 		return nil, err
 	}
+	monitoringSvc, err := monitoring.NewService(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Services{
 		Kms:            kmsSvc,
@@ -89,5 +95,6 @@ func initServices(ctx context.Context) (*Services, error) {
 		BigQuery:       bigquerySvc,
 		Dns:            dnsSvc,
 		Logging:        loggingSvc,
+		Monitoring:     monitoringSvc,
 	}, nil
 }
