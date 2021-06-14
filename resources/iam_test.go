@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-gcp/resources"
@@ -89,6 +90,8 @@ func createIamTestServer() (*iam.Service, error) {
 	if err := faker.FakeData(&key); err != nil {
 		return nil, err
 	}
+	key.ValidAfterTime = time.Now().Format(time.RFC3339)
+	key.ValidBeforeTime = time.Now().Format(time.RFC3339)
 	mux.GET("/v1/test/keys", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		resp := &iam.ListServiceAccountKeysResponse{
 			Keys: []*iam.ServiceAccountKey{&key},

@@ -6,6 +6,7 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	iam "google.golang.org/api/iam/v1"
+	"time"
 )
 
 func IamServiceAccounts() *schema.Table {
@@ -80,12 +81,14 @@ func IamServiceAccounts() *schema.Table {
 						Type: schema.TypeString,
 					},
 					{
-						Name: "valid_after_time",
-						Type: schema.TypeString,
+						Name:     "valid_after_time",
+						Type:     schema.TypeTimestamp,
+						Resolver: resolveIamServiceAccountKeyValidAfterTime,
 					},
 					{
-						Name: "valid_before_time",
-						Type: schema.TypeString,
+						Name:     "valid_before_time",
+						Type:     schema.TypeTimestamp,
+						Resolver: resolveIamServiceAccountKeyValidBeforeTime,
 					},
 				},
 			},
@@ -128,4 +131,34 @@ func fetchIamServiceAccountKeys(ctx context.Context, meta schema.ClientMeta, par
 	}
 	res <- output.Keys
 	return nil
+}
+func resolveIamServiceAccountKeyValidAfterTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(*iam.ServiceAccountKey)
+	if !ok {
+		return fmt.Errorf("expected *iam.ServiceAccountKey but got %T", p)
+	}
+	location, err := time.LoadLocation("UTC")
+	if err != nil {
+		return err
+	}
+	date, err := time.ParseInLocation(time.RFC3339, p.ValidAfterTime, location)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, date)
+}
+func resolveIamServiceAccountKeyValidBeforeTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p, ok := resource.Item.(*iam.ServiceAccountKey)
+	if !ok {
+		return fmt.Errorf("expected *iam.ServiceAccountKey but got %T", p)
+	}
+	location, err := time.LoadLocation("UTC")
+	if err != nil {
+		return err
+	}
+	date, err := time.ParseInLocation(time.RFC3339, p.ValidBeforeTime, location)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, date)
 }
