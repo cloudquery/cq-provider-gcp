@@ -68,10 +68,30 @@ func createIamTestServer() (*iam.Service, error) {
 	if err := faker.FakeData(&acc); err != nil {
 		return nil, err
 	}
+	acc.Name = "test"
 	mux := httprouter.New()
 	mux.GET("/v1/projects/testProject/serviceAccounts", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		resp := &iam.ListServiceAccountsResponse{
 			Accounts: []*iam.ServiceAccount{&acc},
+		}
+		b, err := json.Marshal(resp)
+		if err != nil {
+			http.Error(w, "unable to marshal request: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		if _, err := w.Write(b); err != nil {
+			http.Error(w, "failed to write", http.StatusBadRequest)
+			return
+		}
+	})
+
+	var key iam.ServiceAccountKey
+	if err := faker.FakeData(&key); err != nil {
+		return nil, err
+	}
+	mux.GET("/v1/test/keys", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		resp := &iam.ListServiceAccountKeysResponse{
+			Keys: []*iam.ServiceAccountKey{&key},
 		}
 		b, err := json.Marshal(resp)
 		if err != nil {
