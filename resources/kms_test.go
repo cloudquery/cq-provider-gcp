@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-gcp/resources"
@@ -31,12 +32,19 @@ func createKmsTestServer() (*kms.Service, error) {
 		return nil, err
 	}
 	keyring.Name = fmt.Sprintf("projects/testProject/location/%s/keyring/%s", location.Name, keyring.Name)
+	keyring.CreateTime = time.Now().Format(time.RFC3339)
 	var key kms.CryptoKey
 	if err := faker.FakeData(&key); err != nil {
 		return nil, err
 	}
 	key.Name = fmt.Sprintf("%s/cryptokey/%s", keyring.Name, key.Name)
-
+	key.CreateTime = time.Now().Format(time.RFC3339)
+	key.NextRotationTime = time.Now().Format(time.RFC3339)
+	key.Primary.CreateTime = time.Now().Format(time.RFC3339)
+	key.Primary.DestroyEventTime = time.Now().Format(time.RFC3339)
+	key.Primary.DestroyTime = time.Now().Format(time.RFC3339)
+	key.Primary.GenerateTime = time.Now().Format(time.RFC3339)
+	key.Primary.ImportTime = time.Now().Format(time.RFC3339)
 	mux := httprouter.New()
 	mux.GET("/v1/projects/testProject/locations", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		resp := &kms.ListLocationsResponse{
@@ -94,7 +102,7 @@ func createKmsTestServer() (*kms.Service, error) {
 
 func TestKmsKeyring(t *testing.T) {
 	resource := providertest.ResourceTestData{
-		Table: resources.KmsKeyring(),
+		Table: resources.KmsKeyrings(),
 		Config: &client.Config{
 			ProjectIDs: []string{"testProject"},
 		},

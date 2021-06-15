@@ -11,7 +11,7 @@ func Provider() *provider.Provider {
 		Name:      "gcp",
 		Configure: client.Configure,
 		ResourceMap: map[string]*schema.Table{
-			"kms.keys":                     KmsKeyring(),
+			"kms.keys":                     KmsKeyrings(),
 			"compute.addresses":            ComputeAddresses(),
 			"compute.autoscalers":          ComputeAutoscalers(),
 			"compute.backend_services":     ComputeBackendServices(),
