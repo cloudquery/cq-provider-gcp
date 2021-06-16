@@ -3,6 +3,10 @@ package resources
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/logging"
 	"github.com/cloudquery/cq-provider-sdk/provider/providertest"
@@ -12,9 +16,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 	"google.golang.org/api/dns/v1"
 	"google.golang.org/api/option"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
 func createDnsPolicies() (*dns.Service, error) {

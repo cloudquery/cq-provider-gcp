@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"google.golang.org/api/monitoring/v3"
 
 	"google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/cloudfunctions/v1"
@@ -13,6 +12,7 @@ import (
 	domains "google.golang.org/api/domains/v1beta1"
 	"google.golang.org/api/iam/v1"
 	"google.golang.org/api/logging/v2"
+	"google.golang.org/api/monitoring/v3"
 	sql "google.golang.org/api/sqladmin/v1beta4"
 	"google.golang.org/api/storage/v1"
 )

@@ -3,10 +3,11 @@ package resources
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	iam "google.golang.org/api/iam/v1"
-	"time"
+	"google.golang.org/api/iam/v1"
 )
 
 func IamServiceAccounts() *schema.Table {

@@ -3,9 +3,10 @@ package resources
 import (
 	"context"
 	"fmt"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	dns "google.golang.org/api/dns/v1"
+	"google.golang.org/api/dns/v1"
 )
 
 func DNSPolicies() *schema.Table {

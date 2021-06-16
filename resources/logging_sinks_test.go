@@ -3,6 +3,10 @@ package resources
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/logging"
 	"github.com/cloudquery/cq-provider-sdk/provider/providertest"
@@ -12,9 +16,6 @@ import (
 	"github.com/julienschmidt/httprouter"
 	logging2 "google.golang.org/api/logging/v2"
 	"google.golang.org/api/option"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
 func createLoggingSinks() (*logging2.Service, error) {
