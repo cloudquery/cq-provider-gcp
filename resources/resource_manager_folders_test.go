@@ -18,19 +18,22 @@ import (
 	"time"
 )
 
-func createResourceManagerProjects() (*cloudresourcemanager.Service, error) {
+func createResourceManagerFolders() (*cloudresourcemanager.Service, error) {
 	ctx := context.Background()
-	var project cloudresourcemanager.Project
-	if err := faker.FakeData(&project); err != nil {
+	var folder cloudresourcemanager.Folder
+	if err := faker.FakeData(&folder); err != nil {
 		return nil, err
 	}
 	mux := httprouter.New()
-	project.CreateTime = time.Now().Format(time.RFC3339)
-	project.DeleteTime = time.Now().Format(time.RFC3339)
-	project.UpdateTime = time.Now().Format(time.RFC3339)
-	project.ProjectId = "testProject"
-	mux.GET("/v3/projects/testProject", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		b, err := json.Marshal(&project)
+	folder.CreateTime = time.Now().Format(time.RFC3339)
+	folder.DeleteTime = time.Now().Format(time.RFC3339)
+	folder.UpdateTime = time.Now().Format(time.RFC3339)
+	folder.Name = "testProject"
+	mux.GET("/v3/folders", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+		resp := &cloudresourcemanager.ListFoldersResponse{
+			Folders: []*cloudresourcemanager.Folder{&folder},
+		}
+		b, err := json.Marshal(resp)
 		if err != nil {
 			http.Error(w, "unable to marshal request: "+err.Error(), http.StatusBadRequest)
 			return
@@ -45,7 +48,7 @@ func createResourceManagerProjects() (*cloudresourcemanager.Service, error) {
 	if err := faker.FakeData(&policy); err != nil {
 		return nil, err
 	}
-	mux.POST("/v3/projects/testProject:getIamPolicy", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	mux.POST("/v3/folders/testProject:getIamPolicy", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		b, err := json.Marshal(policy)
 		if err != nil {
 			http.Error(w, "unable to marshal request: "+err.Error(), http.StatusBadRequest)
@@ -64,14 +67,14 @@ func createResourceManagerProjects() (*cloudresourcemanager.Service, error) {
 	return svc, nil
 }
 
-func TestResourceManagerProjects(t *testing.T) {
+func TestResourceManagerFolders(t *testing.T) {
 	resource := providertest.ResourceTestData{
-		Table: ResourceManagerProjects(),
+		Table: ResourceManagerFolders(),
 		Config: client.Config{
 			ProjectIDs: []string{"testProject"},
 		},
 		Configure: func(logger hclog.Logger, _ interface{}) (schema.ClientMeta, error) {
-			resourceManager, err := createResourceManagerProjects()
+			resourceManager, err := createResourceManagerFolders()
 			if err != nil {
 				return nil, err
 			}

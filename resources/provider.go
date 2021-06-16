@@ -39,6 +39,7 @@ func Provider() *provider.Provider {
 			"logging.sinks":                LoggingSinks(),
 			"monitoring.alert_policies":    MonitoringAlertPolicies(),
 			"resource_manager.projects":    ResourceManagerProjects(),
+			"resource_manager.folders":     ResourceManagerFolders(),
 			"storage.buckets":              StorageBucket(),
 			"sql.instances":                SQLInstances(),
 			"domains.registrations":        DomainsRegistration(),
