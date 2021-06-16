@@ -6,7 +6,6 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	"google.golang.org/api/cloudkms/v1"
-	"time"
 )
 
 func KmsKeyrings() *schema.Table {
@@ -218,7 +217,7 @@ func resolveKmsKeyringCreateTime(ctx context.Context, meta schema.ClientMeta, re
 	if !ok {
 		return fmt.Errorf("expected *cloudkms.KeyRing but got %T", p)
 	}
-	date, err := parseISODate(p.CreateTime)
+	date, err := client.ParseISODate(p.CreateTime)
 	if err != nil {
 		return err
 	}
@@ -252,7 +251,7 @@ func resolveKmsKeyringCryptoKeyCreateTime(ctx context.Context, meta schema.Clien
 	if !ok {
 		return fmt.Errorf("expected *cloudkms.CryptoKey but got %T", p)
 	}
-	date, err := parseISODate(p.CreateTime)
+	date, err := client.ParseISODate(p.CreateTime)
 	if err != nil {
 		return err
 	}
@@ -263,7 +262,7 @@ func resolveKmsKeyringCryptoKeyNextRotationTime(ctx context.Context, meta schema
 	if !ok {
 		return fmt.Errorf("expected *cloudkms.CryptoKey but got %T", p)
 	}
-	date, err := parseISODate(p.NextRotationTime)
+	date, err := client.ParseISODate(p.NextRotationTime)
 	if err != nil {
 		return err
 	}
@@ -277,7 +276,7 @@ func resolveKmsKeyringCryptoKeyPrimaryCreateTime(ctx context.Context, meta schem
 	if p.Primary == nil {
 		return nil
 	}
-	date, err := parseISODate(p.Primary.CreateTime)
+	date, err := client.ParseISODate(p.Primary.CreateTime)
 	if err != nil {
 		return err
 	}
@@ -291,7 +290,7 @@ func resolveKmsKeyringCryptoKeyPrimaryDestroyEventTime(ctx context.Context, meta
 	if p.Primary == nil {
 		return nil
 	}
-	date, err := parseISODate(p.Primary.DestroyEventTime)
+	date, err := client.ParseISODate(p.Primary.DestroyEventTime)
 	if err != nil {
 		return err
 	}
@@ -305,7 +304,7 @@ func resolveKmsKeyringCryptoKeyPrimaryDestroyTime(ctx context.Context, meta sche
 	if p.Primary == nil {
 		return nil
 	}
-	date, err := parseISODate(p.Primary.DestroyTime)
+	date, err := client.ParseISODate(p.Primary.DestroyTime)
 	if err != nil {
 		return err
 	}
@@ -319,7 +318,7 @@ func resolveKmsKeyringCryptoKeyPrimaryGenerateTime(ctx context.Context, meta sch
 	if p.Primary == nil {
 		return nil
 	}
-	date, err := parseISODate(p.Primary.GenerateTime)
+	date, err := client.ParseISODate(p.Primary.GenerateTime)
 	if err != nil {
 		return err
 	}
@@ -333,7 +332,7 @@ func resolveKmsKeyringCryptoKeyPrimaryImportTime(ctx context.Context, meta schem
 	if p.Primary == nil {
 		return nil
 	}
-	date, err := parseISODate(p.Primary.ImportTime)
+	date, err := client.ParseISODate(p.Primary.ImportTime)
 	if err != nil {
 		return err
 	}
@@ -343,21 +342,6 @@ func resolveKmsKeyringCryptoKeyPrimaryImportTime(ctx context.Context, meta schem
 // ====================================================================================================================
 //                                                  User Defined Helpers
 // ====================================================================================================================
-
-func parseISODate(d string) (*time.Time, error) {
-	if d == "" {
-		return nil, nil
-	}
-	location, err := time.LoadLocation("UTC")
-	if err != nil {
-		return nil, err
-	}
-	date, err := time.ParseInLocation(time.RFC3339, d, location)
-	if err != nil {
-		return nil, err
-	}
-	return &date, err
-}
 
 func getAllKmsLocations(ctx context.Context, projectId string, kms *cloudkms.Service) ([]*cloudkms.Location, error) {
 	var locations []*cloudkms.Location

@@ -18,18 +18,19 @@ import (
 )
 
 type Services struct {
-	Kms            *kms.Service
-	Storage        *storage.Service
-	Sql            *sql.Service
-	Iam            *iam.Service
-	Crm            *cloudresourcemanager.Service
-	CloudFunctions *cloudfunctions.Service
-	Domain         *domains.Service
-	Compute        *compute.Service
-	BigQuery       *bigquery.Service
-	Dns            *dns.Service
-	Logging        *logging.Service
-	Monitoring     *monitoring.Service
+	Kms             *kms.Service
+	Storage         *storage.Service
+	Sql             *sql.Service
+	Iam             *iam.Service
+	Crm             *cloudresourcemanager.Service
+	CloudFunctions  *cloudfunctions.Service
+	Domain          *domains.Service
+	Compute         *compute.Service
+	BigQuery        *bigquery.Service
+	Dns             *dns.Service
+	Logging         *logging.Service
+	Monitoring      *monitoring.Service
+	ResourceManager *cloudresourcemanager.Service
 }
 
 func initServices(ctx context.Context) (*Services, error) {
@@ -82,19 +83,24 @@ func initServices(ctx context.Context) (*Services, error) {
 	if err != nil {
 		return nil, err
 	}
+	resourceManagerSvc, err := cloudresourcemanager.NewService(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Services{
-		Kms:            kmsSvc,
-		Storage:        storageSvc,
-		Sql:            sqlSvc,
-		Iam:            iamSvc,
-		Crm:            crmSvc,
-		CloudFunctions: cfSvc,
-		Domain:         domainSvc,
-		Compute:        computeSvc,
-		BigQuery:       bigquerySvc,
-		Dns:            dnsSvc,
-		Logging:        loggingSvc,
-		Monitoring:     monitoringSvc,
+		Kms:             kmsSvc,
+		Storage:         storageSvc,
+		Sql:             sqlSvc,
+		Iam:             iamSvc,
+		Crm:             crmSvc,
+		CloudFunctions:  cfSvc,
+		Domain:          domainSvc,
+		Compute:         computeSvc,
+		BigQuery:        bigquerySvc,
+		Dns:             dnsSvc,
+		Logging:         loggingSvc,
+		Monitoring:      monitoringSvc,
+		ResourceManager: resourceManagerSvc,
 	}, nil
 }
