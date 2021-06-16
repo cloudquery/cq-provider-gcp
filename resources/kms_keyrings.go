@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
@@ -12,6 +13,7 @@ import (
 func KmsKeyrings() *schema.Table {
 	return &schema.Table{
 		Name:                 "gcp_kms_keyrings",
+		Description:          "KeyRing: A KeyRing is a toplevel logical grouping of CryptoKeys. ",
 		Resolver:             fetchKmsKeyrings,
 		Multiplex:            client.ProjectMultiplex,
 		IgnoreError:          client.IgnoreErrorHandler,
@@ -28,26 +30,30 @@ func KmsKeyrings() *schema.Table {
 				Type: schema.TypeString,
 			},
 			{
-				Name:     "create_time",
-				Type:     schema.TypeTimestamp,
-				Resolver: resolveKmsKeyringCreateTime,
+				Name:        "create_time",
+				Description: "CreateTime: Output only",
+				Type:        schema.TypeTimestamp,
+				Resolver:    resolveKmsKeyringCreateTime,
 			},
 			{
-				Name: "name",
-				Type: schema.TypeString,
+				Name:        "name",
+				Description: "Name: Output only",
+				Type:        schema.TypeString,
 			},
 		},
 		Relations: []*schema.Table{
 			{
 				Name:                 "gcp_kms_keyring_crypto_keys",
+				Description:          "CryptoKey: A CryptoKey represents a logical key that can be used for cryptographic operations",
 				Resolver:             fetchKmsKeyringCryptoKeys,
 				IgnoreError:          client.IgnoreErrorHandler,
 				PostResourceResolver: client.AddGcpMetadata,
 				Columns: []schema.Column{
 					{
-						Name:     "keyring_id",
-						Type:     schema.TypeUUID,
-						Resolver: schema.ParentIdResolver,
+						Name:        "keyring_id",
+						Description: "Unique ID of gcp_kms_keyrings table (FK)",
+						Type:        schema.TypeUUID,
+						Resolver:    schema.ParentIdResolver,
 					},
 					{
 						Name:     "project_id",
@@ -59,125 +65,155 @@ func KmsKeyrings() *schema.Table {
 						Type: schema.TypeString,
 					},
 					{
-						Name:     "create_time",
-						Type:     schema.TypeTimestamp,
-						Resolver: resolveKmsKeyringCryptoKeyCreateTime,
+						Name:     "policy",
+						Type:     schema.TypeJSON,
+						Resolver: resolveKmsKeyringCryptoKeyPolicy,
 					},
 					{
-						Name: "labels",
-						Type: schema.TypeJSON,
+						Name:        "create_time",
+						Description: "CreateTime: Output only",
+						Type:        schema.TypeTimestamp,
+						Resolver:    resolveKmsKeyringCryptoKeyCreateTime,
 					},
 					{
-						Name: "name",
-						Type: schema.TypeString,
+						Name:        "labels",
+						Description: "Labels: Labels with user-defined metadata",
+						Type:        schema.TypeJSON,
 					},
 					{
-						Name:     "next_rotation_time",
-						Type:     schema.TypeTimestamp,
-						Resolver: resolveKmsKeyringCryptoKeyNextRotationTime,
+						Name:        "name",
+						Description: "Name: Output only",
+						Type:        schema.TypeString,
 					},
 					{
-						Name:     "primary_algorithm",
-						Type:     schema.TypeString,
-						Resolver: schema.PathResolver("Primary.Algorithm"),
+						Name:        "next_rotation_time",
+						Description: "NextRotationTime: At next_rotation_time, the Key Management Service will automatically: 1",
+						Type:        schema.TypeTimestamp,
+						Resolver:    resolveKmsKeyringCryptoKeyNextRotationTime,
 					},
 					{
-						Name:     "primary_attestation_cert_chains_cavium_certs",
-						Type:     schema.TypeStringArray,
-						Resolver: schema.PathResolver("Primary.Attestation.CertChains.CaviumCerts"),
+						Name:        "primary_algorithm",
+						Description: "Algorithm: Output only",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("Primary.Algorithm"),
 					},
 					{
-						Name:     "primary_attestation_cert_chains_google_card_certs",
-						Type:     schema.TypeStringArray,
-						Resolver: schema.PathResolver("Primary.Attestation.CertChains.GoogleCardCerts"),
+						Name:        "primary_attestation_cert_chains_cavium_certs",
+						Description: "CaviumCerts: Cavium certificate chain corresponding to the attestation.",
+						Type:        schema.TypeStringArray,
+						Resolver:    schema.PathResolver("Primary.Attestation.CertChains.CaviumCerts"),
 					},
 					{
-						Name:     "primary_attestation_cert_chains_google_partition_certs",
-						Type:     schema.TypeStringArray,
-						Resolver: schema.PathResolver("Primary.Attestation.CertChains.GooglePartitionCerts"),
+						Name:        "primary_attestation_cert_chains_google_card_certs",
+						Description: "GoogleCardCerts: Google card certificate chain corresponding to the attestation.",
+						Type:        schema.TypeStringArray,
+						Resolver:    schema.PathResolver("Primary.Attestation.CertChains.GoogleCardCerts"),
 					},
 					{
-						Name:     "primary_attestation_content",
-						Type:     schema.TypeString,
-						Resolver: schema.PathResolver("Primary.Attestation.Content"),
+						Name:        "primary_attestation_cert_chains_google_partition_certs",
+						Description: "GooglePartitionCerts: Google partition certificate chain corresponding to the attestation.",
+						Type:        schema.TypeStringArray,
+						Resolver:    schema.PathResolver("Primary.Attestation.CertChains.GooglePartitionCerts"),
 					},
 					{
-						Name:     "primary_attestation_format",
-						Type:     schema.TypeString,
-						Resolver: schema.PathResolver("Primary.Attestation.Format"),
+						Name:        "primary_attestation_content",
+						Description: "Content: Output only",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("Primary.Attestation.Content"),
 					},
 					{
-						Name:     "primary_create_time",
-						Type:     schema.TypeTimestamp,
-						Resolver: resolveKmsKeyringCryptoKeyPrimaryCreateTime,
+						Name:        "primary_attestation_format",
+						Description: "Format: Output only",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("Primary.Attestation.Format"),
 					},
 					{
-						Name:     "primary_destroy_event_time",
-						Type:     schema.TypeTimestamp,
-						Resolver: resolveKmsKeyringCryptoKeyPrimaryDestroyEventTime,
+						Name:        "primary_create_time",
+						Description: "CreateTime: Output only",
+						Type:        schema.TypeTimestamp,
+						Resolver:    resolveKmsKeyringCryptoKeyPrimaryCreateTime,
 					},
 					{
-						Name:     "primary_destroy_time",
-						Type:     schema.TypeTimestamp,
-						Resolver: resolveKmsKeyringCryptoKeyPrimaryDestroyTime,
+						Name:        "primary_destroy_event_time",
+						Description: "DestroyEventTime: Output only",
+						Type:        schema.TypeTimestamp,
+						Resolver:    resolveKmsKeyringCryptoKeyPrimaryDestroyEventTime,
 					},
 					{
-						Name:     "primary_external_protection_level_options_external_key_uri",
-						Type:     schema.TypeString,
-						Resolver: schema.PathResolver("Primary.ExternalProtectionLevelOptions.ExternalKeyUri"),
+						Name:        "primary_destroy_time",
+						Description: "DestroyTime: Output only",
+						Type:        schema.TypeTimestamp,
+						Resolver:    resolveKmsKeyringCryptoKeyPrimaryDestroyTime,
 					},
 					{
-						Name:     "primary_generate_time",
-						Type:     schema.TypeTimestamp,
-						Resolver: resolveKmsKeyringCryptoKeyPrimaryGenerateTime,
+						Name:        "primary_external_protection_level_options_external_key_uri",
+						Description: "ExternalKeyUri: The URI for an external resource that this CryptoKeyVersion represents.",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("Primary.ExternalProtectionLevelOptions.ExternalKeyUri"),
 					},
 					{
-						Name:     "primary_import_failure_reason",
-						Type:     schema.TypeString,
-						Resolver: schema.PathResolver("Primary.ImportFailureReason"),
+						Name:        "primary_generate_time",
+						Description: "GenerateTime: Output only",
+						Type:        schema.TypeTimestamp,
+						Resolver:    resolveKmsKeyringCryptoKeyPrimaryGenerateTime,
 					},
 					{
-						Name:     "primary_import_job",
-						Type:     schema.TypeString,
-						Resolver: schema.PathResolver("Primary.ImportJob"),
+						Name:        "primary_import_failure_reason",
+						Description: "ImportFailureReason: Output only",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("Primary.ImportFailureReason"),
 					},
 					{
-						Name:     "primary_import_time",
-						Type:     schema.TypeTimestamp,
-						Resolver: resolveKmsKeyringCryptoKeyPrimaryImportTime,
+						Name:        "primary_import_job",
+						Description: "ImportJob: Output only",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("Primary.ImportJob"),
 					},
 					{
-						Name:     "primary_name",
-						Type:     schema.TypeString,
-						Resolver: schema.PathResolver("Primary.Name"),
+						Name:        "primary_import_time",
+						Description: "ImportTime: Output only",
+						Type:        schema.TypeTimestamp,
+						Resolver:    resolveKmsKeyringCryptoKeyPrimaryImportTime,
 					},
 					{
-						Name:     "primary_protection_level",
-						Type:     schema.TypeString,
-						Resolver: schema.PathResolver("Primary.ProtectionLevel"),
+						Name:        "primary_name",
+						Description: "Name: Output only",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("Primary.Name"),
 					},
 					{
-						Name:     "primary_state",
-						Type:     schema.TypeString,
-						Resolver: schema.PathResolver("Primary.State"),
+						Name:        "primary_protection_level",
+						Description: "ProtectionLevel: Output only",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("Primary.ProtectionLevel"),
 					},
 					{
-						Name: "purpose",
-						Type: schema.TypeString,
+						Name:        "primary_state",
+						Description: "State: The current state of the CryptoKeyVersion.  Possible values:   \"CRYPTO_KEY_VERSION_STATE_UNSPECIFIED\" - Not specified.   \"PENDING_GENERATION\" - This version is still being generated",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("Primary.State"),
 					},
 					{
-						Name: "rotation_period",
-						Type: schema.TypeString,
+						Name:        "purpose",
+						Description: "Purpose: Immutable",
+						Type:        schema.TypeString,
 					},
 					{
-						Name:     "version_template_algorithm",
-						Type:     schema.TypeString,
-						Resolver: schema.PathResolver("VersionTemplate.Algorithm"),
+						Name:        "rotation_period",
+						Description: "RotationPeriod: next_rotation_time will be advanced by this period when the service automatically rotates a key",
+						Type:        schema.TypeString,
 					},
 					{
-						Name:     "version_template_protection_level",
-						Type:     schema.TypeString,
-						Resolver: schema.PathResolver("VersionTemplate.ProtectionLevel"),
+						Name:        "version_template_algorithm",
+						Description: "Algorithm: Required",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("VersionTemplate.Algorithm"),
+					},
+					{
+						Name:        "version_template_protection_level",
+						Description: "ProtectionLevel: ProtectionLevel to use when creating a CryptoKeyVersion based on this template",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("VersionTemplate.ProtectionLevel"),
 					},
 				},
 			},
@@ -246,6 +282,31 @@ func fetchKmsKeyringCryptoKeys(ctx context.Context, meta schema.ClientMeta, pare
 		nextPageToken = resp.NextPageToken
 	}
 	return nil
+}
+func resolveKmsKeyringCryptoKeyPolicy(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	client := meta.(*client.Client)
+	p, ok := resource.Item.(*cloudkms.CryptoKey)
+	if !ok {
+		return fmt.Errorf("expected *cloudkms.CryptoKey but got %T", p)
+	}
+	call := client.Services.Kms.Projects.Locations.KeyRings.CryptoKeys.
+		GetIamPolicy(p.Name).
+		Context(ctx)
+	resp, err := call.Do()
+	if err != nil {
+		return err
+	}
+
+	var policy map[string]interface{}
+	data, err := json.Marshal(resp)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(data, &policy); err != nil {
+		return err
+	}
+
+	return resource.Set(c.Name, policy)
 }
 func resolveKmsKeyringCryptoKeyCreateTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(*cloudkms.CryptoKey)
