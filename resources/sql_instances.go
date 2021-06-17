@@ -129,7 +129,7 @@ func SQLInstances() *schema.Table {
 			},
 			{
 				Name:        "on_premises_configuration_client_key",
-				Description: "PEM representation of the replica's private key The corresponsing public key is encoded in the client's certificate",
+				Description: "PEM representation of the replica's private key The corresponding public key is encoded in the client's certificate",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("OnPremisesConfiguration.ClientKey"),
 			},
@@ -198,7 +198,7 @@ func SQLInstances() *schema.Table {
 			},
 			{
 				Name:        "mysql_replica_configuration_client_key",
-				Description: "PEM representation of the replica's private key The corresponsing public key is encoded in the client's certificate",
+				Description: "PEM representation of the replica's private key The corresponding public key is encoded in the client's certificate",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ReplicaConfiguration.MysqlReplicaConfiguration.ClientKey"),
 			},
