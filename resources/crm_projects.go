@@ -5,14 +5,17 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	cloudresourcemanager "google.golang.org/api/cloudresourcemanager/v3"
+	"google.golang.org/api/cloudresourcemanager/v3"
 )
 
 func CrmProjects() *schema.Table {
 	return &schema.Table{
-		Name:        "gcp_crm_projects",
-		Description: "A project is a high-level Google Cloud entity",
-		Resolver:    fetchCrmProjects,
+		Name:         "gcp_crm_projects",
+		Description:  "A project is a high-level Google Cloud entity",
+		Multiplex:    client.ProjectMultiplex,
+		DeleteFilter: client.DeleteProjectFilter,
+		IgnoreError:  client.IgnoreErrorHandler,
+		Resolver:     fetchCrmProjects,
 		Columns: []schema.Column{
 			{
 				Name:        "create_time",

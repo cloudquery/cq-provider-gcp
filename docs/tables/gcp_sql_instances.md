@@ -25,7 +25,7 @@ A Cloud SQL instance resource
 |name|text|Name of the Cloud SQL instance This does not include the project ID|
 |on_premises_configuration_ca_certificate|text|PEM representation of the trusted CA's x509 certificate|
 |on_premises_configuration_client_certificate|text|PEM representation of the replica's x509 certificate|
-|on_premises_configuration_client_key|text|PEM representation of the replica's private key The corresponsing public key is encoded in the client's certificate|
+|on_premises_configuration_client_key|text|PEM representation of the replica's private key The corresponding public key is encoded in the client's certificate|
 |on_premises_configuration_dump_file_path|text|The dump file to create the Cloud SQL replica|
 |on_premises_configuration_host_port|text||
 |on_premises_configuration_kind|text|This is always *sql#onPremisesConfiguration*|
@@ -37,7 +37,7 @@ A Cloud SQL instance resource
 |configuration_kind|text|This is always *sql#replicaConfiguration*|
 |mysql_replica_configuration_ca_certificate|text|PEM representation of the trusted CA's x509 certificate|
 |mysql_replica_configuration_client_certificate|text|PEM representation of the replica's x509 certificate|
-|mysql_replica_configuration_client_key|text|PEM representation of the replica's private key The corresponsing public key is encoded in the client's certificate|
+|mysql_replica_configuration_client_key|text|PEM representation of the replica's private key The corresponding public key is encoded in the client's certificate|
 |mysql_replica_configuration_connect_retry_interval|bigint|Seconds to wait between connect retries MySQL's default is 60 seconds|
 |mysql_replica_configuration_dump_file_path|text|Path to a SQL dump file in Google Cloud Storage from which the replica instance is to be created The URI is in the form gs://bucketName/fileName Compressed gzip files (gz) are also supported Dumps have the binlog co-ordinates from which replication begins This can be accomplished by setting --master-data to 1 when using mysqldump|
 |mysql_replica_configuration_kind|text|This is always *sql#mysqlReplicaConfiguration*|
