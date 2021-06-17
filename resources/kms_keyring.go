@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 	"fmt"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	cloudkms "google.golang.org/api/cloudkms/v1"
@@ -60,9 +61,9 @@ func KmsKeyring() *schema.Table {
 						Resolver:    client.ResolveProject,
 					},
 					{
-						Name: "location",
+						Name:        "location",
 						Description: "Location of the resource",
-						Type: schema.TypeString,
+						Type:        schema.TypeString,
 					},
 					{
 						Name:        "create_time",

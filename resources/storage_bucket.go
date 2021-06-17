@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	storage "google.golang.org/api/storage/v1"

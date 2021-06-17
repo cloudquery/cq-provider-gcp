@@ -17,7 +17,7 @@ An instance-attached disk resource
 |index|bigint|A zero-based index to this disk, where 0 is reserved for the boot disk If you have many disks attached to an instance, each disk would have a unique index number|
 |description|text|An optional description Provide this property when creating the disk|
 |disk_name|text|Specifies the disk name If not specified, the default is to use the name of the instance If a disk with the same name already exists in the given region, the existing disk is attached to the new instance and the new disk is not created|
-|disk_size_gb|bigint|Specifies the size of the disk in base-2 GB The size must be at least 10 GB If you specify a sourceImage, which is required for boot disks, the default size is the size of the sourceImage If you do not specify a sourceImage, the default disk size is 500 GB|
+|initialized_disk_size_gb|bigint|Specifies the size of the disk in base-2 GB The size must be at least 10 GB If you specify a sourceImage, which is required for boot disks, the default size is the size of the sourceImage If you do not specify a sourceImage, the default disk size is 500 GB|
 |disk_type|text|Specifies the disk type to use to create the instance|
 |labels|jsonb|Labels to apply to this disk These can be later modified by the diskssetLabels method This field is only applicable for persistent disks|
 |on_update_action|text|Specifies which action to take on instance update with this disk Default is to use the existing disk|
