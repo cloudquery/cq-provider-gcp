@@ -83,7 +83,7 @@ func ComputeInstances() *schema.Table {
 				Name:        "resource_id",
 				Description: "The unique identifier for the resource This identifier is defined by the server",
 				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Id"),
+				Resolver:    client.ResolveResourceId,
 			},
 			{
 				Name:        "kind",
@@ -358,7 +358,7 @@ func ComputeInstances() *schema.Table {
 						Resolver:    schema.PathResolver("InitializeParams.DiskName"),
 					},
 					{
-						Name:        "disk_size_gb",
+						Name:        "initialized_disk_size_gb",
 						Description: "Specifies the size of the disk in base-2 GB The size must be at least 10 GB If you specify a sourceImage, which is required for boot disks, the default size is the size of the sourceImage If you do not specify a sourceImage, the default disk size is 500 GB",
 						Type:        schema.TypeBigInt,
 						Resolver:    schema.PathResolver("InitializeParams.DiskSizeGb"),

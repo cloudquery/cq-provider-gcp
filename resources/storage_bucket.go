@@ -209,6 +209,82 @@ func StorageBucket() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
+				Name:        "gcp_storage_bucket_acls",
+				Description: "Access controls on the bucket.",
+				Resolver:    fetchStorageBucketAcls,
+				Columns: []schema.Column{
+					{
+						Name:        "bucket_id",
+						Description: "Unique ID of gcp_storage_buckets table (FK)",
+						Type:        schema.TypeUUID,
+						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:        "bucket",
+						Description: "The name of the bucket",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "domain",
+						Description: "The domain associated with the entity, if any",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "email",
+						Description: "The email address associated with the entity, if any",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "entity",
+						Description: "The entity holding the permission, in one of the following forms: - user-userId - user-email - group-groupId - group-email - domain-domain - project-team-projectId - allUsers - allAuthenticatedUsers Examples: - The user liz@examplecom would be user-liz@examplecom - The group example@googlegroupscom would be group-example@googlegroupscom - To refer to all members of the Google Apps for Business domain examplecom, the entity would be domain-examplecom",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "entity_id",
+						Description: "The ID for the entity, if any",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "etag",
+						Description: "HTTP 11 Entity tag for the access-control entry",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "resource_id",
+						Description: "The ID of the access-control entry",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("Id"),
+					},
+					{
+						Name:        "kind",
+						Description: "The kind of item this is For bucket access control entries, this is always storage#bucketAccessControl",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "project_team_project_number",
+						Description: "The project number",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("ProjectTeam.ProjectNumber"),
+					},
+					{
+						Name:        "project_team",
+						Description: "The team",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("ProjectTeam.Team"),
+					},
+					{
+						Name:        "role",
+						Description: "The access permission for the entity",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "self_link",
+						Description: "The link to this access-control entry",
+						Type:        schema.TypeString,
+					},
+				},
+			},
+			{
 				Name:        "gcp_storage_bucket_cors",
 				Description: "The bucket's Cross-Origin Resource Sharing (CORS) configuration.",
 				Resolver:    fetchStorageBucketCors,
@@ -242,9 +318,9 @@ func StorageBucket() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_storage_bucket_acls",
-				Description: "Access controls on the bucket.",
-				Resolver:    fetchStorageBucketAcls,
+				Name:        "gcp_storage_bucket_default_object_acls",
+				Description: "Default access controls to apply to new objects when no ACL is provided.",
+				Resolver:    fetchStorageBucketDefaultObjectAcls,
 				Columns: []schema.Column{
 					{
 						Name:        "bucket_id",
@@ -412,92 +488,6 @@ func StorageBucket() *schema.Table {
 					},
 				},
 			},
-			{
-				Name:        "gcp_storage_bucket_default_object_acls",
-				Description: "Default access controls to apply to new objects when no ACL is provided.",
-				Resolver:    fetchStorageBucketDefaultObjectAcls,
-				Columns: []schema.Column{
-					{
-						Name:        "bucket_id",
-						Description: "Unique ID of gcp_storage_buckets table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "bucket",
-						Description: "The name of the bucket",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "domain",
-						Description: "The domain associated with the entity, if any",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "email",
-						Description: "The email address associated with the entity, if any",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "entity",
-						Description: "The entity holding the permission, in one of the following forms: - user-userId - user-email - group-groupId - group-email - domain-domain - project-team-projectId - allUsers - allAuthenticatedUsers Examples: - The user liz@examplecom would be user-liz@examplecom - The group example@googlegroupscom would be group-example@googlegroupscom - To refer to all members of the Google Apps for Business domain examplecom, the entity would be domain-examplecom",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "entity_id",
-						Description: "The ID for the entity, if any",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "etag",
-						Description: "HTTP 11 Entity tag for the access-control entry",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "generation",
-						Description: "The content generation of the object, if applied to an object",
-						Type:        schema.TypeBigInt,
-					},
-					{
-						Name:        "resource_id",
-						Description: "The ID of the access-control entry",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("Id"),
-					},
-					{
-						Name:        "kind",
-						Description: "The kind of item this is For object access control entries, this is always storage#objectAccessControl",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "object",
-						Description: "The name of the object, if applied to an object",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "project_team_project_number",
-						Description: "The project number",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("ProjectTeam.ProjectNumber"),
-					},
-					{
-						Name:        "project_team",
-						Description: "The team",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("ProjectTeam.Team"),
-					},
-					{
-						Name:        "role",
-						Description: "The access permission for the entity",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "self_link",
-						Description: "The link to this access-control entry",
-						Type:        schema.TypeString,
-					},
-				},
-			},
 		},
 	}
 }
@@ -533,15 +523,15 @@ func fetchStorageBucketCors(ctx context.Context, meta schema.ClientMeta, parent 
 	res <- bucket.Cors
 	return nil
 }
+func fetchStorageBucketDefaultObjectAcls(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+	bucket := parent.Item.(*storage.Bucket)
+	res <- bucket.DefaultObjectAcl
+	return nil
+}
 func fetchStorageBucketLifecycleRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	bucket := parent.Item.(*storage.Bucket)
 	if bucket.Lifecycle != nil {
 		res <- bucket.Lifecycle.Rule
 	}
-	return nil
-}
-func fetchStorageBucketDefaultObjectAcls(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	bucket := parent.Item.(*storage.Bucket)
-	res <- bucket.DefaultObjectAcl
 	return nil
 }

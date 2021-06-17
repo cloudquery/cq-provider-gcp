@@ -49,7 +49,7 @@ func ComputeSubnetworks() *schema.Table {
 				Name:        "resource_id",
 				Description: "The unique identifier for the resource This identifier is defined by the server",
 				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Id"),
+				Resolver:    client.ResolveResourceId,
 			},
 			{
 				Name:        "ip_cidr_range",

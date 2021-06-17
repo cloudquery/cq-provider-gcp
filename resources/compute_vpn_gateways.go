@@ -34,7 +34,7 @@ func ComputeVpnGateways() *schema.Table {
 				Name:        "resource_id",
 				Description: "The unique identifier for the resource This identifier is defined by the server",
 				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Id"),
+				Resolver:    client.ResolveResourceId,
 			},
 			{
 				Name:        "kind",
@@ -88,7 +88,7 @@ func ComputeVpnGateways() *schema.Table {
 						Name:        "resource_id",
 						Description: "The numeric ID of this VPN gateway interface",
 						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("Id"),
+						Resolver:    client.ResolveResourceId,
 					},
 					{
 						Name:        "interconnect_attachment",
