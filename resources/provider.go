@@ -40,7 +40,7 @@ func Provider() *provider.Provider {
 			"monitoring.alert_policies":    MonitoringAlertPolicies(),
 			"resource_manager.projects":    ResourceManagerProjects(),
 			"resource_manager.folders":     ResourceManagerFolders(),
-			"storage.buckets":              StorageBucket(),
+			"storage.buckets":              StorageBuckets(),
 			"sql.instances":                SQLInstances(),
 			"domains.registrations":        DomainsRegistration(),
 			"crm.projects":                 CrmProjects(),

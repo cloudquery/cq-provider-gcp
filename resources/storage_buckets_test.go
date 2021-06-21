@@ -67,7 +67,7 @@ func createStorageTestServer() (*storage.Service, error) {
 
 func TestStorageBucket(t *testing.T) {
 	resource := providertest.ResourceTestData{
-		Table: resources.StorageBucket(),
+		Table: resources.StorageBuckets(),
 		Config: client.Config{
 			ProjectIDs: []string{"testProject"},
 		},
