@@ -33,7 +33,7 @@ func KmsKeyrings() *schema.Table {
 				Name:        "create_time",
 				Description: "CreateTime: Output only",
 				Type:        schema.TypeTimestamp,
-				Resolver:    resolveKmsKeyringCreateTime,
+				Resolver:    client.ISODateResolver("CreateTime"),
 			},
 			{
 				Name:        "name",
@@ -73,7 +73,7 @@ func KmsKeyrings() *schema.Table {
 						Name:        "create_time",
 						Description: "CreateTime: Output only",
 						Type:        schema.TypeTimestamp,
-						Resolver:    resolveKmsKeyringCryptoKeyCreateTime,
+						Resolver:    client.ISODateResolver("CreateTime"),
 					},
 					{
 						Name:        "labels",
@@ -89,7 +89,7 @@ func KmsKeyrings() *schema.Table {
 						Name:        "next_rotation_time",
 						Description: "NextRotationTime: At next_rotation_time, the Key Management Service will automatically: 1",
 						Type:        schema.TypeTimestamp,
-						Resolver:    resolveKmsKeyringCryptoKeyNextRotationTime,
+						Resolver:    client.ISODateResolver("NextRotationTime"),
 					},
 					{
 						Name:        "primary_algorithm",
@@ -131,19 +131,19 @@ func KmsKeyrings() *schema.Table {
 						Name:        "primary_create_time",
 						Description: "CreateTime: Output only",
 						Type:        schema.TypeTimestamp,
-						Resolver:    resolveKmsKeyringCryptoKeyPrimaryCreateTime,
+						Resolver:    client.ISODateResolver("Primary.CreateTime"),
 					},
 					{
 						Name:        "primary_destroy_event_time",
 						Description: "DestroyEventTime: Output only",
 						Type:        schema.TypeTimestamp,
-						Resolver:    resolveKmsKeyringCryptoKeyPrimaryDestroyEventTime,
+						Resolver:    client.ISODateResolver("Primary.DestroyEventTime"),
 					},
 					{
 						Name:        "primary_destroy_time",
 						Description: "DestroyTime: Output only",
 						Type:        schema.TypeTimestamp,
-						Resolver:    resolveKmsKeyringCryptoKeyPrimaryDestroyTime,
+						Resolver:    client.ISODateResolver("Primary.DestroyTime"),
 					},
 					{
 						Name:        "primary_external_protection_level_options_external_key_uri",
@@ -155,7 +155,7 @@ func KmsKeyrings() *schema.Table {
 						Name:        "primary_generate_time",
 						Description: "GenerateTime: Output only",
 						Type:        schema.TypeTimestamp,
-						Resolver:    resolveKmsKeyringCryptoKeyPrimaryGenerateTime,
+						Resolver:    client.ISODateResolver("Primary.GenerateTime"),
 					},
 					{
 						Name:        "primary_import_failure_reason",
@@ -173,7 +173,7 @@ func KmsKeyrings() *schema.Table {
 						Name:        "primary_import_time",
 						Description: "ImportTime: Output only",
 						Type:        schema.TypeTimestamp,
-						Resolver:    resolveKmsKeyringCryptoKeyPrimaryImportTime,
+						Resolver:    client.ISODateResolver("Primary.ImportTime"),
 					},
 					{
 						Name:        "primary_name",
@@ -249,17 +249,7 @@ func fetchKmsKeyrings(ctx context.Context, meta schema.ClientMeta, parent *schem
 	}
 	return nil
 }
-func resolveKmsKeyringCreateTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudkms.KeyRing)
-	if !ok {
-		return fmt.Errorf("expected *cloudkms.KeyRing but got %T", p)
-	}
-	date, err := client.ParseISODate(p.CreateTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
-}
+
 func fetchKmsKeyringCryptoKeys(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	c := meta.(*client.Client)
 	keyRing, ok := parent.Item.(*cloudkms.KeyRing)
@@ -307,98 +297,6 @@ func resolveKmsKeyringCryptoKeyPolicy(ctx context.Context, meta schema.ClientMet
 	}
 
 	return resource.Set(c.Name, policy)
-}
-func resolveKmsKeyringCryptoKeyCreateTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudkms.CryptoKey)
-	if !ok {
-		return fmt.Errorf("expected *cloudkms.CryptoKey but got %T", p)
-	}
-	date, err := client.ParseISODate(p.CreateTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
-}
-func resolveKmsKeyringCryptoKeyNextRotationTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudkms.CryptoKey)
-	if !ok {
-		return fmt.Errorf("expected *cloudkms.CryptoKey but got %T", p)
-	}
-	date, err := client.ParseISODate(p.NextRotationTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
-}
-func resolveKmsKeyringCryptoKeyPrimaryCreateTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudkms.CryptoKey)
-	if !ok {
-		return fmt.Errorf("expected *cloudkms.CryptoKey but got %T", p)
-	}
-	if p.Primary == nil {
-		return nil
-	}
-	date, err := client.ParseISODate(p.Primary.CreateTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
-}
-func resolveKmsKeyringCryptoKeyPrimaryDestroyEventTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudkms.CryptoKey)
-	if !ok {
-		return fmt.Errorf("expected *cloudkms.CryptoKey but got %T", p)
-	}
-	if p.Primary == nil {
-		return nil
-	}
-	date, err := client.ParseISODate(p.Primary.DestroyEventTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
-}
-func resolveKmsKeyringCryptoKeyPrimaryDestroyTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudkms.CryptoKey)
-	if !ok {
-		return fmt.Errorf("expected *cloudkms.CryptoKey but got %T", p)
-	}
-	if p.Primary == nil {
-		return nil
-	}
-	date, err := client.ParseISODate(p.Primary.DestroyTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
-}
-func resolveKmsKeyringCryptoKeyPrimaryGenerateTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudkms.CryptoKey)
-	if !ok {
-		return fmt.Errorf("expected *cloudkms.CryptoKey but got %T", p)
-	}
-	if p.Primary == nil {
-		return nil
-	}
-	date, err := client.ParseISODate(p.Primary.GenerateTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
-}
-func resolveKmsKeyringCryptoKeyPrimaryImportTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudkms.CryptoKey)
-	if !ok {
-		return fmt.Errorf("expected *cloudkms.CryptoKey but got %T", p)
-	}
-	if p.Primary == nil {
-		return nil
-	}
-	date, err := client.ParseISODate(p.Primary.ImportTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
 }
 
 // ====================================================================================================================

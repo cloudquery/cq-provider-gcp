@@ -610,8 +610,10 @@ func fetchSqlInstances(ctx context.Context, meta schema.ClientMeta, _ *schema.Re
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Sql.Instances.List(c.ProjectId).Context(ctx).PageToken(nextPageToken)
-		call.PageToken(nextPageToken)
+		call := c.Services.Sql.Instances.
+			List(c.ProjectId).
+			Context(ctx).
+			PageToken(nextPageToken)
 		output, err := call.Do()
 		if err != nil {
 			return err

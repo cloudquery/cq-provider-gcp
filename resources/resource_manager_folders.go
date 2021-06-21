@@ -33,13 +33,13 @@ func ResourceManagerFolders() *schema.Table {
 				Name:        "create_time",
 				Description: "CreateTime: Output only",
 				Type:        schema.TypeTimestamp,
-				Resolver:    resolveResourceManagerFolderCreateTime,
+				Resolver:    client.ISODateResolver("CreateTime"),
 			},
 			{
 				Name:        "delete_time",
 				Description: "DeleteTime: Output only",
 				Type:        schema.TypeTimestamp,
-				Resolver:    resolveResourceManagerFolderDeleteTime,
+				Resolver:    client.ISODateResolver("DeleteTime"),
 			},
 			{
 				Name:        "display_name",
@@ -70,7 +70,7 @@ func ResourceManagerFolders() *schema.Table {
 				Name:        "update_time",
 				Description: "UpdateTime: Output only",
 				Type:        schema.TypeTimestamp,
-				Resolver:    resolveResourceManagerFolderUpdateTime,
+				Resolver:    client.ISODateResolver("UpdateTime"),
 			},
 		},
 	}
@@ -116,40 +116,4 @@ func resolveResourceManagerFolderPolicy(ctx context.Context, meta schema.ClientM
 	}
 
 	return resource.Set(c.Name, policy)
-}
-func resolveResourceManagerFolderCreateTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudresourcemanager.Folder)
-	if !ok {
-		return fmt.Errorf("expected *cloudresourcemanager.Folder but got %T", p)
-	}
-
-	date, err := client.ParseISODate(p.CreateTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
-}
-func resolveResourceManagerFolderDeleteTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudresourcemanager.Folder)
-	if !ok {
-		return fmt.Errorf("expected *cloudresourcemanager.Folder but got %T", p)
-	}
-
-	date, err := client.ParseISODate(p.DeleteTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
-}
-func resolveResourceManagerFolderUpdateTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudresourcemanager.Folder)
-	if !ok {
-		return fmt.Errorf("expected *cloudresourcemanager.Folder but got %T", p)
-	}
-
-	date, err := client.ParseISODate(p.UpdateTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
 }

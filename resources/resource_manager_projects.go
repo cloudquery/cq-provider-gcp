@@ -4,16 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/cloudresourcemanager/v3"
+	cloudresourcemanager "google.golang.org/api/cloudresourcemanager/v3"
 )
 
 func ResourceManagerProjects() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_resource_manager_projects",
-		Description:  "Project: A project is a high-level Google Cloud entity",
+		Description:  "A project is a high-level Google Cloud entity It is a container for ACLs, APIs, App Engine Apps, VMs, and other Google Cloud Platform resources",
 		Resolver:     fetchResourceManagerProjects,
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
@@ -26,56 +25,56 @@ func ResourceManagerProjects() *schema.Table {
 			},
 			{
 				Name:        "create_time",
-				Description: "CreateTime: Output only",
+				Description: "Creation time",
 				Type:        schema.TypeTimestamp,
-				Resolver:    resolveResourceManagerProjectCreateTime,
+				Resolver:    client.ISODateResolver("CreateTime"),
 			},
 			{
 				Name:        "delete_time",
-				Description: "DeleteTime: Output only",
+				Description: "The time at which this resource was requested for deletion",
 				Type:        schema.TypeTimestamp,
-				Resolver:    resolveResourceManagerProjectDeleteTime,
+				Resolver:    client.ISODateResolver("DeleteTime"),
 			},
 			{
 				Name:        "display_name",
-				Description: "DisplayName: Optional",
+				Description: "A user-assigned display name of the project When present it must be between 4 to 30 characters Allowed characters are: lowercase and uppercase letters, numbers, hyphen, single-quote, double-quote, space, and exclamation point",
 				Type:        schema.TypeString,
 			},
 			{
 				Name:        "etag",
-				Description: "Etag: Output only",
+				Description: "A checksum computed by the server based on the current value of the Project resource This may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding",
 				Type:        schema.TypeString,
 			},
 			{
 				Name:        "labels",
-				Description: "Labels: Optional",
+				Description: "The labels associated with this project Label keys must be between 1 and 63 characters long and must conform to the following regular expression: \\a-z\\ (\\[-a-z0-9\\]*\\[a-z0-9\\])? Label values must be between 0 and 63 characters long and must conform to the regular expression (\\a-z\\ (\\[-a-z0-9\\]*\\[a-z0-9\\])?)? No more than 256 labels can be associated with a given resource Clients should store labels in a representation such as JSON that does not depend on specific characters being disallowed",
 				Type:        schema.TypeJSON,
 			},
 			{
 				Name:        "name",
-				Description: "Name: Output only",
+				Description: "The unique resource name of the project It is an int64 generated number prefixed by \"projects/\"",
 				Type:        schema.TypeString,
 			},
 			{
 				Name:        "parent",
-				Description: "Parent: Optional",
+				Description: "A reference to a parent Resource eg, `organizations/123` or `folders/876`",
 				Type:        schema.TypeString,
 			},
 			{
 				Name:        "project_id",
-				Description: "ProjectId: Immutable",
+				Description: "Immutable The unique, user-assigned id of the project It must be 6 to 30 lowercase ASCII letters, digits, or hyphens It must start with a letter Trailing hyphens are prohibited",
 				Type:        schema.TypeString,
 			},
 			{
 				Name:        "state",
-				Description: "State: Output only",
+				Description: "The project lifecycle state  Possible values:   \"STATE_UNSPECIFIED\" - Unspecified state This is only used/useful for distinguishing unset values   \"ACTIVE\" - The normal and active state   \"DELETE_REQUESTED\" - The project has been marked for deletion by the user (by invoking DeleteProject) or by the system (Google Cloud Platform) This can generally be reversed by invoking UndeleteProject",
 				Type:        schema.TypeString,
 			},
 			{
 				Name:        "update_time",
-				Description: "UpdateTime: Output only",
+				Description: "The most recent time this resource was modified",
 				Type:        schema.TypeTimestamp,
-				Resolver:    resolveResourceManagerProjectUpdateTime,
+				Resolver:    client.ISODateResolver("UpdateTime"),
 			},
 		},
 	}
@@ -120,40 +119,4 @@ func resolveResourceManagerProjectPolicy(ctx context.Context, meta schema.Client
 	}
 
 	return resource.Set(c.Name, policy)
-}
-func resolveResourceManagerProjectCreateTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudresourcemanager.Project)
-	if !ok {
-		return fmt.Errorf("expected *cloudresourcemanager.Project but got %T", p)
-	}
-
-	date, err := client.ParseISODate(p.CreateTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
-}
-func resolveResourceManagerProjectDeleteTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudresourcemanager.Project)
-	if !ok {
-		return fmt.Errorf("expected *cloudresourcemanager.Project but got %T", p)
-	}
-
-	date, err := client.ParseISODate(p.DeleteTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
-}
-func resolveResourceManagerProjectUpdateTime(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*cloudresourcemanager.Project)
-	if !ok {
-		return fmt.Errorf("expected *cloudresourcemanager.Project but got %T", p)
-	}
-
-	date, err := client.ParseISODate(p.UpdateTime)
-	if err != nil {
-		return err
-	}
-	return resource.Set(c.Name, date)
 }

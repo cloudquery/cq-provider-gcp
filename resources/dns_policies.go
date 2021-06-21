@@ -3,15 +3,15 @@ package resources
 import (
 	"context"
 	"fmt"
-
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/dns/v1"
+	dns "google.golang.org/api/dns/v1"
 )
 
 func DNSPolicies() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_dns_policies",
+		Description:  "A policy is a collection of DNS rules applied to one or more Virtual Private Cloud resources",
 		Resolver:     fetchDnsPolicies,
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
@@ -23,34 +23,38 @@ func DNSPolicies() *schema.Table {
 				Resolver: client.ResolveProject,
 			},
 			{
+				Name:     "resource_id",
+				Type:     schema.TypeString,
+				Resolver: client.ResolveResourceId,
+			},
+			{
 				Name:     "alternative_name_server_config_kind",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("AlternativeNameServerConfig.Kind"),
 			},
 			{
-				Name: "description",
-				Type: schema.TypeString,
+				Name:        "description",
+				Description: "A mutable string of at most 1024 characters associated with this resource for the user's convenience Has no effect on the policy's function",
+				Type:        schema.TypeString,
 			},
 			{
-				Name: "enable_inbound_forwarding",
-				Type: schema.TypeBool,
+				Name:        "enable_inbound_forwarding",
+				Description: "Allows networks bound to this policy to receive DNS queries sent by VMs or applications over VPN connections When enabled, a virtual IP address is allocated from each of the subnetworks that are bound to this policy",
+				Type:        schema.TypeBool,
 			},
 			{
-				Name: "enable_logging",
-				Type: schema.TypeBool,
-			},
-			{
-				Name:     "resource_id",
-				Type:     schema.TypeBigInt,
-				Resolver: schema.PathResolver("Id"),
+				Name:        "enable_logging",
+				Description: "Controls whether logging is enabled for the networks bound to this policy Defaults to no logging if not set",
+				Type:        schema.TypeBool,
 			},
 			{
 				Name: "kind",
 				Type: schema.TypeString,
 			},
 			{
-				Name: "name",
-				Type: schema.TypeString,
+				Name:        "name",
+				Description: "User-assigned name for this policy",
+				Type:        schema.TypeString,
 			},
 		},
 		Relations: []*schema.Table{
@@ -59,17 +63,20 @@ func DNSPolicies() *schema.Table {
 				Resolver: fetchDnsPolicyAlternativeNameServerTargetNameServers,
 				Columns: []schema.Column{
 					{
-						Name:     "policy_id",
-						Type:     schema.TypeUUID,
-						Resolver: schema.ParentIdResolver,
+						Name:        "policy_id",
+						Description: "Unique ID of gcp_dns_policies table (FK)",
+						Type:        schema.TypeUUID,
+						Resolver:    schema.ParentIdResolver,
 					},
 					{
-						Name: "forwarding_path",
-						Type: schema.TypeString,
+						Name:        "forwarding_path",
+						Description: "Forwarding path for this TargetNameServer If unset or set to DEFAULT, Cloud DNS makes forwarding decisions based on address ranges; that is, RFC1918 addresses go to the VPC network, non-RFC1918 addresses go to the internet When set to PRIVATE, Cloud DNS always sends queries through the VPC network for this target  Possible values:   \"default\" - Cloud DNS makes forwarding decision based on IP address ranges; that is, RFC1918 addresses forward to the target through the VPC and non-RFC1918 addresses forward to the target through the internet   \"private\" - Cloud DNS always forwards to this target through the VPC",
+						Type:        schema.TypeString,
 					},
 					{
-						Name: "ipv4_address",
-						Type: schema.TypeString,
+						Name:        "ipv4_address",
+						Description: "IPv4 address to forward to",
+						Type:        schema.TypeString,
 					},
 					{
 						Name: "kind",
@@ -82,17 +89,19 @@ func DNSPolicies() *schema.Table {
 				Resolver: fetchDnsPolicyNetworks,
 				Columns: []schema.Column{
 					{
-						Name:     "policy_id",
-						Type:     schema.TypeUUID,
-						Resolver: schema.ParentIdResolver,
+						Name:        "policy_id",
+						Description: "Unique ID of gcp_dns_policies table (FK)",
+						Type:        schema.TypeUUID,
+						Resolver:    schema.ParentIdResolver,
 					},
 					{
 						Name: "kind",
 						Type: schema.TypeString,
 					},
 					{
-						Name: "network_url",
-						Type: schema.TypeString,
+						Name:        "network_url",
+						Description: "The fully qualified URL of the VPC network to bind to This should be formatted like https://wwwgoogleapis",
+						Type:        schema.TypeString,
 					},
 				},
 			},
