@@ -45,8 +45,9 @@ func CrmProjects() *schema.Table {
 				Type: schema.TypeString,
 			},
 			{
-				Name: "project_id",
-				Type: schema.TypeString,
+				Name:        "project_id",
+				Description: "GCP Project Id of the resource",
+				Type:        schema.TypeString,
 			},
 			{
 				Name: "state",

@@ -13,9 +13,10 @@ func BigqueryDatasets() *schema.Table {
 		Multiplex: client.ProjectMultiplex,
 		Columns: []schema.Column{
 			{
-				Name:     "project_id",
-				Type:     schema.TypeString,
-				Resolver: client.ResolveProject,
+				Name:        "project_id",
+				Description: "GCP Project Id of the resource",
+				Type:        schema.TypeString,
+				Resolver:    client.ResolveProject,
 			},
 			{
 				Name:        "creation_time",

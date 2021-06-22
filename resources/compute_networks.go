@@ -17,9 +17,10 @@ func ComputeNetworks() *schema.Table {
 		IgnoreError:  client.IgnoreErrorHandler,
 		Columns: []schema.Column{
 			{
-				Name:     "project_id",
-				Type:     schema.TypeString,
-				Resolver: client.ResolveProject,
+				Name:        "project_id",
+				Description: "GCP Project Id of the resource",
+				Type:        schema.TypeString,
+				Resolver:    client.ResolveProject,
 			},
 			{
 				Name:     "ip_v4_range",

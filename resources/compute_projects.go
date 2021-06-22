@@ -18,9 +18,10 @@ func ComputeProjects() *schema.Table {
 		DeleteFilter: client.DeleteProjectFilter,
 		Columns: []schema.Column{
 			{
-				Name:     "project_id",
-				Type:     schema.TypeString,
-				Resolver: client.ResolveProject,
+				Name:        "project_id",
+				Description: "Unique ID of gcp_compute_projects table (FK)",
+				Type:        schema.TypeString,
+				Resolver:    client.ResolveProject,
 			},
 			{
 				Name:     "resource_id",
