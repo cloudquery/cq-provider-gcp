@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	sql "google.golang.org/api/sqladmin/v1beta4"
@@ -127,10 +128,9 @@ func SQLInstances() *schema.Table {
 				Resolver:    schema.PathResolver("OnPremisesConfiguration.ClientCertificate"),
 			},
 			{
-				Name:        "on_premises_configuration_client_key",
-				Description: "PEM representation of the replica's private key The corresponsing public key is encoded in the client's certificate",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("OnPremisesConfiguration.ClientKey"),
+				Name:     "on_premises_configuration_client_key",
+				Type:     schema.TypeString,
+				Resolver: schema.PathResolver("OnPremisesConfiguration.ClientKey"),
 			},
 			{
 				Name:        "on_premises_configuration_dump_file_path",
@@ -178,10 +178,9 @@ func SQLInstances() *schema.Table {
 				Resolver:    schema.PathResolver("ReplicaConfiguration.FailoverTarget"),
 			},
 			{
-				Name:        "replica_configuration_kind",
-				Description: "This is always *sql#replicaConfiguration*",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("ReplicaConfiguration.Kind"),
+				Name:     "configuration_kind",
+				Type:     schema.TypeString,
+				Resolver: schema.PathResolver("ReplicaConfiguration.Kind"),
 			},
 			{
 				Name:        "mysql_replica_configuration_ca_certificate",
@@ -196,10 +195,9 @@ func SQLInstances() *schema.Table {
 				Resolver:    schema.PathResolver("ReplicaConfiguration.MysqlReplicaConfiguration.ClientCertificate"),
 			},
 			{
-				Name:        "mysql_replica_configuration_client_key",
-				Description: "PEM representation of the replica's private key The corresponsing public key is encoded in the client's certificate",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("ReplicaConfiguration.MysqlReplicaConfiguration.ClientKey"),
+				Name:     "mysql_replica_configuration_client_key",
+				Type:     schema.TypeString,
+				Resolver: schema.PathResolver("ReplicaConfiguration.MysqlReplicaConfiguration.ClientKey"),
 			},
 			{
 				Name:        "mysql_replica_configuration_connect_retry_interval",
@@ -393,51 +391,44 @@ func SQLInstances() *schema.Table {
 				Resolver:    schema.PathResolver("Settings.BackupConfiguration.BackupRetentionSettings.RetentionUnit"),
 			},
 			{
-				Name:        "settings_backup_configuration_binary_log_enabled",
-				Description: "(MySQL only) Whether binary log is enabled If backup configuration is disabled, binarylog must be disabled as well",
-				Type:        schema.TypeBool,
-				Resolver:    schema.PathResolver("Settings.BackupConfiguration.BinaryLogEnabled"),
+				Name:     "settings_backup_binary_log_enabled",
+				Type:     schema.TypeBool,
+				Resolver: schema.PathResolver("Settings.BackupConfiguration.BinaryLogEnabled"),
 			},
 			{
-				Name:        "settings_backup_configuration_enabled",
-				Description: "Whether this configuration is enabled",
-				Type:        schema.TypeBool,
-				Resolver:    schema.PathResolver("Settings.BackupConfiguration.Enabled"),
+				Name:     "settings_backup_enabled",
+				Type:     schema.TypeBool,
+				Resolver: schema.PathResolver("Settings.BackupConfiguration.Enabled"),
 			},
 			{
-				Name:        "settings_backup_configuration_kind",
-				Description: "This is always *sql#backupConfiguration*",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Settings.BackupConfiguration.Kind"),
+				Name:     "settings_backup_kind",
+				Type:     schema.TypeString,
+				Resolver: schema.PathResolver("Settings.BackupConfiguration.Kind"),
 			},
 			{
-				Name:     "settings_backup_configuration_location",
+				Name:     "settings_backup_location",
 				Type:     schema.TypeString,
 				Resolver: schema.PathResolver("Settings.BackupConfiguration.Location"),
 			},
 			{
-				Name:        "settings_backup_configuration_point_in_time_recovery_enabled",
-				Description: "Reserved for future use",
-				Type:        schema.TypeBool,
-				Resolver:    schema.PathResolver("Settings.BackupConfiguration.PointInTimeRecoveryEnabled"),
+				Name:     "settings_backup_point_in_time_recovery_enabled",
+				Type:     schema.TypeBool,
+				Resolver: schema.PathResolver("Settings.BackupConfiguration.PointInTimeRecoveryEnabled"),
 			},
 			{
-				Name:        "settings_backup_configuration_replication_log_archiving_enabled",
-				Description: "Reserved for future use",
-				Type:        schema.TypeBool,
-				Resolver:    schema.PathResolver("Settings.BackupConfiguration.ReplicationLogArchivingEnabled"),
+				Name:     "settings_backup_replication_log_archiving_enabled",
+				Type:     schema.TypeBool,
+				Resolver: schema.PathResolver("Settings.BackupConfiguration.ReplicationLogArchivingEnabled"),
 			},
 			{
-				Name:        "settings_backup_configuration_start_time",
-				Description: "Start time for the daily backup configuration in UTC timezone in the 24 hour format - *HH:MM*",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Settings.BackupConfiguration.StartTime"),
+				Name:     "settings_backup_start_time",
+				Type:     schema.TypeString,
+				Resolver: schema.PathResolver("Settings.BackupConfiguration.StartTime"),
 			},
 			{
-				Name:        "settings_backup_configuration_transaction_log_retention_days",
-				Description: "The number of days of transaction logs we retain for point in time restore, from 1-7",
-				Type:        schema.TypeBigInt,
-				Resolver:    schema.PathResolver("Settings.BackupConfiguration.TransactionLogRetentionDays"),
+				Name:     "settings_backup_transaction_log_retention_days",
+				Type:     schema.TypeBigInt,
+				Resolver: schema.PathResolver("Settings.BackupConfiguration.TransactionLogRetentionDays"),
 			},
 			{
 				Name:        "settings_collation",

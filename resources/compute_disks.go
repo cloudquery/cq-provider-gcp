@@ -2,6 +2,7 @@ package resources
 
 import (
 	"context"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	compute "google.golang.org/api/compute/v1"
@@ -21,14 +22,8 @@ func ComputeDisks() *schema.Table {
 				Resolver:    client.ResolveProject,
 			},
 			{
-				Name:     "resource_id",
-				Type:     schema.TypeString,
-				Resolver: client.ResolveResourceId,
-			},
-			{
-				Name:        "creation_timestamp",
-				Description: "Creation timestamp in RFC3339 text format",
-				Type:        schema.TypeString,
+				Name: "creation_timestamp",
+				Type: schema.TypeString,
 			},
 			{
 				Name:        "description",
@@ -66,9 +61,13 @@ func ComputeDisks() *schema.Table {
 				Resolver:    resolveComputeDiskGuestOsFeatures,
 			},
 			{
-				Name:        "kind",
-				Description: "Type of the resource Always compute#disk for disks",
-				Type:        schema.TypeString,
+				Name:     "resource_id",
+				Type:     schema.TypeString,
+				Resolver: client.ResolveResourceId,
+			},
+			{
+				Name: "kind",
+				Type: schema.TypeString,
 			},
 			{
 				Name:        "label_fingerprint",
@@ -263,10 +262,7 @@ func fetchComputeDisks(ctx context.Context, meta schema.ClientMeta, parent *sche
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Compute.Disks.
-			AggregatedList(c.ProjectId).
-			Context(ctx).
-			PageToken(nextPageToken)
+		call := c.Services.Compute.Disks.AggregatedList(c.ProjectId).Context(ctx).PageToken(nextPageToken)
 		output, err := call.Do()
 		if err != nil {
 			return err

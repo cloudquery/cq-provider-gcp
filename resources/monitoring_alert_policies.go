@@ -3,6 +3,7 @@ package resources
 import (
 	"context"
 	"fmt"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	monitoring "google.golang.org/api/monitoring/v3"
