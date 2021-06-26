@@ -53,8 +53,9 @@ func CrmProjects() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name: "project_id",
-				Type: schema.TypeString,
+				Name:        "project_id",
+				Description: "Immutable The unique, user-assigned id of the project",
+				Type:        schema.TypeString,
 			},
 			{
 				Name:        "state",

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/logging"
@@ -48,6 +49,7 @@ func createComputeProjects() (*compute.Service, error) {
 		return nil, err
 	}
 	project.Name = id
+	project.CreationTimestamp = time.Now().Format(time.RFC3339)
 
 	mux.GET("/projects/testProject", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		resp := &project

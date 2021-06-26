@@ -25,14 +25,10 @@ func DNSPolicies() *schema.Table {
 				Resolver:    client.ResolveProject,
 			},
 			{
-				Name:     "resource_id",
-				Type:     schema.TypeString,
-				Resolver: client.ResolveResourceId,
-			},
-			{
-				Name:     "alternative_name_server_config_kind",
-				Type:     schema.TypeString,
-				Resolver: schema.PathResolver("AlternativeNameServerConfig.Kind"),
+				Name:        "alternative_name_server_config_kind",
+				Description: "alternative name server type",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("AlternativeNameServerConfig.Kind"),
 			},
 			{
 				Name:        "description",
@@ -50,8 +46,15 @@ func DNSPolicies() *schema.Table {
 				Type:        schema.TypeBool,
 			},
 			{
-				Name: "kind",
-				Type: schema.TypeString,
+				Name:        "policy_id",
+				Description: "Unique identifier for the resource; defined by the server (output only)",
+				Type:        schema.TypeString,
+				Resolver:    client.ResolveResourceId,
+			},
+			{
+				Name:        "kind",
+				Description: "The resource type",
+				Type:        schema.TypeString,
 			},
 			{
 				Name:        "name",
@@ -61,8 +64,8 @@ func DNSPolicies() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:     "gcp_dns_policy_alternative_name_server_target_name_servers",
-				Resolver: fetchDnsPolicyAlternativeNameServerTargetNameServers,
+				Name:     "gcp_dns_policy_alternative_name_servers",
+				Resolver: fetchDnsPolicyAlternativeNameServers,
 				Columns: []schema.Column{
 					{
 						Name:        "policy_id",
@@ -81,8 +84,9 @@ func DNSPolicies() *schema.Table {
 						Type:        schema.TypeString,
 					},
 					{
-						Name: "kind",
-						Type: schema.TypeString,
+						Name:        "kind",
+						Description: "The resource type",
+						Type:        schema.TypeString,
 					},
 				},
 			},
@@ -97,8 +101,9 @@ func DNSPolicies() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
-						Name: "kind",
-						Type: schema.TypeString,
+						Name:        "kind",
+						Description: "The resource type",
+						Type:        schema.TypeString,
 					},
 					{
 						Name:        "network_url",
@@ -137,7 +142,7 @@ func fetchDnsPolicies(ctx context.Context, meta schema.ClientMeta, parent *schem
 	}
 	return nil
 }
-func fetchDnsPolicyAlternativeNameServerTargetNameServers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchDnsPolicyAlternativeNameServers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(*dns.Policy)
 	if !ok {
 		return fmt.Errorf("expected *dns.Policy but got %T", p)

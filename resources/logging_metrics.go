@@ -72,7 +72,7 @@ func LoggingMetrics() *schema.Table {
 			},
 			{
 				Name:        "filter",
-				Description: "Required An advanced logs filter (https://cloudgooglecom/logging/docs/view/advanced_filters) which is used to match log entries Example: \"resourcetype=gae_app AND severity>=ERROR\" The maximum length of the filter is 20000 characters",
+				Description: "An advanced logs filter (https://cloudgooglecom/logging/docs/view/advanced_filters) which is used to match log entries Example: \"resourcetype=gae_app AND severity>=ERROR\" The maximum length of the filter is 20000 characters",
 				Type:        schema.TypeString,
 			},
 			{
@@ -94,7 +94,7 @@ func LoggingMetrics() *schema.Table {
 			},
 			{
 				Name:        "metric_descriptor_launch_stage",
-				Description: "The launch stage of the metric definition  Possible values:   \"LAUNCH_STAGE_UNSPECIFIED\" - Do not use this default value   \"UNIMPLEMENTED\" - The feature is not yet implemented Users can not use it   \"PRELAUNCH\" - Prelaunch features are hidden from users and are only visible internally   \"EARLY_ACCESS\" - Early Access features are limited to a closed group of testers To use these features, you must sign up in advance and sign a Trusted Tester agreement (which includes confidentiality provisions) These features may be unstable, changed in backward-incompatible ways, and are not guaranteed to be released   \"ALPHA\" - Alpha is a limited availability test for releases before they are cleared for widespread use By Alpha, all significant design issues are resolved and we are in the process of verifying functionality Alpha customers need to apply for access, agree to applicable terms, and have their projects allowlisted Alpha releases don’t have to be feature complete, no SLAs are provided, and there are no technical support obligations, but they will be far enough along that customers can actually use them in test environments or for limited-use tests -- just like they would in normal production cases   \"BETA\" - Beta is the point at which we are ready to open a release for any customer to use There are no SLA or technical support obligations in a Beta release Products will be complete from a feature perspective, but may have some open outstanding issues Beta releases are suitable for limited production use cases   \"GA\" - GA features are open to all developers and are considered stable and fully qualified for production use   \"DEPRECATED\" - Deprecated features are scheduled to be shut down and removed For more information, see the “Deprecation Policy” section of our Terms of Service (https://cloudgooglecom/terms/) and the Google Cloud Platform Subject to the Deprecation Policy (https://cloudgooglecom/terms/deprecation) documentation",
+				Description: "The launch stage of the metric definition",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("MetricDescriptor.LaunchStage"),
 			},
@@ -103,12 +103,6 @@ func LoggingMetrics() *schema.Table {
 				Description: "The delay of data points caused by ingestion Data points older than this age are guaranteed to be ingested and available to be read, excluding data loss due to errors",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("MetricDescriptor.Metadata.IngestDelay"),
-			},
-			{
-				Name:        "metric_descriptor_metadata_launch_stage",
-				Description: "Deprecated Must use the MetricDescriptorlaunch_stage instead  Possible values:   \"LAUNCH_STAGE_UNSPECIFIED\" - Do not use this default value   \"UNIMPLEMENTED\" - The feature is not yet implemented Users can not use it   \"PRELAUNCH\" - Prelaunch features are hidden from users and are only visible internally   \"EARLY_ACCESS\" - Early Access features are limited to a closed group of testers To use these features, you must sign up in advance and sign a Trusted Tester agreement (which includes confidentiality provisions) These features may be unstable, changed in backward-incompatible ways, and are not guaranteed to be released   \"ALPHA\" - Alpha is a limited availability test for releases before they are cleared for widespread use By Alpha, all significant design issues are resolved and we are in the process of verifying functionality Alpha customers need to apply for access, agree to applicable terms, and have their projects allowlisted Alpha releases don’t have to be feature complete, no SLAs are provided, and there are no technical support obligations, but they will be far enough along that customers can actually use them in test environments or for limited-use tests -- just like they would in normal production cases   \"BETA\" - Beta is the point at which we are ready to open a release for any customer to use There are no SLA or technical support obligations in a Beta release Products will be complete from a feature perspective, but may have some open outstanding issues Beta releases are suitable for limited production use cases   \"GA\" - GA features are open to all developers and are considered stable and fully qualified for production use   \"DEPRECATED\" - Deprecated features are scheduled to be shut down and removed For more information, see the “Deprecation Policy” section of our Terms of Service (https://cloudgooglecom/terms/) and the Google Cloud Platform Subject to the Deprecation Policy (https://cloudgooglecom/terms/deprecation) documentation",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("MetricDescriptor.Metadata.LaunchStage"),
 			},
 			{
 				Name:        "metric_descriptor_metadata_sample_period",
@@ -154,7 +148,7 @@ func LoggingMetrics() *schema.Table {
 			},
 			{
 				Name:        "name",
-				Description: "Required The client-assigned metric identifier Examples: \"error_count\", \"nginx/requests\"Metric identifiers are limited to 100 characters and can include only the following characters: A-Z, a-z, 0-9, and the special characters _-,+!*',()%/ The forward-slash character (/) denotes a hierarchy of name pieces, and it cannot be the first character of the nameThe metric identifier in this field must not be URL-encoded (https://enwikipediaorg/wiki/Percent-encoding) However, when the metric identifier appears as the [METRIC_ID] part of a metric_name API parameter, then the metric identifier must be URL-encoded Example: \"projects/my-project/metrics/nginx%2Frequests\"",
+				Description: "The client-assigned metric identifier Examples: \"error_count\", \"nginx/requests\"Metric identifiers are limited to 100 characters and can include only the following characters: A-Z, a-z, 0-9, and the special characters _-,+!*',()%/ The forward-slash character (/) denotes a hierarchy of name pieces, and it cannot be the first character of the nameThe metric identifier in this field must not be URL-encoded (https://enwikipediaorg/wiki/Percent-encoding) However, when the metric identifier appears as the [METRIC_ID] part of a metric_name API parameter, then the metric identifier must be URL-encoded Example: \"projects/my-project/metrics/nginx%2Frequests\"",
 				Type:        schema.TypeString,
 			},
 			{

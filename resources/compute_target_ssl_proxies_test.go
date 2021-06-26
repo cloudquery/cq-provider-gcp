@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/logging"
@@ -46,6 +47,7 @@ func createTargetSslProxies() (*compute.Service, error) {
 	if err := faker.FakeData(&proxy); err != nil {
 		return nil, err
 	}
+	proxy.CreationTimestamp = time.Now().Format(time.RFC3339)
 	mux := httprouter.New()
 	mux.GET("/projects/testProject/global/targetSslProxies", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		resp := &compute.TargetSslProxyList{

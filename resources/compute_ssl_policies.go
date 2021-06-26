@@ -12,7 +12,7 @@ import (
 func ComputeSslPolicies() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_ssl_policies",
-		Description:  "Represents an SSL Policy resource  Use SSL policies to control the SSL features, such as versions and cipher suites, offered by an HTTPS or SSL Proxy load balancer For more information, read  SSL Policy Concepts (== resource_for {$api_version}",
+		Description:  "Represents an SSL Policy resource",
 		Resolver:     fetchComputeSslPolicies,
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
@@ -25,14 +25,10 @@ func ComputeSslPolicies() *schema.Table {
 				Resolver:    client.ResolveProject,
 			},
 			{
-				Name:     "resource_id",
-				Type:     schema.TypeString,
-				Resolver: client.ResolveResourceId,
-			},
-			{
 				Name:        "creation_timestamp",
 				Description: "Creation timestamp in RFC3339 text format",
-				Type:        schema.TypeString,
+				Type:        schema.TypeTimestamp,
+				Resolver:    client.ISODateResolver("CreationTimestamp"),
 			},
 			{
 				Name:        "custom_features",
@@ -41,7 +37,7 @@ func ComputeSslPolicies() *schema.Table {
 			},
 			{
 				Name:        "description",
-				Description: "An optional description of this resource Provide this property when you create the resource",
+				Description: "An optional description of this resource",
 				Type:        schema.TypeString,
 			},
 			{
@@ -51,12 +47,18 @@ func ComputeSslPolicies() *schema.Table {
 			},
 			{
 				Name:        "fingerprint",
-				Description: "Fingerprint of this resource A hash of the contents stored in this object This field is used in optimistic locking This field will be ignored when inserting a SslPolicy An up-to-date fingerprint must be provided in order to update the SslPolicy, otherwise the request will fail with error 412 conditionNotMet  To see the latest fingerprint, make a get() request to retrieve an SslPolicy",
+				Description: "Fingerprint of this resource",
 				Type:        schema.TypeString,
 			},
 			{
+				Name:        "ssl_policy_id",
+				Description: "The unique identifier for the resource This identifier is defined by the server",
+				Type:        schema.TypeString,
+				Resolver:    client.ResolveResourceId,
+			},
+			{
 				Name:        "kind",
-				Description: "[Output only] Type of the resource Always compute#sslPolicyfor SSL policies",
+				Description: "Type of the resource Always compute#sslPolicyfor SSL policies",
 				Type:        schema.TypeString,
 			},
 			{
@@ -66,7 +68,7 @@ func ComputeSslPolicies() *schema.Table {
 			},
 			{
 				Name:        "name",
-				Description: "Name of the resource The name must be 1-63 characters long, and comply with RFC1035 Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash",
+				Description: "Name of the resource",
 				Type:        schema.TypeString,
 			},
 			{
@@ -138,6 +140,7 @@ func fetchComputeSslPolicies(ctx context.Context, meta schema.ClientMeta, parent
 	}
 	return nil
 }
+
 func fetchComputeSslPolicyWarnings(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(*compute.SslPolicy)
 	if !ok {

@@ -6,7 +6,7 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/storage/v1"
+	storage "google.golang.org/api/storage/v1"
 )
 
 func StorageBuckets() *schema.Table {

@@ -14,8 +14,8 @@ A description of the conditions under which some aspect of your system is consid
 |enabled|boolean|Whether or not the policy is enabled On write, the default interpretation if unset is that the policy is enabled On read, clients should not make any assumption about the state if it has not been populated The field should always be populated on List and Get operations, unless a field projection has been specified that strips it out|
 |mutate_time|text|When the change occurred|
 |mutated_by|text|The email address of the user making the change|
-|name|text|Required if the policy exists The resource name for this policy The format is: projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID] [ALERT_POLICY_ID] is assigned by Stackdriver Monitoring when the policy is created When calling the alertPoliciescreate method, do not include the name field in the alerting policy passed as part of the request|
+|name|text|The resource name for this policy|
 |notification_channels|text[]|Identifies the notification channels to which notifications should be sent when incidents are opened or closed or when new violations occur on an already opened incident Each element of this array corresponds to the name field in each of the NotificationChannel objects that are returned from the ListNotificationChannels method|
-|user_labels|jsonb|User-supplied key/value data to be used for organizing and identifying the AlertPolicy objectsThe field can contain up to 64 entries Each key and value is limited to 63 Unicode characters or 128 bytes, whichever is smaller Labels and values can contain only lowercase letters, numerals, underscores, and dashes Keys must begin with a letter|
+|labels|jsonb|Labels for this resource|
 |validity_code|bigint|The status code, which should be an enum value of googlerpcCode|
 |validity_message|text|A developer-facing error message, which should be in English Any user-facing error message should be localized and sent in the googlerpcStatusdetails field, or localized by the client|

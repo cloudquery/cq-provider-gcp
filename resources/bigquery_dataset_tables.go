@@ -12,7 +12,7 @@ import (
 func BigqueryDatasetTables() *schema.Table {
 	return &schema.Table{
 		Name:        "gcp_bigquery_dataset_tables",
-		Description: "[Output-only, Beta] Model options used for the first training run These options are immutable for subsequent training runs Default values are used for any options not specified in the input query",
+		Description: "Model options used for the first training run These options are immutable for subsequent training runs Default values are used for any options not specified in the input query",
 		Resolver:    fetchBigqueryDatasetTables,
 		Columns: []schema.Column{
 			{
@@ -22,34 +22,34 @@ func BigqueryDatasetTables() *schema.Table {
 			},
 			{
 				Name:        "clustering_fields",
-				Description: "[Repeated] One or more fields on which data should be clustered Only top-level, non-repeated, simple-type fields are supported When you cluster a table using multiple columns, the order of columns you specify is important The order of the specified columns determines the sort order of the data",
+				Description: "One or more fields on which data should be clustered Only top-level, non-repeated, simple-type fields are supported When you cluster a table using multiple columns, the order of columns you specify is important The order of the specified columns determines the sort order of the data",
 				Type:        schema.TypeStringArray,
 				Resolver:    schema.PathResolver("Clustering.Fields"),
 			},
 			{
 				Name:        "creation_time",
-				Description: "[Output-only] The time when this table was created, in milliseconds since the epoch",
+				Description: "The time when this table was created, in milliseconds since the epoch",
 				Type:        schema.TypeBigInt,
 			},
 			{
 				Name:        "description",
-				Description: "[Optional] A user-friendly description of this table",
+				Description: "A user-friendly description of this table",
 				Type:        schema.TypeString,
 			},
 			{
 				Name:        "encryption_configuration_kms_key_name",
-				Description: "[Optional] Describes the Cloud KMS encryption key that will be used to protect destination BigQuery table The BigQuery Service Account associated with your project requires access to this encryption key",
+				Description: "Describes the Cloud KMS encryption key that will be used to protect destination BigQuery table The BigQuery Service Account associated with your project requires access to this encryption key",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("EncryptionConfiguration.KmsKeyName"),
 			},
 			{
 				Name:        "etag",
-				Description: "[Output-only] A hash of the table metadata Used to ensure there were no concurrent modifications to the resource when attempting an update Not guaranteed to change when the table contents or the fields numRows, numBytes, numLongTermBytes or lastModifiedTime change",
+				Description: "A hash of the table metadata Used to ensure there were no concurrent modifications to the resource when attempting an update Not guaranteed to change when the table contents or the fields numRows, numBytes, numLongTermBytes or lastModifiedTime change",
 				Type:        schema.TypeString,
 			},
 			{
 				Name:        "expiration_time",
-				Description: "[Optional] The time when this table expires, in milliseconds since the epoch If not present, the table will persist indefinitely Expired tables will be deleted and their storage reclaimed The defaultTableExpirationMs property of the encapsulating dataset can be used to set a default expirationTime on newly created tables",
+				Description: "The time when this table expires, in milliseconds since the epoch If not present, the table will persist indefinitely Expired tables will be deleted and their storage reclaimed The defaultTableExpirationMs property of the encapsulating dataset can be used to set a default expirationTime on newly created tables",
 				Type:        schema.TypeBigInt,
 			},
 			{
@@ -60,60 +60,60 @@ func BigqueryDatasetTables() *schema.Table {
 			},
 			{
 				Name:        "external_data_configuration_compression",
-				Description: "[Optional] The compression type of the data source Possible values include GZIP and NONE The default value is NONE This setting is ignored for Google Cloud Bigtable, Google Cloud Datastore backups and Avro formats",
+				Description: "The compression type of the data source Possible values include GZIP and NONE The default value is NONE This setting is ignored for Google Cloud Bigtable, Google Cloud Datastore backups and Avro formats",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ExternalDataConfiguration.Compression"),
 			},
 			{
 				Name:        "external_data_configuration_connection_id",
-				Description: "[Optional, Trusted Tester] Connection for external data source",
+				Description: "Connection for external data source",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ExternalDataConfiguration.ConnectionId"),
 			},
 			{
 				Name:        "external_data_configuration_ignore_unknown_values",
-				Description: "[Optional] Indicates if BigQuery should allow extra values that are not represented in the table schema If true, the extra values are ignored If false, records with extra columns are treated as bad records, and if there are too many bad records, an invalid error is returned in the job result The default value is false The sourceFormat property determines what BigQuery treats as an extra value: CSV: Trailing columns JSON: Named values that don't match any column names Google Cloud Bigtable: This setting is ignored Google Cloud Datastore backups: This setting is ignored Avro: This setting is ignored",
+				Description: "Indicates if BigQuery should allow extra values that are not represented in the table schema",
 				Type:        schema.TypeBool,
 				Resolver:    schema.PathResolver("ExternalDataConfiguration.IgnoreUnknownValues"),
 			},
 			{
 				Name:        "external_data_configuration_max_bad_records",
-				Description: "[Optional] The maximum number of bad records that BigQuery can ignore when reading data If the number of bad records exceeds this value, an invalid error is returned in the job result This is only valid for CSV, JSON, and Google Sheets The default value is 0, which requires that all records are valid This setting is ignored for Google Cloud Bigtable, Google Cloud Datastore backups and Avro formats",
+				Description: "The maximum number of bad records that BigQuery can ignore when reading data If the number of bad records exceeds this value, an invalid error is returned in the job result This is only valid for CSV, JSON, and Google Sheets The default value is 0, which requires that all records are valid This setting is ignored for Google Cloud Bigtable, Google Cloud Datastore backups and Avro formats",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("ExternalDataConfiguration.MaxBadRecords"),
 			},
 			{
 				Name:        "external_data_configuration_schema",
-				Description: "[Optional] The schema for the data Schema is required for CSV and JSON formats Schema is disallowed for Google Cloud Bigtable, Cloud Datastore backups, and Avro formats",
+				Description: "The schema for the data Schema is required for CSV and JSON formats Schema is disallowed for Google Cloud Bigtable, Cloud Datastore backups, and Avro formats",
 				Type:        schema.TypeJSON,
 				Resolver:    resolveBigqueryDatasetTableExternalDataConfigurationSchema,
 			},
 			{
 				Name:        "external_data_configuration_source_format",
-				Description: "[Required] The data format For CSV files, specify \"CSV\" For Google sheets, specify \"GOOGLE_SHEETS\" For newline-delimited JSON, specify \"NEWLINE_DELIMITED_JSON\" For Avro files, specify \"AVRO\" For Google Cloud Datastore backups, specify \"DATASTORE_BACKUP\" [Beta] For Google Cloud Bigtable, specify \"BIGTABLE\"",
+				Description: "The data format For CSV files, specify \"CSV\" For Google sheets, specify \"GOOGLE_SHEETS\" For newline-delimited JSON, specify \"NEWLINE_DELIMITED_JSON\" For Avro files, specify \"AVRO\" For Google Cloud Datastore backups, specify \"DATASTORE_BACKUP\" [Beta] For Google Cloud Bigtable, specify \"BIGTABLE\"",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("ExternalDataConfiguration.SourceFormat"),
 			},
 			{
 				Name:        "external_data_configuration_source_uris",
-				Description: "[Required] The fully-qualified URIs that point to your data in Google Cloud For Google Cloud Storage URIs: Each URI can contain one '*' wildcard character and it must come after the 'bucket' name Size limits related to load jobs apply to external data sources For Google Cloud Bigtable URIs: Exactly one URI can be specified and it has be a fully specified and valid HTTPS URL for a Google Cloud Bigtable table For Google Cloud Datastore backups, exactly one URI can be specified Also, the '*' wildcard character is not allowed",
+				Description: "The fully-qualified URIs that point to your data in Google Cloud For Google Cloud Storage URIs: Each URI can contain one '*' wildcard character and it must come after the 'bucket' name Size limits related to load jobs apply to external data sources For Google Cloud Bigtable URIs: Exactly one URI can be specified and it has be a fully specified and valid HTTPS URL for a Google Cloud Bigtable table For Google Cloud Datastore backups, exactly one URI can be specified Also, the '*' wildcard character is not allowed",
 				Type:        schema.TypeStringArray,
 				Resolver:    schema.PathResolver("ExternalDataConfiguration.SourceUris"),
 			},
 			{
 				Name:        "friendly_name",
-				Description: "[Optional] A descriptive name for this table",
+				Description: "A descriptive name for this table",
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "resource_id",
-				Description: "[Output-only] An opaque ID uniquely identifying the table",
+				Name:        "table_id",
+				Description: "An opaque ID uniquely identifying the table",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Id"),
 			},
 			{
 				Name:        "kind",
-				Description: "[Output-only] The type of the resource",
+				Description: "The type of the resource",
 				Type:        schema.TypeString,
 			},
 			{
@@ -123,35 +123,35 @@ func BigqueryDatasetTables() *schema.Table {
 			},
 			{
 				Name:        "last_modified_time",
-				Description: "[Output-only] The time when this table was last modified, in milliseconds since the epoch",
+				Description: "The time when this table was last modified, in milliseconds since the epoch",
 				Type:        schema.TypeBigInt,
 			},
 			{
 				Name:        "location",
-				Description: "[Output-only] The geographic location where the table resides This value is inherited from the dataset",
+				Description: "The geographic location where the table resides This value is inherited from the dataset",
 				Type:        schema.TypeString,
 			},
 			{
 				Name:        "materialized_view_enable_refresh",
-				Description: "[Optional] [TrustedTester] Enable automatic refresh of the materialized view when the base table is updated The default value is \"true\"",
+				Description: "[TrustedTester] Enable automatic refresh of the materialized view when the base table is updated The default value is \"true\"",
 				Type:        schema.TypeBool,
 				Resolver:    schema.PathResolver("MaterializedView.EnableRefresh"),
 			},
 			{
 				Name:        "materialized_view_last_refresh_time",
-				Description: "[Output-only] [TrustedTester] The time when this materialized view was last modified, in milliseconds since the epoch",
+				Description: "[TrustedTester] The time when this materialized view was last modified, in milliseconds since the epoch",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("MaterializedView.LastRefreshTime"),
 			},
 			{
 				Name:        "materialized_view_query",
-				Description: "[Required] A query whose result is persisted",
+				Description: "A query whose result is persisted",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("MaterializedView.Query"),
 			},
 			{
 				Name:        "materialized_view_refresh_interval_ms",
-				Description: "[Optional] [TrustedTester] The maximum frequency at which this materialized view will be refreshed The default value is \"1800000\" (30 minutes)",
+				Description: "[TrustedTester] The maximum frequency at which this materialized view will be refreshed The default value is \"1800000\" (30 minutes)",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("MaterializedView.RefreshIntervalMs"),
 			},
@@ -172,85 +172,85 @@ func BigqueryDatasetTables() *schema.Table {
 			},
 			{
 				Name:        "num_bytes",
-				Description: "[Output-only] The size of this table in bytes, excluding any data in the streaming buffer",
+				Description: "The size of this table in bytes, excluding any data in the streaming buffer",
 				Type:        schema.TypeBigInt,
 			},
 			{
 				Name:        "num_long_term_bytes",
-				Description: "[Output-only] The number of bytes in the table that are considered \"long-term storage\"",
+				Description: "The number of bytes in the table that are considered \"long-term storage\"",
 				Type:        schema.TypeBigInt,
 			},
 			{
 				Name:        "num_physical_bytes",
-				Description: "[Output-only] [TrustedTester] The physical size of this table in bytes, excluding any data in the streaming buffer This includes compression and storage used for time travel",
+				Description: "[TrustedTester] The physical size of this table in bytes, excluding any data in the streaming buffer This includes compression and storage used for time travel",
 				Type:        schema.TypeBigInt,
 			},
 			{
 				Name:        "num_rows",
-				Description: "[Output-only] The number of rows of data in this table, excluding any data in the streaming buffer",
+				Description: "The number of rows of data in this table, excluding any data in the streaming buffer",
 				Type:        schema.TypeBigInt,
 			},
 			{
 				Name:        "range_partitioning_field",
-				Description: "[TrustedTester] [Required] The table is partitioned by this field The field must be a top-level NULLABLE/REQUIRED field The only supported type is INTEGER/INT64",
+				Description: "[Required] The table is partitioned by this field The field must be a top-level NULLABLE/REQUIRED field The only supported type is INTEGER/INT64",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("RangePartitioning.Field"),
 			},
 			{
 				Name:        "range_partitioning_range_end",
-				Description: "[TrustedTester] [Required] The end of range partitioning, exclusive",
+				Description: "[Required] The end of range partitioning, exclusive",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("RangePartitioning.Range.End"),
 			},
 			{
 				Name:        "range_partitioning_range_interval",
-				Description: "[TrustedTester] [Required] The width of each interval",
+				Description: "[Required] The width of each interval",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("RangePartitioning.Range.Interval"),
 			},
 			{
 				Name:        "range_partitioning_range_start",
-				Description: "[TrustedTester] [Required] The start of range partitioning, inclusive",
+				Description: "[Required] The start of range partitioning, inclusive",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("RangePartitioning.Range.Start"),
 			},
 			{
 				Name:        "require_partition_filter",
-				Description: "[Optional] If set to true, queries over this table require a partition filter that can be used for partition elimination to be specified",
+				Description: "If set to true, queries over this table require a partition filter that can be used for partition elimination to be specified",
 				Type:        schema.TypeBool,
 			},
 			{
 				Name:        "schema",
-				Description: "[Optional] Describes the schema of this table",
+				Description: "Describes the schema of this table",
 				Type:        schema.TypeJSON,
 				Resolver:    resolveBigqueryDatasetTableSchema,
 			},
 			{
 				Name:        "self_link",
-				Description: "[Output-only] A URL that can be used to access this resource again",
+				Description: "A URL that can be used to access this resource again",
 				Type:        schema.TypeString,
 			},
 			{
 				Name:        "streaming_buffer_estimated_bytes",
-				Description: "[Output-only] A lower-bound estimate of the number of bytes currently in the streaming buffer",
+				Description: "A lower-bound estimate of the number of bytes currently in the streaming buffer",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("StreamingBuffer.EstimatedBytes"),
 			},
 			{
 				Name:        "streaming_buffer_estimated_rows",
-				Description: "[Output-only] A lower-bound estimate of the number of rows currently in the streaming buffer",
+				Description: "A lower-bound estimate of the number of rows currently in the streaming buffer",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("StreamingBuffer.EstimatedRows"),
 			},
 			{
 				Name:        "streaming_buffer_oldest_entry_time",
-				Description: "[Output-only] Contains the timestamp of the oldest entry in the streaming buffer, in milliseconds since the epoch, if the streaming buffer is available",
+				Description: "Contains the timestamp of the oldest entry in the streaming buffer, in milliseconds since the epoch, if the streaming buffer is available",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("StreamingBuffer.OldestEntryTime"),
 			},
 			{
 				Name:        "time_partitioning_expiration_ms",
-				Description: "[Optional] Number of milliseconds for which to keep the storage for partitions in the table The storage in a partition will have an expiration time of its partition time plus this value",
+				Description: "Number of milliseconds for which to keep the storage for partitions in the table The storage in a partition will have an expiration time of its partition time plus this value",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("TimePartitioning.ExpirationMs"),
 			},
@@ -267,18 +267,18 @@ func BigqueryDatasetTables() *schema.Table {
 			},
 			{
 				Name:        "time_partitioning_type",
-				Description: "[Required] The supported types are DAY, HOUR, MONTH, and YEAR, which will generate one partition per day, hour, month, and year, respectively When the type is not specified, the default behavior is DAY",
+				Description: "The supported types are DAY, HOUR, MONTH, and YEAR, which will generate one partition per day, hour, month, and year, respectively When the type is not specified, the default behavior is DAY",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("TimePartitioning.Type"),
 			},
 			{
 				Name:        "type",
-				Description: "[Output-only] Describes the table type The following values are supported: TABLE: A normal BigQuery table VIEW: A virtual table defined by a SQL query SNAPSHOT: An immutable, read-only table that is a copy of another table [TrustedTester] MATERIALIZED_VIEW: SQL query whose result is persisted EXTERNAL: A table that references data stored in an external storage system, such as Google Cloud Storage The default value is TABLE",
+				Description: "Describes the table type The following values are supported: TABLE: A normal BigQuery table VIEW: A virtual table defined by a SQL query SNAPSHOT: An immutable, read-only table that is a copy of another table [TrustedTester] MATERIALIZED_VIEW: SQL query whose result is persisted EXTERNAL: A table that references data stored in an external storage system, such as Google Cloud Storage The default value is TABLE",
 				Type:        schema.TypeString,
 			},
 			{
 				Name:        "view_query",
-				Description: "[Required] A query that BigQuery executes when the view is referenced",
+				Description: "A query that BigQuery executes when the view is referenced",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("View.Query"),
 			},
@@ -292,7 +292,7 @@ func BigqueryDatasetTables() *schema.Table {
 		Relations: []*schema.Table{
 			{
 				Name:        "gcp_bigquery_dataset_table_dataset_model_training_runs",
-				Description: "[Output-only, Beta] Training options used by this training run These options are mutable for subsequent training runs Default values are explicitly stored for options not specified in the input query of the first training run For subsequent training runs, any option not explicitly specified in the input query will be copied from the previous training run",
+				Description: "Training options used by this training run These options are mutable for subsequent training runs Default values are explicitly stored for options not specified in the input query of the first training run For subsequent training runs, any option not explicitly specified in the input query will be copied from the previous training run",
 				Resolver:    fetchBigqueryDatasetTableDatasetModelTrainingRuns,
 				Columns: []schema.Column{
 					{
@@ -303,12 +303,12 @@ func BigqueryDatasetTables() *schema.Table {
 					},
 					{
 						Name:        "start_time",
-						Description: "[Output-only, Beta] Training run start time in milliseconds since the epoch",
+						Description: "Training run start time in milliseconds since the epoch",
 						Type:        schema.TypeString,
 					},
 					{
 						Name:        "state",
-						Description: "[Output-only, Beta] Different state applicable for a training run IN PROGRESS: Training run is in progress FAILED: Training run ended due to a non-retryable failure SUCCEEDED: Training run successfully completed CANCELLED: Training run cancelled by the user",
+						Description: "Different state applicable for a training run IN PROGRESS: Training run is in progress FAILED: Training run ended due to a non-retryable failure SUCCEEDED: Training run successfully completed CANCELLED: Training run cancelled by the user",
 						Type:        schema.TypeString,
 					},
 					{
@@ -359,9 +359,9 @@ func BigqueryDatasetTables() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_bigquery_dataset_table_view_user_defined_function_resources",
-				Description: "This is used for defining User Defined Function (UDF) resources only when using legacy SQL Users of Standard SQL should leverage either DDL (eg CREATE [TEMPORARY] FUNCTION  ) or the Routines API to define UDF resources For additional information on migrating, see: https://cloudgoogle",
-				Resolver:    fetchBigqueryDatasetTableViewUserDefinedFunctionResources,
+				Name:        "gcp_bigquery_dataset_table_user_defined_functions",
+				Description: "This is used for defining User Defined Function (UDF) resources only when using legacy SQL",
+				Resolver:    fetchBigqueryDatasetTableUserDefinedFunctions,
 				Columns: []schema.Column{
 					{
 						Name:        "dataset_table_id",
@@ -371,12 +371,12 @@ func BigqueryDatasetTables() *schema.Table {
 					},
 					{
 						Name:        "inline_code",
-						Description: "[Pick one] An inline resource that contains code for a user-defined function (UDF) Providing a inline code resource is equivalent to providing a URI for a file containing the same code",
+						Description: "An inline resource that contains code for a user-defined function (UDF) Providing a inline code resource is equivalent to providing a URI for a file containing the same code",
 						Type:        schema.TypeString,
 					},
 					{
 						Name:        "resource_uri",
-						Description: "[Pick one] A code resource to load from a Google Cloud Storage URI (gs://bucket/path)",
+						Description: "A code resource to load from a Google Cloud Storage URI (gs://bucket/path)",
 						Type:        schema.TypeString,
 					},
 				},
@@ -464,7 +464,7 @@ func fetchBigqueryDatasetTableDatasetModelTrainingRuns(ctx context.Context, meta
 	res <- p.Model.TrainingRuns
 	return nil
 }
-func fetchBigqueryDatasetTableViewUserDefinedFunctionResources(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchBigqueryDatasetTableUserDefinedFunctions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(*bigquery.Table)
 	if !ok {
 		return fmt.Errorf("expected *bigquery.Table but got %T", p)

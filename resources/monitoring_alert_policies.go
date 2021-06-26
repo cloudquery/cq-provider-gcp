@@ -77,7 +77,7 @@ func MonitoringAlertPolicies() *schema.Table {
 			},
 			{
 				Name:        "name",
-				Description: "Required if the policy exists The resource name for this policy The format is: projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID] [ALERT_POLICY_ID] is assigned by Stackdriver Monitoring when the policy is created When calling the alertPoliciescreate method, do not include the name field in the alerting policy passed as part of the request",
+				Description: "The resource name for this policy",
 				Type:        schema.TypeString,
 			},
 			{
@@ -86,9 +86,10 @@ func MonitoringAlertPolicies() *schema.Table {
 				Type:        schema.TypeStringArray,
 			},
 			{
-				Name:        "user_labels",
-				Description: "User-supplied key/value data to be used for organizing and identifying the AlertPolicy objectsThe field can contain up to 64 entries Each key and value is limited to 63 Unicode characters or 128 bytes, whichever is smaller Labels and values can contain only lowercase letters, numerals, underscores, and dashes Keys must begin with a letter",
+				Name:        "labels",
+				Description: "Labels for this resource",
 				Type:        schema.TypeJSON,
+				Resolver:    schema.PathResolver("UserLabels"),
 			},
 			{
 				Name:        "validity_code",
@@ -123,7 +124,7 @@ func MonitoringAlertPolicies() *schema.Table {
 					},
 					{
 						Name:        "absent_filter",
-						Description: "Required A filter (https://cloudgooglecom/monitoring/api/v3/filters) that identifies which time series should be compared with the thresholdThe filter is similar to the one that is specified in the ListTimeSeries request (https://cloudgooglecom/monitoring/api/ref_v3/rest/v3/projectstimeSeries/list) (that call is useful to verify the time series that will be retrieved / processed) The filter must specify the metric type and the resource type Optionally, it can specify resource labels and metric labels This field must not exceed 2048 Unicode characters in length",
+						Description: "A filter (https://cloudgooglecom/monitoring/api/v3/filters) that identifies which time series should be compared with the thresholdThe filter is similar to the one that is specified in the ListTimeSeries request (https://cloudgooglecom/monitoring/api/ref_v3/rest/v3/projectstimeSeries/list) (that call is useful to verify the time series that will be retrieved / processed) The filter must specify the metric type and the resource type Optionally, it can specify resource labels and metric labels This field must not exceed 2048 Unicode characters in length",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("ConditionAbsent.Filter"),
 					},
@@ -183,7 +184,7 @@ func MonitoringAlertPolicies() *schema.Table {
 					},
 					{
 						Name:        "threshold_filter",
-						Description: "Required A filter (https://cloudgooglecom/monitoring/api/v3/filters) that identifies which time series should be compared with the thresholdThe filter is similar to the one that is specified in the ListTimeSeries request (https://cloudgooglecom/monitoring/api/ref_v3/rest/v3/projectstimeSeries/list) (that call is useful to verify the time series that will be retrieved / processed) The filter must specify the metric type and the resource type Optionally, it can specify resource labels and metric labels This field must not exceed 2048 Unicode characters in length",
+						Description: "A filter (https://cloudgooglecom/monitoring/api/v3/filters) that identifies which time series should be compared with the thresholdThe filter is similar to the one that is specified in the ListTimeSeries request (https://cloudgooglecom/monitoring/api/ref_v3/rest/v3/projectstimeSeries/list) (that call is useful to verify the time series that will be retrieved / processed) The filter must specify the metric type and the resource type Optionally, it can specify resource labels and metric labels This field must not exceed 2048 Unicode characters in length",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("ConditionThreshold.Filter"),
 					},
@@ -212,7 +213,7 @@ func MonitoringAlertPolicies() *schema.Table {
 					},
 					{
 						Name:        "name",
-						Description: "Required if the condition exists The unique resource name for this condition Its format is: projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[POLICY_ID]/conditions/[ CONDITION_ID] [CONDITION_ID] is assigned by Stackdriver Monitoring when the condition is created as part of a new or updated alerting policyWhen calling the alertPoliciescreate method, do not include the name field in the conditions of the requested alerting policy Stackdriver Monitoring creates the condition identifiers and includes them in the new policyWhen calling the alertPoliciesupdate method to update a policy, including a condition name causes the existing condition to be updated Conditions without names are added to the updated policy Existing conditions are deleted if they are not updatedBest practice is to preserve [CONDITION_ID] if you make only small changes, such as those to condition thresholds, durations, or trigger values Otherwise, treat the change as a new condition and let the existing condition be deleted",
+						Description: "if the condition exists The unique resource name for this condition Its format is: projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[POLICY_ID]/conditions/[ CONDITION_ID] [CONDITION_ID] is assigned by Stackdriver Monitoring when the condition is created as part of a new or updated alerting policyWhen calling the alertPoliciescreate method, do not include the name field in the conditions of the requested alerting policy Stackdriver Monitoring creates the condition identifiers and includes them in the new policyWhen calling the alertPoliciesupdate method to update a policy, including a condition name causes the existing condition to be updated Conditions without names are added to the updated policy Existing conditions are deleted if they are not updatedBest practice is to preserve [CONDITION_ID] if you make only small changes, such as those to condition thresholds, durations, or trigger values Otherwise, treat the change as a new condition and let the existing condition be deleted",
 						Type:        schema.TypeString,
 					},
 				},

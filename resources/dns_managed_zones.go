@@ -25,11 +25,6 @@ func DNSManagedZones() *schema.Table {
 				Resolver:    client.ResolveProject,
 			},
 			{
-				Name:     "resource_id",
-				Type:     schema.TypeString,
-				Resolver: client.ResolveResourceId,
-			},
-			{
 				Name:        "creation_time",
 				Description: "The time that this resource was created on the server This is in RFC3339 text format Output only",
 				Type:        schema.TypeString,
@@ -67,22 +62,28 @@ func DNSManagedZones() *schema.Table {
 				Resolver: schema.PathResolver("ForwardingConfig.Kind"),
 			},
 			{
-				Name: "kind",
-				Type: schema.TypeString,
+				Name:     "managed_zone_id",
+				Type:     schema.TypeString,
+				Resolver: client.ResolveResourceId,
+			},
+			{
+				Name:        "kind",
+				Description: "The resource type",
+				Type:        schema.TypeString,
 			},
 			{
 				Name:        "labels",
-				Description: "User labels",
+				Description: "User assigned labels for this resource",
 				Type:        schema.TypeJSON,
 			},
 			{
 				Name:        "name",
-				Description: "User assigned name for this resource Must be unique within the project The name must be 1-63 characters long, must begin with a letter, end with a letter or digit, and only contain lowercase letters, digits or dashes",
+				Description: "User assigned name for this resource",
 				Type:        schema.TypeString,
 			},
 			{
 				Name:        "name_server_set",
-				Description: "ly specifies the NameServerSet for this ManagedZone A NameServerSet is a set of DNS name servers that all host the same ManagedZones Most users leave this field unset If you need to use this field, contact your account team",
+				Description: "specifies the NameServerSet for this ManagedZone",
 				Type:        schema.TypeString,
 			},
 			{

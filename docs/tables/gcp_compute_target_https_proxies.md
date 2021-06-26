@@ -1,17 +1,17 @@
 
 # Table: gcp_compute_target_https_proxies
-Represents a Target HTTPS Proxy resource  Google Compute Engine has two Target HTTPS Proxy resources:  * Global (/compute/docs/reference/rest/{$api_version}/targetHttpsProxies) * Regional (/compute/docs/reference/rest/{$api_version}/regionTargetHttpsProxies)  A target HTTPS proxy is a component of GCP HTTPS load balancers  * targetHttpsProxies are used by external HTTPS load balancers * regionTargetHttpsProxies are used by internal HTTPS load balancers  Forwarding rules reference a target HTTPS proxy, and the target proxy then references a URL map For more information, read Using Target Proxies and  Forwarding rule concepts (== resource_for {$api_version}targetHttpsProxies ==) (== resource_for {$api_version}
+Represents a Target HTTPS Proxy resource
 ## Columns
 | Name        | Type           | Description  |
 | ------------- | ------------- | -----  |
 |project_id|text|GCP Project Id of the resource|
-|resource_id|text|Original Id of the resource|
 |authorization_policy|text|A URL referring to a networksecurityAuthorizationPolicy resource that describes how the proxy should authorize inbound traffic If left blank, access will not be restricted by an authorization policy Refer to the AuthorizationPolicy resource for additional details authorizationPolicy only applies to a global TargetHttpsProxy attached to globalForwardingRules with the loadBalancingScheme set to INTERNAL_SELF_MANAGED Note: This field currently has no impact|
-|creation_timestamp|text|Creation timestamp in RFC3339 text format|
-|description|text|An optional description of this resource Provide this property when you create the resource|
-|fingerprint|text|Fingerprint of this resource A hash of the contents stored in this object This field is used in optimistic locking This field will be ignored when inserting a TargetHttpsProxy An up-to-date fingerprint must be provided in order to patch the TargetHttpsProxy; otherwise, the request will fail with error 412 conditionNotMet To see the latest fingerprint, make a get() request to retrieve the TargetHttpsProxy|
+|creation_timestamp|timestamp without time zone|Creation timestamp in RFC3339 text format|
+|description|text|An optional description of this resource|
+|fingerprint|text|Fingerprint of this resource|
+|https_proxy_id|text|Unique Id of the ssl proxy|
 |kind|text|Type of resource Always compute#targetHttpsProxy for target HTTPS proxies|
-|name|text|Name of the resource Provided by the client when the resource is created The name must be 1-63 characters long, and comply with RFC1035 Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash|
+|name|text|Name of the resource|
 |proxy_bind|boolean|This field only applies when the forwarding rule that references this target proxy has a loadBalancingScheme set to INTERNAL_SELF_MANAGED  When this field is set to true, Envoy proxies set up inbound traffic interception and bind to the IP address and port specified in the forwarding rule This is generally useful when using Traffic Director to configure Envoy as a gateway or middle proxy (in other words, not a sidecar proxy) The Envoy proxy listens for inbound requests and handles requests when it receives them  The default is false|
 |quic_override|text|Specifies the QUIC override policy for this TargetHttpsProxy resource This setting determines whether the load balancer attempts to negotiate QUIC with clients You can specify NONE, ENABLE, or DISABLE - When quic-override is set to NONE, Google manages whether QUIC is used - When quic-override is set to ENABLE, the load balancer uses QUIC when possible - When quic-override is set to DISABLE, the load balancer doesn't use QUIC - If the quic-override flag is not specified, NONE is implied|
 |region|text|URL of the region where the regional TargetHttpsProxy resides This field is not applicable to global TargetHttpsProxies|

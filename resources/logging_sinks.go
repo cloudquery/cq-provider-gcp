@@ -48,7 +48,7 @@ func LoggingSinks() *schema.Table {
 			},
 			{
 				Name:        "destination",
-				Description: "Required The export destination: \"storagegoogleapiscom/[GCS_BUCKET]\" \"bigquerygoogleapiscom/projects/[PROJECT_ID]/datasets/[DATASET]\" \"pubsubgoogleapiscom/projects/[PROJECT_ID]/topics/[TOPIC_ID]\" The sink's writer_identity, set when the sink is created, must have permission to write to the destination or else the log entries are not exported For more information, see Exporting Logs with Sinks (https://cloudgooglecom/logging/docs/api/tasks/exporting-logs)",
+				Description: "The export destination: \"storagegoogleapiscom/[GCS_BUCKET]\" \"bigquerygoogleapiscom/projects/[PROJECT_ID]/datasets/[DATASET]\" \"pubsubgoogleapiscom/projects/[PROJECT_ID]/topics/[TOPIC_ID]\" The sink's writer_identity, set when the sink is created, must have permission to write to the destination or else the log entries are not exported For more information, see Exporting Logs with Sinks (https://cloudgooglecom/logging/docs/api/tasks/exporting-logs)",
 				Type:        schema.TypeString,
 			},
 			{
@@ -68,7 +68,7 @@ func LoggingSinks() *schema.Table {
 			},
 			{
 				Name:        "name",
-				Description: "Required The client-assigned sink identifier, unique within the project Example: \"my-syslog-errors-to-pubsub\" Sink identifiers are limited to 100 characters and can include only the following characters: upper and lower-case alphanumeric characters, underscores, hyphens, and periods First character has to be alphanumeric",
+				Description: "The client-assigned sink identifier, unique within the project Example: \"my-syslog-errors-to-pubsub\" Sink identifiers are limited to 100 characters and can include only the following characters: upper and lower-case alphanumeric characters, underscores, hyphens, and periods First character has to be alphanumeric",
 				Type:        schema.TypeString,
 			},
 			{
@@ -116,12 +116,12 @@ func LoggingSinks() *schema.Table {
 					},
 					{
 						Name:        "filter",
-						Description: "Required An advanced logs filter (https://cloudgooglecom/logging/docs/view/advanced-queries) that matches the log entries to be excluded By using the sample function (https://cloudgooglecom/logging/docs/view/advanced-queries#sample), you can exclude less than 100% of the matching log entries For example, the following query matches 99% of low-severity log entries from Google Cloud Storage buckets:\"resourcetype=gcs_bucket severity<ERROR sample(insertId, 0",
+						Description: "An advanced logs filter (https://cloudgooglecom/logging/docs/view/advanced-queries) that matches the log entries to be excluded By using the sample function (https://cloudgooglecom/logging/docs/view/advanced-queries#sample), you can exclude less than 100% of the matching log entries For example, the following query matches 99% of low-severity log entries from Google Cloud Storage buckets:\"resourcetype=gcs_bucket severity<ERROR sample(insertId, 0",
 						Type:        schema.TypeString,
 					},
 					{
 						Name:        "name",
-						Description: "Required A client-assigned identifier, such as \"load-balancer-exclusion\" Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods First character has to be alphanumeric",
+						Description: "A client-assigned identifier, such as \"load-balancer-exclusion\" Identifiers are limited to 100 characters and can include only letters, digits, underscores, hyphens, and periods First character has to be alphanumeric",
 						Type:        schema.TypeString,
 					},
 					{

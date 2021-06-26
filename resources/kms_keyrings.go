@@ -7,13 +7,13 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/cloudkms/v1"
+	cloudkms "google.golang.org/api/cloudkms/v1"
 )
 
 func KmsKeyrings() *schema.Table {
 	return &schema.Table{
 		Name:                 "gcp_kms_keyrings",
-		Description:          "KeyRing: A KeyRing is a toplevel logical grouping of CryptoKeys. ",
+		Description:          "A KeyRing is a toplevel logical grouping of CryptoKeys.",
 		Resolver:             fetchKmsKeyrings,
 		Multiplex:            client.ProjectMultiplex,
 		IgnoreError:          client.IgnoreErrorHandler,
@@ -27,25 +27,26 @@ func KmsKeyrings() *schema.Table {
 				Resolver:    client.ResolveProject,
 			},
 			{
-				Name: "location",
-				Type: schema.TypeString,
+				Name:        "location",
+				Description: "Location of the resource",
+				Type:        schema.TypeString,
 			},
 			{
 				Name:        "create_time",
-				Description: "CreateTime: Output only",
+				Description: "The time at which this KeyRing was created",
 				Type:        schema.TypeTimestamp,
 				Resolver:    client.ISODateResolver("CreateTime"),
 			},
 			{
 				Name:        "name",
-				Description: "Name: Output only",
+				Description: "The resource name for the KeyRing in the format `projects/*/locations/*/keyRings/*`",
 				Type:        schema.TypeString,
 			},
 		},
 		Relations: []*schema.Table{
 			{
 				Name:                 "gcp_kms_keyring_crypto_keys",
-				Description:          "CryptoKey: A CryptoKey represents a logical key that can be used for cryptographic operations",
+				Description:          "A CryptoKey represents a logical key that can be used for cryptographic operations.",
 				Resolver:             fetchKmsKeyringCryptoKeys,
 				IgnoreError:          client.IgnoreErrorHandler,
 				PostResourceResolver: client.AddGcpMetadata,
@@ -63,157 +64,159 @@ func KmsKeyrings() *schema.Table {
 						Resolver:    client.ResolveProject,
 					},
 					{
-						Name: "location",
-						Type: schema.TypeString,
+						Name:        "location",
+						Description: "Location of the resource",
+						Type:        schema.TypeString,
 					},
 					{
-						Name:     "policy",
-						Type:     schema.TypeJSON,
-						Resolver: resolveKmsKeyringCryptoKeyPolicy,
+						Name:        "policy",
+						Description: "Access control policy for a resource",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveKmsKeyringCryptoKeyPolicy,
 					},
 					{
 						Name:        "create_time",
-						Description: "CreateTime: Output only",
+						Description: "The time at which this CryptoKey was created",
 						Type:        schema.TypeTimestamp,
 						Resolver:    client.ISODateResolver("CreateTime"),
 					},
 					{
 						Name:        "labels",
-						Description: "Labels: Labels with user-defined metadata",
+						Description: "Labels with user-defined metadata For more information, see Labeling Keys (https://cloudgooglecom/kms/docs/labeling-keys)",
 						Type:        schema.TypeJSON,
 					},
 					{
 						Name:        "name",
-						Description: "Name: Output only",
+						Description: "The resource name for this CryptoKey in the format `projects/*/locations/*/keyRings/*/cryptoKeys/*`",
 						Type:        schema.TypeString,
 					},
 					{
 						Name:        "next_rotation_time",
-						Description: "NextRotationTime: At next_rotation_time, the Key Management Service will automatically: 1",
+						Description: "At next_rotation_time, the Key Management Service will automatically: 1 Create a new version of this CryptoKey 2 Mark the new version as primary Key rotations performed manually via CreateCryptoKeyVersion and UpdateCryptoKeyPrimaryVersion do not affect next_rotation_time Keys with purpose ENCRYPT_DECRYPT support automatic rotation For other keys, this field must be omitted",
 						Type:        schema.TypeTimestamp,
 						Resolver:    client.ISODateResolver("NextRotationTime"),
 					},
 					{
 						Name:        "primary_algorithm",
-						Description: "Algorithm: Output only",
+						Description: "The CryptoKeyVersionAlgorithm that this CryptoKeyVersion supports  Possible values:   \"CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED\" - Not specified   \"GOOGLE_SYMMETRIC_ENCRYPTION\" - Creates symmetric encryption keys   \"RSA_SIGN_PSS_2048_SHA256\" - RSASSA-PSS 2048 bit key with a SHA256 digest   \"RSA_SIGN_PSS_3072_SHA256\" - RSASSA-PSS 3072 bit key with a SHA256 digest   \"RSA_SIGN_PSS_4096_SHA256\" - RSASSA-PSS 4096 bit key with a SHA256 digest   \"RSA_SIGN_PSS_4096_SHA512\" - RSASSA-PSS 4096 bit key with a SHA512 digest   \"RSA_SIGN_PKCS1_2048_SHA256\" - RSASSA-PKCS1-v1_5 with a 2048 bit key and a SHA256 digest   \"RSA_SIGN_PKCS1_3072_SHA256\" - RSASSA-PKCS1-v1_5 with a 3072 bit key and a SHA256 digest   \"RSA_SIGN_PKCS1_4096_SHA256\" - RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA256 digest   \"RSA_SIGN_PKCS1_4096_SHA512\" - RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA512 digest   \"RSA_DECRYPT_OAEP_2048_SHA256\" - RSAES-OAEP 2048 bit key with a SHA256 digest   \"RSA_DECRYPT_OAEP_3072_SHA256\" - RSAES-OAEP 3072 bit key with a SHA256 digest   \"RSA_DECRYPT_OAEP_4096_SHA256\" - RSAES-OAEP 4096 bit key with a SHA256 digest   \"RSA_DECRYPT_OAEP_4096_SHA512\" - RSAES-OAEP 4096 bit key with a SHA512 digest   \"EC_SIGN_P256_SHA256\" - ECDSA on the NIST P-256 curve with a SHA256 digest   \"EC_SIGN_P384_SHA384\" - ECDSA on the NIST P-384 curve with a SHA384 digest   \"EXTERNAL_SYMMETRIC_ENCRYPTION\" - Algorithm representing symmetric encryption by an external key manager",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("Primary.Algorithm"),
 					},
 					{
 						Name:        "primary_attestation_cert_chains_cavium_certs",
-						Description: "CaviumCerts: Cavium certificate chain corresponding to the attestation.",
+						Description: "Cavium certificate chain corresponding to the attestation",
 						Type:        schema.TypeStringArray,
 						Resolver:    schema.PathResolver("Primary.Attestation.CertChains.CaviumCerts"),
 					},
 					{
 						Name:        "primary_attestation_cert_chains_google_card_certs",
-						Description: "GoogleCardCerts: Google card certificate chain corresponding to the attestation.",
+						Description: "Google card certificate chain corresponding to the attestation",
 						Type:        schema.TypeStringArray,
 						Resolver:    schema.PathResolver("Primary.Attestation.CertChains.GoogleCardCerts"),
 					},
 					{
 						Name:        "primary_attestation_cert_chains_google_partition_certs",
-						Description: "GooglePartitionCerts: Google partition certificate chain corresponding to the attestation.",
+						Description: "Google partition certificate chain corresponding to the attestation",
 						Type:        schema.TypeStringArray,
 						Resolver:    schema.PathResolver("Primary.Attestation.CertChains.GooglePartitionCerts"),
 					},
 					{
 						Name:        "primary_attestation_content",
-						Description: "Content: Output only",
+						Description: "The attestation data provided by the HSM when the key operation was performed",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("Primary.Attestation.Content"),
 					},
 					{
 						Name:        "primary_attestation_format",
-						Description: "Format: Output only",
+						Description: "The format of the attestation data  Possible values:   \"ATTESTATION_FORMAT_UNSPECIFIED\" - Not specified   \"CAVIUM_V1_COMPRESSED\" - Cavium HSM attestation compressed with gzip Note that this format is defined by Cavium and subject to change at any time   \"CAVIUM_V2_COMPRESSED\" - Cavium HSM attestation V2 compressed with gzip This is a new format introduced in Cavium's version 32-08",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("Primary.Attestation.Format"),
 					},
 					{
 						Name:        "primary_create_time",
-						Description: "CreateTime: Output only",
+						Description: "The time at which this CryptoKeyVersion was created",
 						Type:        schema.TypeTimestamp,
 						Resolver:    client.ISODateResolver("Primary.CreateTime"),
 					},
 					{
 						Name:        "primary_destroy_event_time",
-						Description: "DestroyEventTime: Output only",
+						Description: "The time this CryptoKeyVersion's key material was destroyed Only present if state is DESTROYED",
 						Type:        schema.TypeTimestamp,
 						Resolver:    client.ISODateResolver("Primary.DestroyEventTime"),
 					},
 					{
 						Name:        "primary_destroy_time",
-						Description: "DestroyTime: Output only",
+						Description: "The time this CryptoKeyVersion's key material is scheduled for destruction Only present if state is DESTROY_SCHEDULED",
 						Type:        schema.TypeTimestamp,
 						Resolver:    client.ISODateResolver("Primary.DestroyTime"),
 					},
 					{
 						Name:        "primary_external_protection_level_options_external_key_uri",
-						Description: "ExternalKeyUri: The URI for an external resource that this CryptoKeyVersion represents.",
+						Description: "The URI for an external resource that this CryptoKeyVersion represents",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("Primary.ExternalProtectionLevelOptions.ExternalKeyUri"),
 					},
 					{
 						Name:        "primary_generate_time",
-						Description: "GenerateTime: Output only",
+						Description: "The time this CryptoKeyVersion's key material was generated",
 						Type:        schema.TypeTimestamp,
 						Resolver:    client.ISODateResolver("Primary.GenerateTime"),
 					},
 					{
 						Name:        "primary_import_failure_reason",
-						Description: "ImportFailureReason: Output only",
+						Description: "The root cause of an import failure Only present if state is IMPORT_FAILED",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("Primary.ImportFailureReason"),
 					},
 					{
 						Name:        "primary_import_job",
-						Description: "ImportJob: Output only",
+						Description: "The name of the ImportJob used to import this CryptoKeyVersion Only present if the underlying key material was imported",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("Primary.ImportJob"),
 					},
 					{
 						Name:        "primary_import_time",
-						Description: "ImportTime: Output only",
+						Description: "The time at which this CryptoKeyVersion's key material was imported",
 						Type:        schema.TypeTimestamp,
 						Resolver:    client.ISODateResolver("Primary.ImportTime"),
 					},
 					{
 						Name:        "primary_name",
-						Description: "Name: Output only",
+						Description: "The resource name for this CryptoKeyVersion in the format `projects/*/locations/*/keyRings/*/cryptoKeys/*/cryptoKeyVersions/*`",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("Primary.Name"),
 					},
 					{
 						Name:        "primary_protection_level",
-						Description: "ProtectionLevel: Output only",
+						Description: "The ProtectionLevel describing how crypto operations are performed with this CryptoKeyVersion  Possible values:   \"PROTECTION_LEVEL_UNSPECIFIED\" - Not specified   \"SOFTWARE\" - Crypto operations are performed in software   \"HSM\" - Crypto operations are performed in a Hardware Security Module   \"EXTERNAL\" - Crypto operations are performed by an external key manager",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("Primary.ProtectionLevel"),
 					},
 					{
 						Name:        "primary_state",
-						Description: "State: The current state of the CryptoKeyVersion.  Possible values:   \"CRYPTO_KEY_VERSION_STATE_UNSPECIFIED\" - Not specified.   \"PENDING_GENERATION\" - This version is still being generated",
+						Description: "The current state of the CryptoKeyVersion  Possible values:   \"CRYPTO_KEY_VERSION_STATE_UNSPECIFIED\" - Not specified   \"PENDING_GENERATION\" - This version is still being generated It may not be used, enabled, disabled, or destroyed yet Cloud KMS will automatically mark this version ENABLED as soon as the version is ready   \"ENABLED\" - This version may be used for cryptographic operations   \"DISABLED\" - This version may not be used, but the key material is still available, and the version can be placed back into the ENABLED state   \"DESTROYED\" - This version is destroyed, and the key material is no longer stored A version may not leave this state once entered   \"DESTROY_SCHEDULED\" - This version is scheduled for destruction, and will be destroyed soon Call RestoreCryptoKeyVersion to put it back into the DISABLED state   \"PENDING_IMPORT\" - This version is still being imported It may not be used, enabled, disabled, or destroyed yet Cloud KMS will automatically mark this version ENABLED as soon as the version is ready   \"IMPORT_FAILED\" - This version was not imported successfully It may not be used, enabled, disabled, or destroyed The submitted key material has been discarded Additional details can be found in CryptoKeyVersionimport_failure_reason",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("Primary.State"),
 					},
 					{
 						Name:        "purpose",
-						Description: "Purpose: Immutable",
+						Description: "Immutable The immutable purpose of this CryptoKey  Possible values:   \"CRYPTO_KEY_PURPOSE_UNSPECIFIED\" - Not specified   \"ENCRYPT_DECRYPT\" - CryptoKeys with this purpose may be used with Encrypt and Decrypt   \"ASYMMETRIC_SIGN\" - CryptoKeys with this purpose may be used with AsymmetricSign and GetPublicKey   \"ASYMMETRIC_DECRYPT\" - CryptoKeys with this purpose may be used with AsymmetricDecrypt and GetPublicKey",
 						Type:        schema.TypeString,
 					},
 					{
 						Name:        "rotation_period",
-						Description: "RotationPeriod: next_rotation_time will be advanced by this period when the service automatically rotates a key",
+						Description: "next_rotation_time will be advanced by this period when the service automatically rotates a key Must be at least 24 hours and at most 876,000 hours If rotation_period is set, next_rotation_time must also be set Keys with purpose ENCRYPT_DECRYPT support automatic rotation For other keys, this field must be omitted",
 						Type:        schema.TypeString,
 					},
 					{
 						Name:        "version_template_algorithm",
-						Description: "Algorithm: Required",
+						Description: "Required Algorithm to use when creating a CryptoKeyVersion based on this template For backwards compatibility, GOOGLE_SYMMETRIC_ENCRYPTION is implied if both this field is omitted and CryptoKeypurpose is ENCRYPT_DECRYPT  Possible values:   \"CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED\" - Not specified   \"GOOGLE_SYMMETRIC_ENCRYPTION\" - Creates symmetric encryption keys   \"RSA_SIGN_PSS_2048_SHA256\" - RSASSA-PSS 2048 bit key with a SHA256 digest   \"RSA_SIGN_PSS_3072_SHA256\" - RSASSA-PSS 3072 bit key with a SHA256 digest   \"RSA_SIGN_PSS_4096_SHA256\" - RSASSA-PSS 4096 bit key with a SHA256 digest   \"RSA_SIGN_PSS_4096_SHA512\" - RSASSA-PSS 4096 bit key with a SHA512 digest   \"RSA_SIGN_PKCS1_2048_SHA256\" - RSASSA-PKCS1-v1_5 with a 2048 bit key and a SHA256 digest   \"RSA_SIGN_PKCS1_3072_SHA256\" - RSASSA-PKCS1-v1_5 with a 3072 bit key and a SHA256 digest   \"RSA_SIGN_PKCS1_4096_SHA256\" - RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA256 digest   \"RSA_SIGN_PKCS1_4096_SHA512\" - RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA512 digest   \"RSA_DECRYPT_OAEP_2048_SHA256\" - RSAES-OAEP 2048 bit key with a SHA256 digest   \"RSA_DECRYPT_OAEP_3072_SHA256\" - RSAES-OAEP 3072 bit key with a SHA256 digest   \"RSA_DECRYPT_OAEP_4096_SHA256\" - RSAES-OAEP 4096 bit key with a SHA256 digest   \"RSA_DECRYPT_OAEP_4096_SHA512\" - RSAES-OAEP 4096 bit key with a SHA512 digest   \"EC_SIGN_P256_SHA256\" - ECDSA on the NIST P-256 curve with a SHA256 digest   \"EC_SIGN_P384_SHA384\" - ECDSA on the NIST P-384 curve with a SHA384 digest   \"EXTERNAL_SYMMETRIC_ENCRYPTION\" - Algorithm representing symmetric encryption by an external key manager",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("VersionTemplate.Algorithm"),
 					},
 					{
 						Name:        "version_template_protection_level",
-						Description: "ProtectionLevel: ProtectionLevel to use when creating a CryptoKeyVersion based on this template",
+						Description: "ProtectionLevel to use when creating a CryptoKeyVersion based on this template Immutable Defaults to SOFTWARE  Possible values:   \"PROTECTION_LEVEL_UNSPECIFIED\" - Not specified   \"SOFTWARE\" - Crypto operations are performed in software   \"HSM\" - Crypto operations are performed in a Hardware Security Module   \"EXTERNAL\" - Crypto operations are performed by an external key manager",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("VersionTemplate.ProtectionLevel"),
 					},
@@ -251,7 +254,6 @@ func fetchKmsKeyrings(ctx context.Context, meta schema.ClientMeta, parent *schem
 	}
 	return nil
 }
-
 func fetchKmsKeyringCryptoKeys(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	c := meta.(*client.Client)
 	keyRing, ok := parent.Item.(*cloudkms.KeyRing)
@@ -276,14 +278,12 @@ func fetchKmsKeyringCryptoKeys(ctx context.Context, meta schema.ClientMeta, pare
 	return nil
 }
 func resolveKmsKeyringCryptoKeyPolicy(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	client := meta.(*client.Client)
+	client_ := meta.(*client.Client)
 	p, ok := resource.Item.(*cloudkms.CryptoKey)
 	if !ok {
 		return fmt.Errorf("expected *cloudkms.CryptoKey but got %T", p)
 	}
-	call := client.Services.Kms.Projects.Locations.KeyRings.CryptoKeys.
-		GetIamPolicy(p.Name).
-		Context(ctx)
+	call := client_.Services.Kms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(p.Name).Context(ctx)
 	resp, err := call.Do()
 	if err != nil {
 		return err
