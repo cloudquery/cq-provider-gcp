@@ -38,7 +38,7 @@ func LoggingSinks() *schema.Table {
 			},
 			{
 				Name:        "create_time",
-				Description: "The creation timestamp of the sinkThis field may not be present for older sinks",
+				Description: "The creation timestamp of the sink, This field may not be present for older sinks",
 				Type:        schema.TypeString,
 			},
 			{

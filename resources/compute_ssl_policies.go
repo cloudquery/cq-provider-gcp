@@ -3,7 +3,6 @@ package resources
 import (
 	"context"
 	"fmt"
-
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	compute "google.golang.org/api/compute/v1"
@@ -58,7 +57,7 @@ func ComputeSslPolicies() *schema.Table {
 			},
 			{
 				Name:        "kind",
-				Description: "Type of the resource Always compute#sslPolicyfor SSL policies",
+				Description: "Type of the resource Always compute#sslPolicy for SSL policies",
 				Type:        schema.TypeString,
 			},
 			{

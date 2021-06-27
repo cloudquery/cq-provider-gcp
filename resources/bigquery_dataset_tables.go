@@ -3,7 +3,6 @@ package resources
 import (
 	"context"
 	"fmt"
-
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	bigquery "google.golang.org/api/bigquery/v2"
@@ -133,13 +132,13 @@ func BigqueryDatasetTables() *schema.Table {
 			},
 			{
 				Name:        "materialized_view_enable_refresh",
-				Description: "[TrustedTester] Enable automatic refresh of the materialized view when the base table is updated The default value is \"true\"",
+				Description: "Enable automatic refresh of the materialized view when the base table is updated The default value is \"true\"",
 				Type:        schema.TypeBool,
 				Resolver:    schema.PathResolver("MaterializedView.EnableRefresh"),
 			},
 			{
 				Name:        "materialized_view_last_refresh_time",
-				Description: "[TrustedTester] The time when this materialized view was last modified, in milliseconds since the epoch",
+				Description: "The time when this materialized view was last modified, in milliseconds since the epoch",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("MaterializedView.LastRefreshTime"),
 			},
@@ -151,7 +150,7 @@ func BigqueryDatasetTables() *schema.Table {
 			},
 			{
 				Name:        "materialized_view_refresh_interval_ms",
-				Description: "[TrustedTester] The maximum frequency at which this materialized view will be refreshed The default value is \"1800000\" (30 minutes)",
+				Description: "The maximum frequency at which this materialized view will be refreshed The default value is \"1800000\" (30 minutes)",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("MaterializedView.RefreshIntervalMs"),
 			},
@@ -182,7 +181,7 @@ func BigqueryDatasetTables() *schema.Table {
 			},
 			{
 				Name:        "num_physical_bytes",
-				Description: "[TrustedTester] The physical size of this table in bytes, excluding any data in the streaming buffer This includes compression and storage used for time travel",
+				Description: "The physical size of this table in bytes, excluding any data in the streaming buffer This includes compression and storage used for time travel",
 				Type:        schema.TypeBigInt,
 			},
 			{
@@ -192,25 +191,25 @@ func BigqueryDatasetTables() *schema.Table {
 			},
 			{
 				Name:        "range_partitioning_field",
-				Description: "[Required] The table is partitioned by this field The field must be a top-level NULLABLE/REQUIRED field The only supported type is INTEGER/INT64",
+				Description: "The table is partitioned by this field The field must be a top-level NULLABLE/REQUIRED field The only supported type is INTEGER/INT64",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("RangePartitioning.Field"),
 			},
 			{
 				Name:        "range_partitioning_range_end",
-				Description: "[Required] The end of range partitioning, exclusive",
+				Description: "The end of range partitioning, exclusive",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("RangePartitioning.Range.End"),
 			},
 			{
 				Name:        "range_partitioning_range_interval",
-				Description: "[Required] The width of each interval",
+				Description: "The width of each interval",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("RangePartitioning.Range.Interval"),
 			},
 			{
 				Name:        "range_partitioning_range_start",
-				Description: "[Required] The start of range partitioning, inclusive",
+				Description: "The start of range partitioning, inclusive",
 				Type:        schema.TypeBigInt,
 				Resolver:    schema.PathResolver("RangePartitioning.Range.Start"),
 			},
@@ -256,7 +255,7 @@ func BigqueryDatasetTables() *schema.Table {
 			},
 			{
 				Name:        "time_partitioning_field",
-				Description: "[Beta] [Optional] If not set, the table is partitioned by pseudo column, referenced via either '_PARTITIONTIME' as TIMESTAMP type, or '_PARTITIONDATE' as DATE type If field is specified, the table is instead partitioned by this field The field must be a top-level TIMESTAMP or DATE field Its mode must be NULLABLE or REQUIRED",
+				Description: "If not set, the table is partitioned by pseudo column, referenced via either '_PARTITIONTIME' as TIMESTAMP type, or '_PARTITIONDATE' as DATE type If field is specified, the table is instead partitioned by this field The field must be a top-level TIMESTAMP or DATE field Its mode must be NULLABLE or REQUIRED",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("TimePartitioning.Field"),
 			},
@@ -273,7 +272,7 @@ func BigqueryDatasetTables() *schema.Table {
 			},
 			{
 				Name:        "type",
-				Description: "Describes the table type The following values are supported: TABLE: A normal BigQuery table VIEW: A virtual table defined by a SQL query SNAPSHOT: An immutable, read-only table that is a copy of another table [TrustedTester] MATERIALIZED_VIEW: SQL query whose result is persisted EXTERNAL: A table that references data stored in an external storage system, such as Google Cloud Storage The default value is TABLE",
+				Description: "Describes the table type The following values are supported: TABLE: A normal BigQuery table VIEW: A virtual table defined by a SQL query SNAPSHOT: An immutable, read-only table that is a copy of another table MATERIALIZED_VIEW: SQL query whose result is persisted EXTERNAL: A table that references data stored in an external storage system, such as Google Cloud Storage The default value is TABLE",
 				Type:        schema.TypeString,
 			},
 			{
@@ -429,11 +428,11 @@ func resolveBigqueryDatasetTableExternalDataConfigurationSchema(ctx context.Cont
 		return nil
 	}
 
-	schema := make(map[string]interface{})
+	s := make(map[string]interface{})
 	for _, f := range p.ExternalDataConfiguration.Schema.Fields {
-		schema[f.Name] = f.Type
+		s[f.Name] = f.Type
 	}
-	return resource.Set(c.Name, schema)
+	return resource.Set(c.Name, s)
 }
 func resolveBigqueryDatasetTableSchema(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	p, ok := resource.Item.(*bigquery.Table)
@@ -445,11 +444,11 @@ func resolveBigqueryDatasetTableSchema(ctx context.Context, meta schema.ClientMe
 		return nil
 	}
 
-	schema := make(map[string]interface{})
+	s := make(map[string]interface{})
 	for _, f := range p.Schema.Fields {
-		schema[f.Name] = f.Type
+		s[f.Name] = f.Type
 	}
-	return resource.Set(c.Name, schema)
+	return resource.Set(c.Name, s)
 }
 func fetchBigqueryDatasetTableDatasetModelTrainingRuns(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	p, ok := parent.Item.(*bigquery.Table)

@@ -3,7 +3,6 @@ package resources
 import (
 	"context"
 	"fmt"
-
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	bigquery "google.golang.org/api/bigquery/v2"
 )

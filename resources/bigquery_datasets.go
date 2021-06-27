@@ -2,7 +2,6 @@ package resources
 
 import (
 	"context"
-
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 )
@@ -93,6 +92,10 @@ func BigqueryDatasets() *schema.Table {
 				Description: "A URL that can be used to access the resource again You can use this URL in Get or Update requests to the resource",
 				Type:        schema.TypeString,
 			},
+		},
+		Relations: []*schema.Table{
+			BigqueryDatasetAccesses(),
+			BigqueryDatasetTables(),
 		},
 	}
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	cloudkms "google.golang.org/api/cloudkms/v1"
@@ -188,19 +187,19 @@ func KmsKeyrings() *schema.Table {
 					},
 					{
 						Name:        "primary_protection_level",
-						Description: "The ProtectionLevel describing how crypto operations are performed with this CryptoKeyVersion  Possible values:   \"PROTECTION_LEVEL_UNSPECIFIED\" - Not specified   \"SOFTWARE\" - Crypto operations are performed in software   \"HSM\" - Crypto operations are performed in a Hardware Security Module   \"EXTERNAL\" - Crypto operations are performed by an external key manager",
+						Description: "The ProtectionLevel describing how crypto operations are performed with this CryptoKeyVersion",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("Primary.ProtectionLevel"),
 					},
 					{
 						Name:        "primary_state",
-						Description: "The current state of the CryptoKeyVersion  Possible values:   \"CRYPTO_KEY_VERSION_STATE_UNSPECIFIED\" - Not specified   \"PENDING_GENERATION\" - This version is still being generated It may not be used, enabled, disabled, or destroyed yet Cloud KMS will automatically mark this version ENABLED as soon as the version is ready   \"ENABLED\" - This version may be used for cryptographic operations   \"DISABLED\" - This version may not be used, but the key material is still available, and the version can be placed back into the ENABLED state   \"DESTROYED\" - This version is destroyed, and the key material is no longer stored A version may not leave this state once entered   \"DESTROY_SCHEDULED\" - This version is scheduled for destruction, and will be destroyed soon Call RestoreCryptoKeyVersion to put it back into the DISABLED state   \"PENDING_IMPORT\" - This version is still being imported It may not be used, enabled, disabled, or destroyed yet Cloud KMS will automatically mark this version ENABLED as soon as the version is ready   \"IMPORT_FAILED\" - This version was not imported successfully It may not be used, enabled, disabled, or destroyed The submitted key material has been discarded Additional details can be found in CryptoKeyVersionimport_failure_reason",
+						Description: "The current state of the CryptoKeyVersion",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("Primary.State"),
 					},
 					{
 						Name:        "purpose",
-						Description: "Immutable The immutable purpose of this CryptoKey  Possible values:   \"CRYPTO_KEY_PURPOSE_UNSPECIFIED\" - Not specified   \"ENCRYPT_DECRYPT\" - CryptoKeys with this purpose may be used with Encrypt and Decrypt   \"ASYMMETRIC_SIGN\" - CryptoKeys with this purpose may be used with AsymmetricSign and GetPublicKey   \"ASYMMETRIC_DECRYPT\" - CryptoKeys with this purpose may be used with AsymmetricDecrypt and GetPublicKey",
+						Description: "Immutable The immutable purpose of this CryptoKey",
 						Type:        schema.TypeString,
 					},
 					{
@@ -210,13 +209,13 @@ func KmsKeyrings() *schema.Table {
 					},
 					{
 						Name:        "version_template_algorithm",
-						Description: "Required Algorithm to use when creating a CryptoKeyVersion based on this template For backwards compatibility, GOOGLE_SYMMETRIC_ENCRYPTION is implied if both this field is omitted and CryptoKeypurpose is ENCRYPT_DECRYPT  Possible values:   \"CRYPTO_KEY_VERSION_ALGORITHM_UNSPECIFIED\" - Not specified   \"GOOGLE_SYMMETRIC_ENCRYPTION\" - Creates symmetric encryption keys   \"RSA_SIGN_PSS_2048_SHA256\" - RSASSA-PSS 2048 bit key with a SHA256 digest   \"RSA_SIGN_PSS_3072_SHA256\" - RSASSA-PSS 3072 bit key with a SHA256 digest   \"RSA_SIGN_PSS_4096_SHA256\" - RSASSA-PSS 4096 bit key with a SHA256 digest   \"RSA_SIGN_PSS_4096_SHA512\" - RSASSA-PSS 4096 bit key with a SHA512 digest   \"RSA_SIGN_PKCS1_2048_SHA256\" - RSASSA-PKCS1-v1_5 with a 2048 bit key and a SHA256 digest   \"RSA_SIGN_PKCS1_3072_SHA256\" - RSASSA-PKCS1-v1_5 with a 3072 bit key and a SHA256 digest   \"RSA_SIGN_PKCS1_4096_SHA256\" - RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA256 digest   \"RSA_SIGN_PKCS1_4096_SHA512\" - RSASSA-PKCS1-v1_5 with a 4096 bit key and a SHA512 digest   \"RSA_DECRYPT_OAEP_2048_SHA256\" - RSAES-OAEP 2048 bit key with a SHA256 digest   \"RSA_DECRYPT_OAEP_3072_SHA256\" - RSAES-OAEP 3072 bit key with a SHA256 digest   \"RSA_DECRYPT_OAEP_4096_SHA256\" - RSAES-OAEP 4096 bit key with a SHA256 digest   \"RSA_DECRYPT_OAEP_4096_SHA512\" - RSAES-OAEP 4096 bit key with a SHA512 digest   \"EC_SIGN_P256_SHA256\" - ECDSA on the NIST P-256 curve with a SHA256 digest   \"EC_SIGN_P384_SHA384\" - ECDSA on the NIST P-384 curve with a SHA384 digest   \"EXTERNAL_SYMMETRIC_ENCRYPTION\" - Algorithm representing symmetric encryption by an external key manager",
+						Description: "Algorithm to use when creating a CryptoKeyVersion based on this template",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("VersionTemplate.Algorithm"),
 					},
 					{
 						Name:        "version_template_protection_level",
-						Description: "ProtectionLevel to use when creating a CryptoKeyVersion based on this template Immutable Defaults to SOFTWARE  Possible values:   \"PROTECTION_LEVEL_UNSPECIFIED\" - Not specified   \"SOFTWARE\" - Crypto operations are performed in software   \"HSM\" - Crypto operations are performed in a Hardware Security Module   \"EXTERNAL\" - Crypto operations are performed by an external key manager",
+						Description: "ProtectionLevel to use when creating a CryptoKeyVersion based on this template Immutable Defaults to SOFTWARE",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("VersionTemplate.ProtectionLevel"),
 					},

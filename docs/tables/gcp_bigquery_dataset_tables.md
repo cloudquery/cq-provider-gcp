@@ -25,21 +25,21 @@ Model options used for the first training run These options are immutable for su
 |labels|jsonb|The labels associated with this table You can use these to organize and group your tables Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes International characters are allowed Label values are optional Label keys must start with a letter and each label in the list must have a different key|
 |last_modified_time|bigint|The time when this table was last modified, in milliseconds since the epoch|
 |location|text|The geographic location where the table resides This value is inherited from the dataset|
-|materialized_view_enable_refresh|boolean|[TrustedTester] Enable automatic refresh of the materialized view when the base table is updated The default value is "true"|
-|materialized_view_last_refresh_time|bigint|[TrustedTester] The time when this materialized view was last modified, in milliseconds since the epoch|
+|materialized_view_enable_refresh|boolean|Enable automatic refresh of the materialized view when the base table is updated The default value is "true"|
+|materialized_view_last_refresh_time|bigint|The time when this materialized view was last modified, in milliseconds since the epoch|
 |materialized_view_query|text|A query whose result is persisted|
-|materialized_view_refresh_interval_ms|bigint|[TrustedTester] The maximum frequency at which this materialized view will be refreshed The default value is "1800000" (30 minutes)|
+|materialized_view_refresh_interval_ms|bigint|The maximum frequency at which this materialized view will be refreshed The default value is "1800000" (30 minutes)|
 |model_options_labels|text[]||
 |model_options_loss_type|text||
 |model_options_model_type|text||
 |num_bytes|bigint|The size of this table in bytes, excluding any data in the streaming buffer|
 |num_long_term_bytes|bigint|The number of bytes in the table that are considered "long-term storage"|
-|num_physical_bytes|bigint|[TrustedTester] The physical size of this table in bytes, excluding any data in the streaming buffer This includes compression and storage used for time travel|
+|num_physical_bytes|bigint|The physical size of this table in bytes, excluding any data in the streaming buffer This includes compression and storage used for time travel|
 |num_rows|bigint|The number of rows of data in this table, excluding any data in the streaming buffer|
-|range_partitioning_field|text|[Required] The table is partitioned by this field The field must be a top-level NULLABLE/REQUIRED field The only supported type is INTEGER/INT64|
-|range_partitioning_range_end|bigint|[Required] The end of range partitioning, exclusive|
-|range_partitioning_range_interval|bigint|[Required] The width of each interval|
-|range_partitioning_range_start|bigint|[Required] The start of range partitioning, inclusive|
+|range_partitioning_field|text|The table is partitioned by this field The field must be a top-level NULLABLE/REQUIRED field The only supported type is INTEGER/INT64|
+|range_partitioning_range_end|bigint|The end of range partitioning, exclusive|
+|range_partitioning_range_interval|bigint|The width of each interval|
+|range_partitioning_range_start|bigint|The start of range partitioning, inclusive|
 |require_partition_filter|boolean|If set to true, queries over this table require a partition filter that can be used for partition elimination to be specified|
 |schema|jsonb|Describes the schema of this table|
 |self_link|text|A URL that can be used to access this resource again|
@@ -47,9 +47,9 @@ Model options used for the first training run These options are immutable for su
 |streaming_buffer_estimated_rows|bigint|A lower-bound estimate of the number of rows currently in the streaming buffer|
 |streaming_buffer_oldest_entry_time|bigint|Contains the timestamp of the oldest entry in the streaming buffer, in milliseconds since the epoch, if the streaming buffer is available|
 |time_partitioning_expiration_ms|bigint|Number of milliseconds for which to keep the storage for partitions in the table The storage in a partition will have an expiration time of its partition time plus this value|
-|time_partitioning_field|text|[Beta] [Optional] If not set, the table is partitioned by pseudo column, referenced via either '_PARTITIONTIME' as TIMESTAMP type, or '_PARTITIONDATE' as DATE type If field is specified, the table is instead partitioned by this field The field must be a top-level TIMESTAMP or DATE field Its mode must be NULLABLE or REQUIRED|
+|time_partitioning_field|text|If not set, the table is partitioned by pseudo column, referenced via either '_PARTITIONTIME' as TIMESTAMP type, or '_PARTITIONDATE' as DATE type If field is specified, the table is instead partitioned by this field The field must be a top-level TIMESTAMP or DATE field Its mode must be NULLABLE or REQUIRED|
 |time_partitioning_require_partition_filter|boolean||
 |time_partitioning_type|text|The supported types are DAY, HOUR, MONTH, and YEAR, which will generate one partition per day, hour, month, and year, respectively When the type is not specified, the default behavior is DAY|
-|type|text|Describes the table type The following values are supported: TABLE: A normal BigQuery table VIEW: A virtual table defined by a SQL query SNAPSHOT: An immutable, read-only table that is a copy of another table [TrustedTester] MATERIALIZED_VIEW: SQL query whose result is persisted EXTERNAL: A table that references data stored in an external storage system, such as Google Cloud Storage The default value is TABLE|
+|type|text|Describes the table type The following values are supported: TABLE: A normal BigQuery table VIEW: A virtual table defined by a SQL query SNAPSHOT: An immutable, read-only table that is a copy of another table MATERIALIZED_VIEW: SQL query whose result is persisted EXTERNAL: A table that references data stored in an external storage system, such as Google Cloud Storage The default value is TABLE|
 |view_query|text|A query that BigQuery executes when the view is referenced|
 |view_use_legacy_sql|boolean|Specifies whether to use BigQuery's legacy SQL for this view The default value is true If set to false, the view will use BigQuery's standard SQL: https://cloudgooglecom/bigquery/sql-reference/ Queries and views that reference this view must use the same flag value|
