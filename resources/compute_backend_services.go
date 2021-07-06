@@ -467,10 +467,10 @@ func ComputeBackendServices() *schema.Table {
 				Resolver:    fetchComputeBackendServiceBackends,
 				Columns: []schema.Column{
 					{
-						Name:        "backend_service_id",
+						Name:        "backend_service_cq_id",
 						Description: "Unique ID of gcp_compute_backend_services table (FK)",
-						Type:        schema.TypeString,
-						Resolver:    schema.ParentFieldResolver("id"),
+						Type:        schema.TypeUUID,
+						Resolver:    schema.ParentIdResolver,
 					},
 					{
 						Name:        "balancing_mode",

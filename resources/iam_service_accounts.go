@@ -64,7 +64,7 @@ func IamServiceAccounts() *schema.Table {
 				Resolver:    fetchIamServiceAccountKeys,
 				Columns: []schema.Column{
 					{
-						Name:        "service_account_id",
+						Name:        "service_account_cq_id",
 						Description: "Unique ID of gcp_iam_service_accounts table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,

@@ -16,6 +16,7 @@ func DNSPolicies() *schema.Table {
 		Resolver:     fetchDnsPolicies,
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		DeleteFilter: client.DeleteProjectFilter,
 		Columns: []schema.Column{
 			{
@@ -46,7 +47,7 @@ func DNSPolicies() *schema.Table {
 				Type:        schema.TypeBool,
 			},
 			{
-				Name:        "policy_id",
+				Name:        "id",
 				Description: "Unique identifier for the resource; defined by the server (output only)",
 				Type:        schema.TypeString,
 				Resolver:    client.ResolveResourceId,
@@ -68,7 +69,7 @@ func DNSPolicies() *schema.Table {
 				Resolver: fetchDnsPolicyAlternativeNameServers,
 				Columns: []schema.Column{
 					{
-						Name:        "policy_id",
+						Name:        "policy_cq_id",
 						Description: "Unique ID of gcp_dns_policies table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
@@ -95,7 +96,7 @@ func DNSPolicies() *schema.Table {
 				Resolver: fetchDnsPolicyNetworks,
 				Columns: []schema.Column{
 					{
-						Name:        "policy_id",
+						Name:        "policy_cq_id",
 						Description: "Unique ID of gcp_dns_policies table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,

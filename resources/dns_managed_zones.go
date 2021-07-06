@@ -16,6 +16,7 @@ func DNSManagedZones() *schema.Table {
 		Resolver:     fetchDnsManagedZones,
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		DeleteFilter: client.DeleteProjectFilter,
 		Columns: []schema.Column{
 			{
@@ -62,7 +63,7 @@ func DNSManagedZones() *schema.Table {
 				Resolver: schema.PathResolver("ForwardingConfig.Kind"),
 			},
 			{
-				Name:     "managed_zone_id",
+				Name:     "id",
 				Type:     schema.TypeString,
 				Resolver: client.ResolveResourceId,
 			},
@@ -157,7 +158,7 @@ func DNSManagedZones() *schema.Table {
 				Resolver:    fetchDnsManagedZoneDnssecConfigDefaultKeySpecs,
 				Columns: []schema.Column{
 					{
-						Name:        "managed_zone_id",
+						Name:        "managed_zone_cq_id",
 						Description: "Unique ID of gcp_dns_managed_zones table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
@@ -188,7 +189,7 @@ func DNSManagedZones() *schema.Table {
 				Resolver: fetchDnsManagedZoneForwardingConfigTargetNameServers,
 				Columns: []schema.Column{
 					{
-						Name:        "managed_zone_id",
+						Name:        "managed_zone_cq_id",
 						Description: "Unique ID of gcp_dns_managed_zones table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
@@ -214,7 +215,7 @@ func DNSManagedZones() *schema.Table {
 				Resolver: fetchDnsManagedZonePrivateVisibilityConfigNetworks,
 				Columns: []schema.Column{
 					{
-						Name:        "managed_zone_id",
+						Name:        "managed_zone_cq_id",
 						Description: "Unique ID of gcp_dns_managed_zones table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,

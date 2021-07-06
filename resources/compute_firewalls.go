@@ -122,7 +122,7 @@ func ComputeFirewalls() *schema.Table {
 				Resolver: fetchComputeFirewallAllowed,
 				Columns: []schema.Column{
 					{
-						Name:        "firewall_id",
+						Name:        "firewall_cq_id",
 						Description: "Unique ID of gcp_compute_firewalls table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
@@ -145,7 +145,7 @@ func ComputeFirewalls() *schema.Table {
 				Resolver: fetchComputeFirewallDenied,
 				Columns: []schema.Column{
 					{
-						Name:        "firewall_id",
+						Name:        "firewall_cq_id",
 						Description: "Unique ID of gcp_compute_firewalls table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,

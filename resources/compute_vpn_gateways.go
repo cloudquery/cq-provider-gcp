@@ -13,6 +13,7 @@ func ComputeVpnGateways() *schema.Table {
 		Name:        "gcp_compute_vpn_gateways",
 		Description: "Represents a HA VPN gateway  HA VPN is a high-availability (HA) Cloud VPN solution that lets you securely connect your on-premises network to your Google Cloud Virtual Private Cloud network through an IPsec VPN connection in a single region.",
 		Resolver:    fetchComputeVpnGateways,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Multiplex:   client.ProjectMultiplex,
 		Columns: []schema.Column{
 			{
@@ -32,7 +33,7 @@ func ComputeVpnGateways() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "resource_id",
+				Name:        "id",
 				Description: "The unique identifier for the resource This identifier is defined by the server",
 				Type:        schema.TypeString,
 				Resolver:    client.ResolveResourceId,
@@ -78,15 +79,16 @@ func ComputeVpnGateways() *schema.Table {
 				Name:        "gcp_compute_vpn_gateway_vpn_interfaces",
 				Description: "A VPN gateway interface",
 				Resolver:    fetchComputeVpnGatewayVpnInterfaces,
+				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"id"}},
 				Columns: []schema.Column{
 					{
-						Name:        "vpn_gateway_id",
+						Name:        "vpn_gateway_cq_id",
 						Description: "Unique ID of gcp_compute_vpn_gateways table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
-						Name:        "resource_id",
+						Name:        "id",
 						Description: "The numeric ID of this VPN gateway interface",
 						Type:        schema.TypeString,
 						Resolver:    client.ResolveResourceId,

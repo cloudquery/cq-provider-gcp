@@ -174,7 +174,7 @@ func LoggingMetrics() *schema.Table {
 				Resolver:    fetchLoggingMetricDescriptorLabels,
 				Columns: []schema.Column{
 					{
-						Name:        "metric_id",
+						Name:        "metric_cq_id",
 						Description: "Unique ID of gcp_logging_metrics table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,

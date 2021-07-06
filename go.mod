@@ -14,3 +14,5 @@ require (
 	google.golang.org/api v0.44.0
 	google.golang.org/grpc v1.37.1
 )
+
+replace github.com/cloudquery/cq-provider-sdk v0.3.0-rc1 => github.com/roneli/cq-provider-sdk v0.0.3-0.20210706122853-c8f394534cae

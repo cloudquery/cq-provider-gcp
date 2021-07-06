@@ -287,7 +287,7 @@ func ComputeInstances() *schema.Table {
 				Resolver:    fetchComputeInstanceDisks,
 				Columns: []schema.Column{
 					{
-						Name:        "instance_id",
+						Name:        "instance_cq_id",
 						Description: "Unique ID of gcp_compute_instances table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
@@ -421,7 +421,7 @@ func ComputeInstances() *schema.Table {
 					},
 					{
 						Name:        "source_image_encryption_key_sha256",
-						Description: "[Output only] The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource",
+						Description: "The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects this resource",
 						Type:        schema.TypeString,
 						Resolver:    schema.PathResolver("InitializeParams.SourceImageEncryptionKey.Sha256"),
 					},
@@ -505,7 +505,7 @@ func ComputeInstances() *schema.Table {
 				Resolver:    fetchComputeInstanceNetworkInterfaces,
 				Columns: []schema.Column{
 					{
-						Name:        "instance_id",
+						Name:        "instance_cq_id",
 						Description: "Unique ID of gcp_compute_instances table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
@@ -608,7 +608,7 @@ func ComputeInstances() *schema.Table {
 						Resolver:    fetchComputeInstanceNetworkInterfaceAliasIpRanges,
 						Columns: []schema.Column{
 							{
-								Name:        "instance_network_interface_id",
+								Name:        "instance_network_interface_cq_id",
 								Description: "Unique ID of gcp_compute_instance_network_interfaces table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
@@ -633,7 +633,7 @@ func ComputeInstances() *schema.Table {
 				Resolver:    fetchComputeInstanceSchedulingNodeAffinities,
 				Columns: []schema.Column{
 					{
-						Name:        "instance_id",
+						Name:        "instance_cq_id",
 						Description: "Unique ID of gcp_compute_instances table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
@@ -661,7 +661,7 @@ func ComputeInstances() *schema.Table {
 				Resolver:    fetchComputeInstanceServiceAccounts,
 				Columns: []schema.Column{
 					{
-						Name:        "instance_id",
+						Name:        "instance_cq_id",
 						Description: "Unique ID of gcp_compute_instances table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,

@@ -16,6 +16,7 @@ func ComputeProjects() *schema.Table {
 		Resolver:     fetchComputeProjects,
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id"}},
 		DeleteFilter: client.DeleteProjectFilter,
 		Columns: []schema.Column{
 			{
@@ -114,7 +115,7 @@ func ComputeProjects() *schema.Table {
 				Resolver:    fetchComputeProjectQuotas,
 				Columns: []schema.Column{
 					{
-						Name:        "project_id",
+						Name:        "project_cq_id",
 						Description: "Unique ID of gcp_compute_projects table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,

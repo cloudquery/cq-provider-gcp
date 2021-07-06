@@ -13,7 +13,7 @@ func ComputeAutoscalers() *schema.Table {
 		Name:        "gcp_compute_autoscalers",
 		Description: "Represents an Autoscaler resource.",
 		Resolver:    fetchComputeAutoscalers,
-		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"resource_id"}},
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Multiplex:   client.ProjectMultiplex,
 		Columns: []schema.Column{
 			{
@@ -105,7 +105,7 @@ func ComputeAutoscalers() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "resource_id",
+				Name:        "id",
 				Description: "The unique identifier for the resource This identifier is defined by the server",
 				Type:        schema.TypeString,
 				Resolver:    client.ResolveResourceId,

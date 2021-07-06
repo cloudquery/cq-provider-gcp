@@ -13,6 +13,7 @@ func ComputeInterconnects() *schema.Table {
 		Name:        "gcp_compute_interconnects",
 		Description: "Represents an Interconnect resource  An Interconnect resource is a dedicated connection between the GCP network and your on-premises network",
 		Resolver:    fetchComputeInterconnects,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Multiplex:   client.ProjectMultiplex,
 		Columns: []schema.Column{
 			{
@@ -52,7 +53,7 @@ func ComputeInterconnects() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "resource_id",
+				Name:        "id",
 				Description: "The unique identifier for the resource This identifier is defined by the server",
 				Type:        schema.TypeString,
 				Resolver:    client.ResolveResourceId,
@@ -130,7 +131,7 @@ func ComputeInterconnects() *schema.Table {
 				Resolver:    fetchComputeInterconnectCircuitInfos,
 				Columns: []schema.Column{
 					{
-						Name:        "interconnect_id",
+						Name:        "interconnect_cq_id",
 						Description: "Unique ID of gcp_compute_interconnects table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
@@ -158,7 +159,7 @@ func ComputeInterconnects() *schema.Table {
 				Resolver:    fetchComputeInterconnectExpectedOutages,
 				Columns: []schema.Column{
 					{
-						Name:        "interconnect_id",
+						Name:        "interconnect_cq_id",
 						Description: "Unique ID of gcp_compute_interconnects table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,

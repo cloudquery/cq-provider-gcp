@@ -14,6 +14,7 @@ func ComputeNetworks() *schema.Table {
 		Description: "Represents a VPC Network resource  Networks connect resources to each other and to the internet",
 		Resolver:    fetchComputeNetworks,
 		Multiplex:   client.ProjectMultiplex,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",
@@ -49,7 +50,7 @@ func ComputeNetworks() *schema.Table {
 				Resolver:    schema.PathResolver("GatewayIPv4"),
 			},
 			{
-				Name:        "resource_id",
+				Name:        "id",
 				Description: "The unique identifier for the resource This identifier is defined by the server",
 				Type:        schema.TypeString,
 				Resolver:    client.ResolveResourceId,

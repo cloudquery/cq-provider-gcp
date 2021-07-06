@@ -16,6 +16,7 @@ func StorageBuckets() *schema.Table {
 		Resolver:     fetchStorageBuckets,
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		DeleteFilter: client.DeleteProjectFilter,
 		Columns: []schema.Column{
 			{
@@ -77,10 +78,9 @@ func StorageBuckets() *schema.Table {
 				Resolver:    schema.PathResolver("IamConfiguration.UniformBucketLevelAccess.LockedTime"),
 			},
 			{
-				Name:        "resource_id",
+				Name:        "id",
 				Description: "Original Id of the resource",
 				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Id"),
 			},
 			{
 				Name:        "kind",
@@ -216,7 +216,7 @@ func StorageBuckets() *schema.Table {
 				Resolver:    fetchStorageBucketAcls,
 				Columns: []schema.Column{
 					{
-						Name:        "bucket_id",
+						Name:        "bucket_cq_id",
 						Description: "Unique ID of gcp_storage_buckets table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
@@ -252,10 +252,9 @@ func StorageBuckets() *schema.Table {
 						Type:        schema.TypeString,
 					},
 					{
-						Name:        "resource_id",
+						Name:        "id",
 						Description: "The ID of the access-control entry",
 						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("Id"),
 					},
 					{
 						Name:        "kind",
@@ -292,7 +291,7 @@ func StorageBuckets() *schema.Table {
 				Resolver:    fetchStorageBucketCors,
 				Columns: []schema.Column{
 					{
-						Name:        "bucket_id",
+						Name:        "bucket_cq_id",
 						Description: "Unique ID of gcp_storage_buckets table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
@@ -323,9 +322,10 @@ func StorageBuckets() *schema.Table {
 				Name:        "gcp_storage_bucket_default_object_acls",
 				Description: "Default access controls to apply to new objects when no ACL is provided.",
 				Resolver:    fetchStorageBucketDefaultObjectAcls,
+				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"bucket_cq_id", "id"}},
 				Columns: []schema.Column{
 					{
-						Name:        "bucket_id",
+						Name:        "bucket_cq_id",
 						Description: "Unique ID of gcp_storage_buckets table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
@@ -366,10 +366,9 @@ func StorageBuckets() *schema.Table {
 						Type:        schema.TypeBigInt,
 					},
 					{
-						Name:        "resource_id",
+						Name:        "id",
 						Description: "The ID of the access-control entry",
 						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("Id"),
 					},
 					{
 						Name:        "kind",
@@ -411,7 +410,7 @@ func StorageBuckets() *schema.Table {
 				Resolver:    fetchStorageBucketLifecycleRules,
 				Columns: []schema.Column{
 					{
-						Name:        "bucket_id",
+						Name:        "bucket_cq_id",
 						Description: "Unique ID of gcp_storage_buckets table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
@@ -494,9 +493,10 @@ func StorageBuckets() *schema.Table {
 				Name:        "gcp_storage_bucket_policies",
 				Description: "A bucket/object IAM policy",
 				Resolver:    fetchStorageBucketPolicies,
+				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"resource_id"}},
 				Columns: []schema.Column{
 					{
-						Name:        "bucket_id",
+						Name:        "bucket_cq_id",
 						Description: "Unique ID of gcp_storage_buckets table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
@@ -529,7 +529,7 @@ func StorageBuckets() *schema.Table {
 						Resolver:    fetchStorageBucketPolicyBindings,
 						Columns: []schema.Column{
 							{
-								Name:        "bucket_policy_id",
+								Name:        "bucket_policy_cq_id",
 								Description: "Unique ID of gcp_storage_bucket_policies table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,

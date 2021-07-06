@@ -13,6 +13,7 @@ func ComputeSubnetworks() *schema.Table {
 		Name:        "gcp_compute_subnetworks",
 		Description: "Represents a Subnetwork resource  A subnetwork (also known as a subnet) is a logical partition of a Virtual Private Cloud network with one primary IP range and zero or more secondary IP ranges",
 		Resolver:    fetchComputeSubnetworks,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Multiplex:   client.ProjectMultiplex,
 		Columns: []schema.Column{
 			{
@@ -47,7 +48,7 @@ func ComputeSubnetworks() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "resource_id",
+				Name:        "id",
 				Description: "The unique identifier for the resource This identifier is defined by the server",
 				Type:        schema.TypeString,
 				Resolver:    client.ResolveResourceId,
@@ -156,7 +157,7 @@ func ComputeSubnetworks() *schema.Table {
 				Resolver:    fetchComputeSubnetworkSecondaryIpRanges,
 				Columns: []schema.Column{
 					{
-						Name:        "subnetwork_id",
+						Name:        "subnetwork_cq_id",
 						Description: "Unique ID of gcp_compute_subnetworks table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,

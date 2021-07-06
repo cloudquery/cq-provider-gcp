@@ -14,6 +14,7 @@ func ComputeSslCertificates() *schema.Table {
 		Description: "Represents an SSL Certificate resource.",
 		Resolver:    fetchComputeSslCertificates,
 		Multiplex:   client.ProjectMultiplex,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",
@@ -42,7 +43,7 @@ func ComputeSslCertificates() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "resource_id",
+				Name:        "id",
 				Description: "The unique identifier for the resource This identifier is defined by the server",
 				Type:        schema.TypeString,
 				Resolver:    client.ResolveResourceId,

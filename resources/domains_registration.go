@@ -371,7 +371,7 @@ func DomainsRegistration() *schema.Table {
 				Resolver:    fetchDomainsRegistrationGlueRecords,
 				Columns: []schema.Column{
 					{
-						Name:        "registration_id",
+						Name:        "registration_cq_id",
 						Description: "Unique ID of gcp_domains_registrations table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
