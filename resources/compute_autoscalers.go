@@ -13,6 +13,7 @@ func ComputeAutoscalers() *schema.Table {
 		Name:        "gcp_compute_autoscalers",
 		Description: "Represents an Autoscaler resource.",
 		Resolver:    fetchComputeAutoscalers,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"resource_id"}},
 		Multiplex:   client.ProjectMultiplex,
 		Columns: []schema.Column{
 			{

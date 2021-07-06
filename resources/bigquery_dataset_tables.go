@@ -14,11 +14,17 @@ func BigqueryDatasetTables() *schema.Table {
 		Name:        "gcp_bigquery_dataset_tables",
 		Description: "Model options used for the first training run These options are immutable for subsequent training runs Default values are used for any options not specified in the input query",
 		Resolver:    fetchBigqueryDatasetTables,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"id"}},
 		Columns: []schema.Column{
 			{
-				Name:     "dataset_id",
+				Name:     "dataset_cq_id",
 				Type:     schema.TypeUUID,
 				Resolver: schema.ParentIdResolver,
+			},
+			{
+				Name:     "dataset_id",
+				Type:     schema.TypeString,
+				Resolver: schema.ParentFieldResolver("id"),
 			},
 			{
 				Name:        "clustering_fields",
@@ -106,10 +112,9 @@ func BigqueryDatasetTables() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "table_id",
+				Name:        "id",
 				Description: "An opaque ID uniquely identifying the table",
 				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Id"),
 			},
 			{
 				Name:        "kind",
@@ -296,10 +301,15 @@ func BigqueryDatasetTables() *schema.Table {
 				Resolver:    fetchBigqueryDatasetTableDatasetModelTrainingRuns,
 				Columns: []schema.Column{
 					{
-						Name:        "dataset_table_id",
+						Name:        "dataset_table_cq_id",
 						Description: "Unique ID of gcp_bigquery_dataset_tables table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:     "dataset_table_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentFieldResolver("id"),
 					},
 					{
 						Name:        "start_time",
@@ -364,10 +374,15 @@ func BigqueryDatasetTables() *schema.Table {
 				Resolver:    fetchBigqueryDatasetTableUserDefinedFunctions,
 				Columns: []schema.Column{
 					{
-						Name:        "dataset_table_id",
+						Name:        "dataset_table_cq_id",
 						Description: "Unique ID of gcp_bigquery_dataset_tables table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:     "dataset_table_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentFieldResolver("id"),
 					},
 					{
 						Name:        "inline_code",

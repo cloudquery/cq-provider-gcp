@@ -13,6 +13,7 @@ func ComputeFirewalls() *schema.Table {
 		Name:        "gcp_compute_firewalls",
 		Description: "Represents a Firewall Rule resource  Firewall rules allow or deny ingress traffic to, and egress traffic from your instances For more information, read Firewall rules",
 		Resolver:    fetchComputeFirewalls,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Multiplex:   client.ProjectMultiplex,
 		Columns: []schema.Column{
 			{
@@ -47,7 +48,7 @@ func ComputeFirewalls() *schema.Table {
 				Type:        schema.TypeBool,
 			},
 			{
-				Name:        "resource_id",
+				Name:        "id",
 				Description: "The unique identifier for the resource This identifier is defined by the server",
 				Type:        schema.TypeString,
 				Resolver:    client.ResolveResourceId,

@@ -13,6 +13,7 @@ func ComputeDisks() *schema.Table {
 		Name:        "gcp_compute_disks",
 		Description: "Represents a Persistent Disk resource.",
 		Resolver:    fetchComputeDisks,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Multiplex:   client.ProjectMultiplex,
 		Columns: []schema.Column{
 			{
@@ -62,7 +63,7 @@ func ComputeDisks() *schema.Table {
 				Resolver:    resolveComputeDiskGuestOsFeatures,
 			},
 			{
-				Name:        "disk_id",
+				Name:        "id",
 				Description: "The unique identifier for the resource This identifier is defined by the server",
 				Type:        schema.TypeString,
 				Resolver:    client.ResolveResourceId,

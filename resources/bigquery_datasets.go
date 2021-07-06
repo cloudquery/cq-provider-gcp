@@ -13,6 +13,7 @@ func BigqueryDatasets() *schema.Table {
 		Description: "dataset resources in the project",
 		Resolver:    fetchBigqueryDatasets,
 		Multiplex:   client.ProjectMultiplex,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",
@@ -57,10 +58,9 @@ func BigqueryDatasets() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "dataset_id",
+				Name:        "id",
 				Description: "The fully-qualified unique name of the dataset in the format projectId:datasetId The dataset name without the project name is given in the datasetId field When creating a new dataset, leave this field blank, and instead specify the datasetId field",
 				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Id"),
 			},
 			{
 				Name:        "kind",

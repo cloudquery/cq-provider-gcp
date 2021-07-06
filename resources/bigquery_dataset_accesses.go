@@ -13,10 +13,15 @@ func BigqueryDatasetAccesses() *schema.Table {
 		Name:     "gcp_bigquery_dataset_accesses",
 		Resolver: fetchBigqueryDatasetAccesses,
 		Columns: []schema.Column{
+			//{
+			//	Name:     "dataset_cq_id",
+			//	Type:     schema.TypeString,
+			//	Resolver: schema.ParentIdResolver,
+			//},
 			{
 				Name:     "dataset_id",
-				Type:     schema.TypeUUID,
-				Resolver: schema.ParentIdResolver,
+				Type:     schema.TypeString,
+				Resolver: schema.ParentFieldResolver("id"),
 			},
 			{
 				Name:        "target_types",

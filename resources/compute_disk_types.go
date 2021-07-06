@@ -13,6 +13,7 @@ func ComputeDiskTypes() *schema.Table {
 		Name:        "gcp_compute_disk_types",
 		Description: "Represents a Disk Type resource.",
 		Resolver:    fetchComputeDiskTypes,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Multiplex:   client.ProjectMultiplex,
 		Columns: []schema.Column{
 			{
@@ -66,7 +67,7 @@ func ComputeDiskTypes() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "resource_id",
+				Name:        "id",
 				Description: "The unique identifier for the resource This identifier is defined by the server",
 				Type:        schema.TypeString,
 				Resolver:    client.ResolveResourceId,

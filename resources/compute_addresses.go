@@ -13,6 +13,7 @@ func ComputeAddresses() *schema.Table {
 		Name:        "gcp_compute_addresses",
 		Description: "Addresses for GFE-based external HTTP(S) load balancers.",
 		Resolver:    fetchComputeAddresses,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},
 		Multiplex:   client.ProjectMultiplex,
 		Columns: []schema.Column{
 			{
