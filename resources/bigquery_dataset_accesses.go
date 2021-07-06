@@ -15,7 +15,7 @@ func BigqueryDatasetAccesses() *schema.Table {
 		Columns: []schema.Column{
 			{
 				Name:     "dataset_cq_id",
-				Type:     schema.TypeString,
+				Type:     schema.TypeUUID,
 				Resolver: schema.ParentIdResolver,
 			},
 			{

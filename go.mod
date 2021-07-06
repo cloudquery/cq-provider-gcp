@@ -3,7 +3,7 @@ module github.com/cloudquery/cq-provider-gcp
 go 1.16
 
 require (
-	github.com/cloudquery/cq-provider-sdk v0.3.0-rc1
+	github.com/cloudquery/cq-provider-sdk v0.3.0-rc2
 	github.com/cloudquery/faker/v3 v3.7.4
 	github.com/googleapis/gax-go/v2 v2.0.5
 	github.com/hashicorp/go-hclog v0.16.1
@@ -14,5 +14,3 @@ require (
 	google.golang.org/api v0.44.0
 	google.golang.org/grpc v1.37.1
 )
-
-replace github.com/cloudquery/cq-provider-sdk v0.3.0-rc1 => github.com/roneli/cq-provider-sdk v0.0.3-0.20210706122853-c8f394534cae
