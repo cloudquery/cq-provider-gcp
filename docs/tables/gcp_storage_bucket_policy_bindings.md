@@ -4,7 +4,7 @@ Represents an expression text Example: title: "User account presence" descriptio
 ## Columns
 | Name        | Type           | Description  |
 | ------------- | ------------- | -----  |
-|bucket_policy_id|uuid|Unique ID of gcp_storage_bucket_policies table (FK)|
+|bucket_policy_cq_id|uuid|Unique ID of gcp_storage_bucket_policies table (FK)|
 |condition_description|text|An optional description of the expression This is a longer text which describes the expression, eg when hovered over it in a UI|
 |condition_expression|text|Textual representation of an expression in Common Expression Language syntax The application context of the containing message determines which well-known feature set of CEL is supported|
 |condition_location|text|An optional string indicating the location of the expression for error reporting, eg a file name and a position in the file|
