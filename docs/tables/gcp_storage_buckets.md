@@ -38,3 +38,4 @@ The Buckets resource represents a bucket in Cloud Storage
 |website_main_page_suffix|text|If the requested object path is missing, the service will ensure the path has a trailing '/', append this suffix, and attempt to retrieve the resulting object This allows the creation of indexhtml objects to represent directory pages|
 |website_not_found_page|text|If the requested object path is missing, and any mainPageSuffix object is missing, if applicable, the service will return the named object from this bucket as the content for a 404 Not Found result|
 |zone_affinity|text[]|The zone or zones from which the bucket is intended to use zonal quota Requests for data from outside the specified affinities are still allowed but won't be able to use zonal quota The zone or zones need to be within the bucket location otherwise the requests will fail with a 400 Bad Request response|
+|policy|jsonb|Bucket's policy|

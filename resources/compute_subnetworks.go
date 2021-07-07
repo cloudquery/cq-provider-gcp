@@ -155,6 +155,7 @@ func ComputeSubnetworks() *schema.Table {
 				Name:        "gcp_compute_subnetwork_secondary_ip_ranges",
 				Description: "Represents a secondary IP range of a subnetwork",
 				Resolver:    fetchComputeSubnetworkSecondaryIpRanges,
+				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"subnetwork_cq_id", "range_name"}},
 				Columns: []schema.Column{
 					{
 						Name:        "subnetwork_cq_id",

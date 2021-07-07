@@ -79,7 +79,7 @@ func ComputeVpnGateways() *schema.Table {
 				Name:        "gcp_compute_vpn_gateway_vpn_interfaces",
 				Description: "A VPN gateway interface",
 				Resolver:    fetchComputeVpnGatewayVpnInterfaces,
-				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"id"}},
+				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"vpn_gateway_cq_id", "id"}},
 				Columns: []schema.Column{
 					{
 						Name:        "vpn_gateway_cq_id",

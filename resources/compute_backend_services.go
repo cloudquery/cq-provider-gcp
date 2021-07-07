@@ -465,6 +465,7 @@ func ComputeBackendServices() *schema.Table {
 				Name:        "gcp_compute_backend_service_backends",
 				Description: "Message containing information of one individual backend",
 				Resolver:    fetchComputeBackendServiceBackends,
+				//Options:     schema.TableCreationOptions{PrimaryKeys: []string{"backend_service_cq_id"}}, //todo check what can be used as pk here
 				Columns: []schema.Column{
 					{
 						Name:        "backend_service_cq_id",

@@ -156,6 +156,7 @@ func DNSManagedZones() *schema.Table {
 				Name:        "gcp_dns_managed_zone_dnssec_config_default_key_specs",
 				Description: "Parameters for DnsKey key generation Used for generating initial keys for a new ManagedZone and as default when adding a new DnsKey",
 				Resolver:    fetchDnsManagedZoneDnssecConfigDefaultKeySpecs,
+				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"managed_zone_cq_id", "kind", "key_type"}},
 				Columns: []schema.Column{
 					{
 						Name:        "managed_zone_cq_id",
@@ -187,6 +188,7 @@ func DNSManagedZones() *schema.Table {
 			{
 				Name:     "gcp_dns_managed_zone_forwarding_config_target_name_servers",
 				Resolver: fetchDnsManagedZoneForwardingConfigTargetNameServers,
+				Options:  schema.TableCreationOptions{PrimaryKeys: []string{"managed_zone_cq_id", "forwarding_path", "ipv4_address"}},
 				Columns: []schema.Column{
 					{
 						Name:        "managed_zone_cq_id",
@@ -213,6 +215,7 @@ func DNSManagedZones() *schema.Table {
 			{
 				Name:     "gcp_dns_managed_zone_private_visibility_config_networks",
 				Resolver: fetchDnsManagedZonePrivateVisibilityConfigNetworks,
+				Options:  schema.TableCreationOptions{PrimaryKeys: []string{"managed_zone_cq_id", "network_url"}},
 				Columns: []schema.Column{
 					{
 						Name:        "managed_zone_cq_id",

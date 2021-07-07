@@ -120,6 +120,7 @@ func ComputeFirewalls() *schema.Table {
 			{
 				Name:     "gcp_compute_firewall_allowed",
 				Resolver: fetchComputeFirewallAllowed,
+				Options:  schema.TableCreationOptions{PrimaryKeys: []string{"firewall_cq_id", "ip_protocol", "ports"}},
 				Columns: []schema.Column{
 					{
 						Name:        "firewall_cq_id",
@@ -143,6 +144,7 @@ func ComputeFirewalls() *schema.Table {
 			{
 				Name:     "gcp_compute_firewall_denied",
 				Resolver: fetchComputeFirewallDenied,
+				Options:  schema.TableCreationOptions{PrimaryKeys: []string{"firewall_cq_id", "ip_protocol", "ports"}},
 				Columns: []schema.Column{
 					{
 						Name:        "firewall_cq_id",

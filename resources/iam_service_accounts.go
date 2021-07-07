@@ -15,6 +15,7 @@ func IamServiceAccounts() *schema.Table {
 		Description: "An IAM service account A service account is an account for an application or a virtual machine (VM) instance, not a person You can use a service account to call Google APIs To learn more, read the overview of service accounts (https://cloudgooglecom/iam/help/service-accounts/overview) When you create a service account, you specify the project ID that owns the service account, as well as a name that must be unique within the project IAM uses these values to create an email address that identifies the service account",
 		Resolver:    fetchIamServiceAccounts,
 		Multiplex:   client.ProjectMultiplex,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},
 		Columns: []schema.Column{
 			{
 				Name:        "description",
@@ -62,6 +63,7 @@ func IamServiceAccounts() *schema.Table {
 				Name:        "gcp_iam_service_account_keys",
 				Description: "Represents a service account key A service account has two sets of key-pairs: user-managed, and system-managed User-managed key-pairs can be created and deleted by users Users are responsible for rotating these keys periodically to ensure security of their service accounts Users retain the private key of these key-pairs, and Google retains ONLY the public key System-managed keys are automatically rotated by Google, and are used for signing for a maximum of two weeks The rotation process is probabilistic, and usage of the new key will gradually ramp up and down over the key's lifetime If you cache the public key set for a service account, we recommend that you update the cache every 15 minutes User-managed keys can be added and removed at any time, so it is important to update the cache frequently For Google-managed keys, Google will publish a key at least 6 hours before it is first used for signing and will keep publishing it for at least 6 hours after it was last used for signing Public keys for all service accounts are also published at the OAuth2 Service Account API",
 				Resolver:    fetchIamServiceAccountKeys,
+				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"service_account_cq_id", "name"}},
 				Columns: []schema.Column{
 					{
 						Name:        "service_account_cq_id",

@@ -87,6 +87,7 @@ func ComputeSslPolicies() *schema.Table {
 			{
 				Name:     "gcp_compute_ssl_policy_warnings",
 				Resolver: fetchComputeSslPolicyWarnings,
+				Options:  schema.TableCreationOptions{PrimaryKeys: []string{"ssl_policy_cq_id", "code"}},
 				Columns: []schema.Column{
 					{
 						Name:        "ssl_policy_cq_id",

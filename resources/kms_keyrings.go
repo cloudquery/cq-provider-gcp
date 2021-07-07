@@ -19,7 +19,7 @@ func KmsKeyrings() *schema.Table {
 		IgnoreError:          client.IgnoreErrorHandler,
 		DeleteFilter:         client.DeleteProjectFilter,
 		PostResourceResolver: client.AddGcpMetadata,
-		Options:              schema.TableCreationOptions{PrimaryKeys: []string{"name"}},
+		Options:              schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",
@@ -51,6 +51,7 @@ func KmsKeyrings() *schema.Table {
 				Resolver:             fetchKmsKeyringCryptoKeys,
 				IgnoreError:          client.IgnoreErrorHandler,
 				PostResourceResolver: client.AddGcpMetadata,
+				Options:              schema.TableCreationOptions{PrimaryKeys: []string{"keyring_cq_id", "name"}},
 				Columns: []schema.Column{
 					{
 						Name:        "keyring_cq_id",

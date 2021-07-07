@@ -13,6 +13,7 @@ func IamRoles() *schema.Table {
 		Description: "A role in the Identity and Access Management API",
 		Resolver:    fetchIamRoles,
 		Multiplex:   client.ProjectMultiplex,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",

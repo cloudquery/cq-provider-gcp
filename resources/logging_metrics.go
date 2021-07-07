@@ -17,6 +17,7 @@ func LoggingMetrics() *schema.Table {
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",
@@ -172,6 +173,7 @@ func LoggingMetrics() *schema.Table {
 				Name:        "gcp_logging_metric_descriptor_labels",
 				Description: "A description of a label",
 				Resolver:    fetchLoggingMetricDescriptorLabels,
+				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"metric_cq_id", "key"}},
 				Columns: []schema.Column{
 					{
 						Name:        "metric_cq_id",
