@@ -5,6 +5,7 @@ An instance-attached disk resource
 | Name        | Type           | Description  |
 | ------------- | ------------- | -----  |
 |instance_cq_id|uuid|Unique ID of gcp_compute_instances table (FK)|
+|instance_id|text||
 |auto_delete|boolean|Specifies whether the disk will be auto-deleted when the instance is deleted (but not when the disk is detached from the instance)|
 |boot|boolean|Indicates that this is a boot disk The virtual machine will use the first partition of the disk for its root filesystem|
 |device_name|text|Specifies a unique device name of your choice that is reflected into the /dev/disk/by-id/google-* tree of a Linux operating system running within the instance This name can be used to reference the device for mounting, resizing, and so on, from within the instance  If not specified, the server chooses a default device name to apply to this disk, in the form persistent-disk-x, where x is a number assigned by Google Compute Engine This field is only applicable for persistent disks|

@@ -88,6 +88,11 @@ func ComputeVpnGateways() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
+						Name:     "vpn_gateway_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
+					},
+					{
 						Name:        "id",
 						Description: "The numeric ID of this VPN gateway interface",
 						Type:        schema.TypeString,

@@ -72,6 +72,11 @@ func IamServiceAccounts() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
+						Name:     "service_account_name",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("name"),
+					},
+					{
 						Name:        "key_algorithm",
 						Description: "Specifies the algorithm (and possibly key size) for the key  Possible values:   \"KEY_ALG_UNSPECIFIED\" - An unspecified key algorithm   \"KEY_ALG_RSA_1024\" - 1k RSA Key   \"KEY_ALG_RSA_2048\" - 2k RSA Key",
 						Type:        schema.TypeString,

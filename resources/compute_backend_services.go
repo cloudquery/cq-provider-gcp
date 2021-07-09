@@ -462,16 +462,21 @@ func ComputeBackendServices() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:        "gcp_compute_backend_service_backends",
-				Description: "Message containing information of one individual backend",
-				Resolver:    fetchComputeBackendServiceBackends,
-				//Options:     schema.TableCreationOptions{PrimaryKeys: []string{"backend_service_cq_id"}}, //todo check what can be used as pk here
+				Name:         "gcp_compute_backend_service_backends",
+				Description:  "Message containing information of one individual backend",
+				Resolver:     fetchComputeBackendServiceBackends,
+				AlwaysDelete: true,
 				Columns: []schema.Column{
 					{
 						Name:        "backend_service_cq_id",
 						Description: "Unique ID of gcp_compute_backend_services table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:     "backend_service_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
 					},
 					{
 						Name:        "balancing_mode",

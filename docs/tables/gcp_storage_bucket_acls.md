@@ -5,6 +5,7 @@ Access controls on the bucket.
 | Name        | Type           | Description  |
 | ------------- | ------------- | -----  |
 |bucket_cq_id|uuid|Unique ID of gcp_storage_buckets table (FK)|
+|bucket_id|text||
 |bucket|text|The name of the bucket|
 |domain|text|The domain associated with the entity, if any|
 |email|text|The email address associated with the entity, if any|

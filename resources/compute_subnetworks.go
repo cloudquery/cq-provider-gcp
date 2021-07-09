@@ -152,16 +152,21 @@ func ComputeSubnetworks() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:        "gcp_compute_subnetwork_secondary_ip_ranges",
-				Description: "Represents a secondary IP range of a subnetwork",
-				Resolver:    fetchComputeSubnetworkSecondaryIpRanges,
-				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"subnetwork_cq_id", "range_name"}},
+				Name:         "gcp_compute_subnetwork_secondary_ip_ranges",
+				Description:  "Represents a secondary IP range of a subnetwork",
+				Resolver:     fetchComputeSubnetworkSecondaryIpRanges,
+				AlwaysDelete: true,
 				Columns: []schema.Column{
 					{
 						Name:        "subnetwork_cq_id",
 						Description: "Unique ID of gcp_compute_subnetworks table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:     "subnetwork_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
 					},
 					{
 						Name:        "ip_cidr_range",

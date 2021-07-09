@@ -294,6 +294,11 @@ func ComputeInstances() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
+						Name:     "instance_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
+					},
+					{
 						Name:        "auto_delete",
 						Description: "Specifies whether the disk will be auto-deleted when the instance is deleted (but not when the disk is detached from the instance)",
 						Type:        schema.TypeBool,
@@ -513,6 +518,11 @@ func ComputeInstances() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
+						Name:     "instance_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
+					},
+					{
 						Name:        "fingerprint",
 						Description: "Fingerprint hash of contents stored in this network interface This field will be ignored when inserting an Instance or adding a NetworkInterface An up-to-date fingerprint must be provided in order to update the NetworkInterface The request will fail with error 400 Bad Request if the fingerprint is not provided, or 412 Precondition Failed if the fingerprint is out of date",
 						Type:        schema.TypeString,
@@ -568,6 +578,11 @@ func ComputeInstances() *schema.Table {
 								Resolver:    schema.ParentIdResolver,
 							},
 							{
+								Name:     "instance_network_interface_name",
+								Type:     schema.TypeString,
+								Resolver: schema.ParentResourceFieldResolver("name"),
+							},
+							{
 								Name:        "kind",
 								Description: "Type of the resource Always compute#accessConfig for access configs",
 								Type:        schema.TypeString,
@@ -618,6 +633,11 @@ func ComputeInstances() *schema.Table {
 								Resolver:    schema.ParentIdResolver,
 							},
 							{
+								Name:     "instance_network_interface_name",
+								Type:     schema.TypeString,
+								Resolver: schema.ParentResourceFieldResolver("name"),
+							},
+							{
 								Name:        "ip_cidr_range",
 								Description: "The IP alias ranges to allocate for this interface This IP CIDR range must belong to the specified subnetwork and cannot contain IP addresses reserved by system or used by other network interfaces This range may be a single IP address (such as 10234), a netmask (such as /24) or a CIDR-formatted string (such as 10120/24)",
 								Type:        schema.TypeString,
@@ -642,6 +662,11 @@ func ComputeInstances() *schema.Table {
 						Description: "Unique ID of gcp_compute_instances table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:     "instance_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
 					},
 					{
 						Name:        "key",
@@ -671,6 +696,11 @@ func ComputeInstances() *schema.Table {
 						Description: "Unique ID of gcp_compute_instances table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:     "instance_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
 					},
 					{
 						Name:        "email",

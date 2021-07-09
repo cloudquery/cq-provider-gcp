@@ -122,6 +122,11 @@ func ComputeProjects() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
+						Name:     "project_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("project_id"),
+					},
+					{
 						Name:        "limit",
 						Description: "Quota limit for this metric",
 						Type:        schema.TypeFloat,

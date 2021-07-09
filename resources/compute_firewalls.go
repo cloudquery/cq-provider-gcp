@@ -129,6 +129,11 @@ func ComputeFirewalls() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
+						Name:     "firewall_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
+					},
+					{
 						Name:        "ip_protocol",
 						Description: "The IP protocol to which this rule applies The protocol type is required when creating a firewall rule This value can either be one of the following well known protocol strings (tcp, udp, icmp, esp, ah, ipip, sctp) or the IP protocol number",
 						Type:        schema.TypeString,
@@ -151,6 +156,11 @@ func ComputeFirewalls() *schema.Table {
 						Description: "Unique ID of gcp_compute_firewalls table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:     "firewall_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
 					},
 					{
 						Name:        "ip_protocol",

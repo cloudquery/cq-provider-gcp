@@ -138,6 +138,11 @@ func ComputeInterconnects() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
+						Name:     "interconnect_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
+					},
+					{
 						Name:        "customer_demarc_id",
 						Description: "Customer-side demarc ID for this circuit",
 						Type:        schema.TypeString,
@@ -165,6 +170,11 @@ func ComputeInterconnects() *schema.Table {
 						Description: "Unique ID of gcp_compute_interconnects table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:     "interconnect_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
 					},
 					{
 						Name:        "affected_circuits",

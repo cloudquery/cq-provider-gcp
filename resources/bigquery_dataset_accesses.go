@@ -20,6 +20,11 @@ func BigqueryDatasetAccesses() *schema.Table {
 				Resolver: schema.ParentIdResolver,
 			},
 			{
+				Name:     "dataset_id",
+				Type:     schema.TypeString,
+				Resolver: schema.ParentResourceFieldResolver("id"),
+			},
+			{
 				Name:        "target_types",
 				Description: "Which resources in the dataset this entry applies to.",
 				Type:        schema.TypeStringArray,

@@ -379,6 +379,11 @@ func DomainsRegistration() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
+						Name:     "registration_name",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("name"),
+					},
+					{
 						Name:        "host_name",
 						Description: "Required Domain name of the host in Punycode format",
 						Type:        schema.TypeString,

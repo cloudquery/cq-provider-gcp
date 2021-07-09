@@ -22,6 +22,11 @@ func BigqueryDatasetTables() *schema.Table {
 				Resolver: schema.ParentIdResolver,
 			},
 			{
+				Name:     "dataset_id",
+				Type:     schema.TypeString,
+				Resolver: schema.ParentResourceFieldResolver("id"),
+			},
+			{
 				Name:        "clustering_fields",
 				Description: "One or more fields on which data should be clustered Only top-level, non-repeated, simple-type fields are supported When you cluster a table using multiple columns, the order of columns you specify is important The order of the specified columns determines the sort order of the data",
 				Type:        schema.TypeStringArray,
@@ -303,6 +308,11 @@ func BigqueryDatasetTables() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
+						Name:     "dataset_table_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
+					},
+					{
 						Name:        "start_time",
 						Description: "Training run start time in milliseconds since the epoch",
 						Type:        schema.TypeString,
@@ -370,6 +380,11 @@ func BigqueryDatasetTables() *schema.Table {
 						Description: "Unique ID of gcp_bigquery_dataset_tables table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:     "dataset_table_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
 					},
 					{
 						Name:        "inline_code",

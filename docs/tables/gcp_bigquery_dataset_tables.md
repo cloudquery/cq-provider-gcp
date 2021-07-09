@@ -5,6 +5,7 @@ Model options used for the first training run These options are immutable for su
 | Name        | Type           | Description  |
 | ------------- | ------------- | -----  |
 |dataset_cq_id|uuid||
+|dataset_id|text||
 |clustering_fields|text[]|One or more fields on which data should be clustered Only top-level, non-repeated, simple-type fields are supported When you cluster a table using multiple columns, the order of columns you specify is important The order of the specified columns determines the sort order of the data|
 |creation_time|bigint|The time when this table was created, in milliseconds since the epoch|
 |description|text|A user-friendly description of this table|

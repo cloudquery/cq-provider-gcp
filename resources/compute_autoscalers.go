@@ -170,10 +170,15 @@ func ComputeAutoscalers() *schema.Table {
 				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"autoscaler_id", "metric"}},
 				Columns: []schema.Column{
 					{
-						Name:        "autoscaler_id",
+						Name:        "autoscaler_cq_id",
 						Description: "Unique ID of gcp_compute_autoscalers table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:     "autoscaler_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
 					},
 					{
 						Name:        "filter",

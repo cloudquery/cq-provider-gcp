@@ -230,6 +230,11 @@ func StorageBuckets() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
+						Name:     "bucket_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
+					},
+					{
 						Name:        "bucket",
 						Description: "The name of the bucket",
 						Type:        schema.TypeString,
@@ -294,16 +299,21 @@ func StorageBuckets() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_storage_bucket_cors",
-				Description: "The bucket's Cross-Origin Resource Sharing (CORS) configuration.",
-				Resolver:    fetchStorageBucketCors,
-				//Options:      schema.TableCreationOptions{PrimaryKeys: []string{"bucket_cq_id", "bucket"}}, //todo check what can be used as pk
+				Name:         "gcp_storage_bucket_cors",
+				Description:  "The bucket's Cross-Origin Resource Sharing (CORS) configuration.",
+				Resolver:     fetchStorageBucketCors,
+				AlwaysDelete: true,
 				Columns: []schema.Column{
 					{
 						Name:        "bucket_cq_id",
 						Description: "Unique ID of gcp_storage_buckets table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:     "bucket_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
 					},
 					{
 						Name:        "max_age_seconds",
@@ -338,6 +348,11 @@ func StorageBuckets() *schema.Table {
 						Description: "Unique ID of gcp_storage_buckets table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:     "bucket_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
 					},
 					{
 						Name:        "bucket",
@@ -414,16 +429,21 @@ func StorageBuckets() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_storage_bucket_lifecycle_rules",
-				Description: "A lifecycle management rule, which is made of an action to take and the condition(s) under which the action will be taken.",
-				Resolver:    fetchStorageBucketLifecycleRules,
-				//Options:     schema.TableCreationOptions{PrimaryKeys: []string{"bucket_cq_id", "id"}}, //todo check what can be used as pk
+				Name:         "gcp_storage_bucket_lifecycle_rules",
+				Description:  "A lifecycle management rule, which is made of an action to take and the condition(s) under which the action will be taken.",
+				Resolver:     fetchStorageBucketLifecycleRules,
+				AlwaysDelete: true,
 				Columns: []schema.Column{
 					{
 						Name:        "bucket_cq_id",
 						Description: "Unique ID of gcp_storage_buckets table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:     "bucket_id",
+						Type:     schema.TypeString,
+						Resolver: schema.ParentResourceFieldResolver("id"),
 					},
 					{
 						Name:        "action_storage_class",
