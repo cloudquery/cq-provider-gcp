@@ -156,7 +156,6 @@ func DNSManagedZones() *schema.Table {
 				Name:        "gcp_dns_managed_zone_dnssec_config_default_key_specs",
 				Description: "Parameters for DnsKey key generation Used for generating initial keys for a new ManagedZone and as default when adding a new DnsKey",
 				Resolver:    fetchDnsManagedZoneDnssecConfigDefaultKeySpecs,
-				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"managed_zone_cq_id", "kind", "key_type"}},
 				Columns: []schema.Column{
 					{
 						Name:        "managed_zone_cq_id",

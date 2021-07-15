@@ -10,11 +10,12 @@ import (
 
 func ComputeDiskTypes() *schema.Table {
 	return &schema.Table{
-		Name:        "gcp_compute_disk_types",
-		Description: "Represents a Disk Type resource.",
-		Resolver:    fetchComputeDiskTypes,
-		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
-		Multiplex:   client.ProjectMultiplex,
+		Name:         "gcp_compute_disk_types",
+		Description:  "Represents a Disk Type resource.",
+		Resolver:     fetchComputeDiskTypes,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
+		Multiplex:    client.ProjectMultiplex,
+		DeleteFilter: client.DeleteProjectFilter,
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",

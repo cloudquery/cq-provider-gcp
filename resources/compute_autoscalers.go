@@ -10,11 +10,12 @@ import (
 
 func ComputeAutoscalers() *schema.Table {
 	return &schema.Table{
-		Name:        "gcp_compute_autoscalers",
-		Description: "Represents an Autoscaler resource.",
-		Resolver:    fetchComputeAutoscalers,
-		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
-		Multiplex:   client.ProjectMultiplex,
+		Name:         "gcp_compute_autoscalers",
+		Description:  "Represents an Autoscaler resource.",
+		Resolver:     fetchComputeAutoscalers,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
+		Multiplex:    client.ProjectMultiplex,
+		DeleteFilter: client.DeleteProjectFilter,
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",

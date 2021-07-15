@@ -10,11 +10,12 @@ import (
 
 func ComputeNetworks() *schema.Table {
 	return &schema.Table{
-		Name:        "gcp_compute_networks",
-		Description: "Represents a VPC Network resource  Networks connect resources to each other and to the internet",
-		Resolver:    fetchComputeNetworks,
-		Multiplex:   client.ProjectMultiplex,
-		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
+		Name:         "gcp_compute_networks",
+		Description:  "Represents a VPC Network resource  Networks connect resources to each other and to the internet",
+		Resolver:     fetchComputeNetworks,
+		Multiplex:    client.ProjectMultiplex,
+		DeleteFilter: client.DeleteProjectFilter,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",

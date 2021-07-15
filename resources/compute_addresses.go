@@ -10,11 +10,12 @@ import (
 
 func ComputeAddresses() *schema.Table {
 	return &schema.Table{
-		Name:        "gcp_compute_addresses",
-		Description: "Addresses for GFE-based external HTTP(S) load balancers.",
-		Resolver:    fetchComputeAddresses,
-		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
-		Multiplex:   client.ProjectMultiplex,
+		Name:         "gcp_compute_addresses",
+		Description:  "Addresses for GFE-based external HTTP(S) load balancers.",
+		Resolver:     fetchComputeAddresses,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
+		Multiplex:    client.ProjectMultiplex,
+		DeleteFilter: client.DeleteProjectFilter,
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",

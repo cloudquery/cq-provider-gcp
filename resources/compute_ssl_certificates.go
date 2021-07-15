@@ -10,11 +10,12 @@ import (
 
 func ComputeSslCertificates() *schema.Table {
 	return &schema.Table{
-		Name:        "gcp_compute_ssl_certificates",
-		Description: "Represents an SSL Certificate resource.",
-		Resolver:    fetchComputeSslCertificates,
-		Multiplex:   client.ProjectMultiplex,
-		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
+		Name:         "gcp_compute_ssl_certificates",
+		Description:  "Represents an SSL Certificate resource.",
+		Resolver:     fetchComputeSslCertificates,
+		Multiplex:    client.ProjectMultiplex,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
+		DeleteFilter: client.DeleteProjectFilter,
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",

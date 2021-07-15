@@ -10,11 +10,12 @@ import (
 
 func SQLInstances() *schema.Table {
 	return &schema.Table{
-		Name:        "gcp_sql_instances",
-		Description: "A Cloud SQL instance resource",
-		Resolver:    fetchSqlInstances,
-		Multiplex:   client.ProjectMultiplex,
-		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},
+		Name:         "gcp_sql_instances",
+		Description:  "A Cloud SQL instance resource",
+		Resolver:     fetchSqlInstances,
+		Multiplex:    client.ProjectMultiplex,
+		DeleteFilter: client.DeleteProjectFilter,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",

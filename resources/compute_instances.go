@@ -285,7 +285,6 @@ func ComputeInstances() *schema.Table {
 				Name:        "gcp_compute_instance_disks",
 				Description: "An instance-attached disk resource",
 				Resolver:    fetchComputeInstanceDisks,
-				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"instance_cq_id", "device_name"}},
 				Columns: []schema.Column{
 					{
 						Name:        "instance_cq_id",

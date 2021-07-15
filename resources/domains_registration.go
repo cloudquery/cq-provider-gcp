@@ -12,11 +12,12 @@ import (
 
 func DomainsRegistration() *schema.Table {
 	return &schema.Table{
-		Name:        "gcp_domains_registrations",
-		Description: "The `Registration` resource facilitates managing and configuring domain name registrations To create a new `Registration` resource, find a suitable domain name by calling the `SearchDomains` method with a query to see available domain name options After choosing a name, call `RetrieveRegisterParameters` to ensure availability and obtain information like pricing, which is needed to build a call to `RegisterDomain`",
-		Resolver:    fetchDomainsRegistrations,
-		Multiplex:   client.ProjectMultiplex,
-		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},
+		Name:         "gcp_domains_registrations",
+		Description:  "The `Registration` resource facilitates managing and configuring domain name registrations To create a new `Registration` resource, find a suitable domain name by calling the `SearchDomains` method with a query to see available domain name options After choosing a name, call `RetrieveRegisterParameters` to ensure availability and obtain information like pricing, which is needed to build a call to `RegisterDomain`",
+		Resolver:     fetchDomainsRegistrations,
+		Multiplex:    client.ProjectMultiplex,
+		DeleteFilter: client.DeleteProjectFilter,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",
