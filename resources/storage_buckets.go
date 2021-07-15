@@ -299,10 +299,9 @@ func StorageBuckets() *schema.Table {
 				},
 			},
 			{
-				Name:         "gcp_storage_bucket_cors",
-				Description:  "The bucket's Cross-Origin Resource Sharing (CORS) configuration.",
-				Resolver:     fetchStorageBucketCors,
-				AlwaysDelete: true,
+				Name:        "gcp_storage_bucket_cors",
+				Description: "The bucket's Cross-Origin Resource Sharing (CORS) configuration.",
+				Resolver:    fetchStorageBucketCors,
 				Columns: []schema.Column{
 					{
 						Name:        "bucket_cq_id",
@@ -429,10 +428,9 @@ func StorageBuckets() *schema.Table {
 				},
 			},
 			{
-				Name:         "gcp_storage_bucket_lifecycle_rules",
-				Description:  "A lifecycle management rule, which is made of an action to take and the condition(s) under which the action will be taken.",
-				Resolver:     fetchStorageBucketLifecycleRules,
-				AlwaysDelete: true,
+				Name:        "gcp_storage_bucket_lifecycle_rules",
+				Description: "A lifecycle management rule, which is made of an action to take and the condition(s) under which the action will be taken.",
+				Resolver:    fetchStorageBucketLifecycleRules,
 				Columns: []schema.Column{
 					{
 						Name:        "bucket_cq_id",

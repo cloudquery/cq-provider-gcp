@@ -462,10 +462,9 @@ func ComputeBackendServices() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:         "gcp_compute_backend_service_backends",
-				Description:  "Message containing information of one individual backend",
-				Resolver:     fetchComputeBackendServiceBackends,
-				AlwaysDelete: true,
+				Name:        "gcp_compute_backend_service_backends",
+				Description: "Message containing information of one individual backend",
+				Resolver:    fetchComputeBackendServiceBackends,
 				Columns: []schema.Column{
 					{
 						Name:        "backend_service_cq_id",

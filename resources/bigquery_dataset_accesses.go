@@ -12,7 +12,6 @@ func BigqueryDatasetAccesses() *schema.Table {
 	return &schema.Table{
 		Name:     "gcp_bigquery_dataset_accesses",
 		Resolver: fetchBigqueryDatasetAccesses,
-		Options:  schema.TableCreationOptions{PrimaryKeys: []string{"dataset_cq_id", "domain"}},
 		Columns: []schema.Column{
 			{
 				Name:     "dataset_cq_id",

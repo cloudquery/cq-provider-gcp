@@ -85,9 +85,8 @@ func ComputeSslPolicies() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:         "gcp_compute_ssl_policy_warnings",
-				Resolver:     fetchComputeSslPolicyWarnings,
-				AlwaysDelete: true,
+				Name:     "gcp_compute_ssl_policy_warnings",
+				Resolver: fetchComputeSslPolicyWarnings,
 				Columns: []schema.Column{
 					{
 						Name:        "ssl_policy_cq_id",

@@ -618,10 +618,9 @@ func SQLInstances() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:         "gcp_sql_instance_ip_addresses",
-				Description:  "Database instance IP Mapping",
-				Resolver:     fetchSqlInstanceIpAddresses,
-				AlwaysDelete: true,
+				Name:        "gcp_sql_instance_ip_addresses",
+				Description: "Database instance IP Mapping",
+				Resolver:    fetchSqlInstanceIpAddresses,
 				Columns: []schema.Column{
 					{
 						Name:        "instance_cq_id",
@@ -652,10 +651,9 @@ func SQLInstances() *schema.Table {
 				},
 			},
 			{
-				Name:         "gcp_sql_instance_settings_deny_maintenance_periods",
-				Description:  "Deny Maintenance Periods This specifies a date range during when all CSA rollout will be denied",
-				Resolver:     fetchSqlInstanceSettingsDenyMaintenancePeriods,
-				AlwaysDelete: true,
+				Name:        "gcp_sql_instance_settings_deny_maintenance_periods",
+				Description: "Deny Maintenance Periods This specifies a date range during when all CSA rollout will be denied",
+				Resolver:    fetchSqlInstanceSettingsDenyMaintenancePeriods,
 				Columns: []schema.Column{
 					{
 						Name:        "instance_cq_id",
@@ -686,10 +684,9 @@ func SQLInstances() *schema.Table {
 				},
 			},
 			{
-				Name:         "gcp_sql_instance_settings_ip_config_authorized_networks",
-				Description:  "An entry for an Access Control list",
-				Resolver:     fetchSqlInstanceSettingsIpConfigurationAuthorizedNetworks,
-				AlwaysDelete: true,
+				Name:        "gcp_sql_instance_settings_ip_config_authorized_networks",
+				Description: "An entry for an Access Control list",
+				Resolver:    fetchSqlInstanceSettingsIpConfigurationAuthorizedNetworks,
 				Columns: []schema.Column{
 					{
 						Name:        "instance_cq_id",
