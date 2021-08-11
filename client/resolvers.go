@@ -50,6 +50,20 @@ func ResolveResourceId(_ context.Context, _ schema.ClientMeta, r *schema.Resourc
 	return r.Set(c.Name, data)
 }
 
+func ResolveRegionURLName(region string) func(_ context.Context, _ schema.ClientMeta, r *schema.Resource, c schema.Column) error {
+	return func(_ context.Context, _ schema.ClientMeta, r *schema.Resource, c schema.Column) error {
+		data, err := cast.ToStringE(funk.Get(r.Item, region, funk.WithAllowZero()))
+		if err != nil {
+			return err
+		}
+		a := strings.Split(data, "/")
+		if len(a) == 0 {
+			return nil
+		}
+		return r.Set(c.Name, data[len(a)-1])
+	}
+}
+
 func parseISODate(d string) (*time.Time, error) {
 	if d == "" {
 		return nil, nil
