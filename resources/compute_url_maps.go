@@ -2,11 +2,11 @@ package resources
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
-
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+	compute "google.golang.org/api/compute/v1"
 )
 
 func ComputeURLMaps() *schema.Table {
@@ -262,41 +262,36 @@ func ComputeURLMaps() *schema.Table {
 				Type:        schema.TypeString,
 			},
 		},
-		Relations: []*schema.Table{{
-			Name:        "gcp_compute_url_map_weighted_backend_services",
-			Description: "In contrast to a single BackendService in HttpRouteAction to which all matching traffic is directed to, WeightedBackendService allows traffic to be split across multiple BackendServices",
-			Resolver:    fetchComputeUrlMapWeightedBackendServices,
-			Columns: []schema.Column{
-				{
-					Name:        "url_map_cq_id",
-					Description: "Unique CloudQuery ID of gcp_compute_url_maps table (FK)",
-					Type:        schema.TypeUUID,
-					Resolver:    schema.ParentIdResolver,
-				},
-				{
-					Name:        "backend_service",
-					Description: "The full or partial URL to the default BackendService resource Before forwarding the request to backendService, the loadbalancer applies any relevant headerActions specified as part of this backendServiceWeight",
-					Type:        schema.TypeString,
-				},
-				{
-					Name:        "header_action_request_headers_to_remove",
-					Description: "A list of header names for headers that need to be removed from the request prior to forwarding the request to the backendService",
-					Type:        schema.TypeStringArray,
-					Resolver:    schema.PathResolver("HeaderAction.RequestHeadersToRemove"),
-				},
-				{
-					Name:        "header_action_response_headers_to_remove",
-					Description: "A list of header names for headers that need to be removed from the response prior to sending the response back to the client",
-					Type:        schema.TypeStringArray,
-					Resolver:    schema.PathResolver("HeaderAction.ResponseHeadersToRemove"),
-				},
-				{
-					Name:        "weight",
-					Description: "Specifies the fraction of traffic sent to backendService, computed as weight / (sum of all weightedBackendService weights in routeAction)  The selection of a backend service is determined only for new traffic Once a user's request has been directed to a backendService, subsequent requests will be sent to the same backendService as determined by the BackendService's session affinity policy",
-					Type:        schema.TypeBigInt,
+		Relations: []*schema.Table{
+			{
+				Name:        "gcp_compute_url_map_weighted_backend_services",
+				Description: "In contrast to a single BackendService in HttpRouteAction to which all matching traffic is directed to, WeightedBackendService allows traffic to be split across multiple BackendServices",
+				Resolver:    fetchComputeUrlMapWeightedBackendServices,
+				Columns: []schema.Column{
+					{
+						Name:        "url_map_cq_id",
+						Description: "Unique CloudQuery ID of gcp_compute_url_maps table (FK)",
+						Type:        schema.TypeUUID,
+						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:        "backend_service",
+						Description: "The full or partial URL to the default BackendService resource Before forwarding the request to backendService, the loadbalancer applies any relevant headerActions specified as part of this backendServiceWeight",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "header_action",
+						Description: "Specifies changes to request and response headers that need to take effect for the selected backendService headerAction specified here take effect before headerAction in the enclosing HttpRouteRule, PathMatcher and UrlMap Note that headerAction is not supported for Loadbalancers that have their loadBalancingScheme set to EXTERNAL Not supported when the URL map is bound to target gRPC proxy that has validateForProxyless field set to true",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveComputeURLMapWeightedBackendServiceHeaderAction,
+					},
+					{
+						Name:        "weight",
+						Description: "Specifies the fraction of traffic sent to backendService, computed as weight / (sum of all weightedBackendService weights in routeAction)  The selection of a backend service is determined only for new traffic Once a user's request has been directed to a backendService, subsequent requests will be sent to the same backendService as determined by the BackendService's session affinity policy",
+						Type:        schema.TypeBigInt,
+					},
 				},
 			},
-		},
 			{
 				Name:        "gcp_compute_url_map_header_action_request_headers_to_adds",
 				Description: "Specification determining how headers are added to requests or responses",
@@ -393,148 +388,10 @@ func ComputeURLMaps() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
-						Name:        "default_route_action_cors_policy_allow_credentials",
-						Description: "In response to a preflight request, setting this to true indicates that the actual request can include user credentials This translates to the Access-Control-Allow-Credentials header Default is false",
-						Type:        schema.TypeBool,
-						Resolver:    schema.PathResolver("DefaultRouteAction.CorsPolicy.AllowCredentials"),
-					},
-					{
-						Name:        "default_route_action_cors_policy_allow_headers",
-						Description: "Specifies the content for the Access-Control-Allow-Headers header",
-						Type:        schema.TypeStringArray,
-						Resolver:    schema.PathResolver("DefaultRouteAction.CorsPolicy.AllowHeaders"),
-					},
-					{
-						Name:        "default_route_action_cors_policy_allow_methods",
-						Description: "Specifies the content for the Access-Control-Allow-Methods header",
-						Type:        schema.TypeStringArray,
-						Resolver:    schema.PathResolver("DefaultRouteAction.CorsPolicy.AllowMethods"),
-					},
-					{
-						Name:        "default_route_action_cors_policy_allow_origin_regexes",
-						Description: "Specifies the regualar expression patterns that match allowed origins For regular expression grammar please see githubcom/google/re2/wiki/Syntax An origin is allowed if it matches either an item in allowOrigins or an item in allowOriginRegexes",
-						Type:        schema.TypeStringArray,
-						Resolver:    schema.PathResolver("DefaultRouteAction.CorsPolicy.AllowOriginRegexes"),
-					},
-					{
-						Name:        "default_route_action_cors_policy_allow_origins",
-						Description: "Specifies the list of origins that will be allowed to do CORS requests An origin is allowed if it matches either an item in allowOrigins or an item in allowOriginRegexes",
-						Type:        schema.TypeStringArray,
-						Resolver:    schema.PathResolver("DefaultRouteAction.CorsPolicy.AllowOrigins"),
-					},
-					{
-						Name:        "default_route_action_cors_policy_disabled",
-						Description: "If true, specifies the CORS policy is disabled The default value of false, which indicates that the CORS policy is in effect",
-						Type:        schema.TypeBool,
-						Resolver:    schema.PathResolver("DefaultRouteAction.CorsPolicy.Disabled"),
-					},
-					{
-						Name:        "default_route_action_cors_policy_expose_headers",
-						Description: "Specifies the content for the Access-Control-Expose-Headers header",
-						Type:        schema.TypeStringArray,
-						Resolver:    schema.PathResolver("DefaultRouteAction.CorsPolicy.ExposeHeaders"),
-					},
-					{
-						Name:        "default_route_action_cors_policy_max_age",
-						Description: "Specifies how long results of a preflight request can be cached in seconds This translates to the Access-Control-Max-Age header",
-						Type:        schema.TypeBigInt,
-						Resolver:    schema.PathResolver("DefaultRouteAction.CorsPolicy.MaxAge"),
-					},
-					{
-						Name:        "default_route_action_fault_injection_policy_abort_http_status",
-						Description: "The HTTP status code used to abort the request The value must be between 200 and 599 inclusive",
-						Type:        schema.TypeBigInt,
-						Resolver:    schema.PathResolver("DefaultRouteAction.FaultInjectionPolicy.Abort.HttpStatus"),
-					},
-					{
-						Name:        "default_route_action_fault_injection_policy_abort_percentage",
-						Description: "The percentage of traffic (connections/operations/requests) which will be aborted as part of fault injection The value must be between 00 and 1000 inclusive",
-						Type:        schema.TypeFloat,
-						Resolver:    schema.PathResolver("DefaultRouteAction.FaultInjectionPolicy.Abort.Percentage"),
-					},
-					{
-						Name:        "default_route_action_fault_injection_policy_delay_fixed_delay_nanos",
-						Description: "Span of time that's a fraction of a second at nanosecond resolution Durations less than one second are represented with a 0 `seconds` field and a positive `nanos` field Must be from 0 to 999,999,999 inclusive",
-						Type:        schema.TypeBigInt,
-						Resolver:    schema.PathResolver("DefaultRouteAction.FaultInjectionPolicy.Delay.FixedDelay.Nanos"),
-					},
-					{
-						Name:        "default_route_action_fault_injection_policy_delay_fixed_delay_seconds",
-						Description: "Span of time at a resolution of a second Must be from 0 to 315,576,000,000 inclusive Note: these bounds are computed from: 60 sec/min * 60 min/hr * 24 hr/day * 365",
-						Type:        schema.TypeBigInt,
-						Resolver:    schema.PathResolver("DefaultRouteAction.FaultInjectionPolicy.Delay.FixedDelay.Seconds"),
-					},
-					{
-						Name:        "default_route_action_fault_injection_policy_delay_percentage",
-						Description: "The percentage of traffic (connections/operations/requests) on which delay will be introduced as part of fault injection The value must be between 00 and 1000 inclusive",
-						Type:        schema.TypeFloat,
-						Resolver:    schema.PathResolver("DefaultRouteAction.FaultInjectionPolicy.Delay.Percentage"),
-					},
-					{
-						Name:        "default_route_action_max_stream_duration_nanos",
-						Description: "Span of time that's a fraction of a second at nanosecond resolution Durations less than one second are represented with a 0 `seconds` field and a positive `nanos` field Must be from 0 to 999,999,999 inclusive",
-						Type:        schema.TypeBigInt,
-						Resolver:    schema.PathResolver("DefaultRouteAction.MaxStreamDuration.Nanos"),
-					},
-					{
-						Name:        "default_route_action_max_stream_duration_seconds",
-						Description: "Span of time at a resolution of a second Must be from 0 to 315,576,000,000 inclusive Note: these bounds are computed from: 60 sec/min * 60 min/hr * 24 hr/day * 365",
-						Type:        schema.TypeBigInt,
-						Resolver:    schema.PathResolver("DefaultRouteAction.MaxStreamDuration.Seconds"),
-					},
-					{
-						Name:        "default_route_action_request_mirror_policy_backend_service",
-						Description: "The full or partial URL to the BackendService resource being mirrored to",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("DefaultRouteAction.RequestMirrorPolicy.BackendService"),
-					},
-					{
-						Name:        "default_route_action_retry_policy_num_retries",
-						Description: "Specifies the allowed number retries This number must be > 0 If not specified, defaults to 1",
-						Type:        schema.TypeBigInt,
-						Resolver:    schema.PathResolver("DefaultRouteAction.RetryPolicy.NumRetries"),
-					},
-					{
-						Name:        "default_route_action_retry_policy_per_try_timeout_nanos",
-						Description: "Span of time that's a fraction of a second at nanosecond resolution Durations less than one second are represented with a 0 `seconds` field and a positive `nanos` field Must be from 0 to 999,999,999 inclusive",
-						Type:        schema.TypeBigInt,
-						Resolver:    schema.PathResolver("DefaultRouteAction.RetryPolicy.PerTryTimeout.Nanos"),
-					},
-					{
-						Name:        "default_route_action_retry_policy_per_try_timeout_seconds",
-						Description: "Span of time at a resolution of a second Must be from 0 to 315,576,000,000 inclusive Note: these bounds are computed from: 60 sec/min * 60 min/hr * 24 hr/day * 365",
-						Type:        schema.TypeBigInt,
-						Resolver:    schema.PathResolver("DefaultRouteAction.RetryPolicy.PerTryTimeout.Seconds"),
-					},
-					{
-						Name:        "default_route_action_retry_policy_retry_conditions",
-						Description: "Specfies one or more conditions when this retry rule applies Valid values are: - 5xx: Loadbalancer will attempt a retry if the backend service responds with any 5xx response code, or if the backend service does not respond at all, example: disconnects, reset, read timeout, connection failure, and refused streams - gateway-error: Similar to 5xx, but only applies to response codes 502, 503 or 504 - - connect-failure: Loadbalancer will retry on failures connecting to backend services, for example due to connection timeouts - retriable-4xx: Loadbalancer will retry for retriable 4xx response codes Currently the only retriable error supported is 409 - refused-stream:Loadbalancer will retry if the backend service resets the stream with a REFUSED_STREAM error code This reset type indicates that it is safe to retry",
-						Type:        schema.TypeStringArray,
-						Resolver:    schema.PathResolver("DefaultRouteAction.RetryPolicy.RetryConditions"),
-					},
-					{
-						Name:        "default_route_action_timeout_nanos",
-						Description: "Span of time that's a fraction of a second at nanosecond resolution Durations less than one second are represented with a 0 `seconds` field and a positive `nanos` field Must be from 0 to 999,999,999 inclusive",
-						Type:        schema.TypeBigInt,
-						Resolver:    schema.PathResolver("DefaultRouteAction.Timeout.Nanos"),
-					},
-					{
-						Name:        "default_route_action_timeout_seconds",
-						Description: "Span of time at a resolution of a second Must be from 0 to 315,576,000,000 inclusive Note: these bounds are computed from: 60 sec/min * 60 min/hr * 24 hr/day * 365",
-						Type:        schema.TypeBigInt,
-						Resolver:    schema.PathResolver("DefaultRouteAction.Timeout.Seconds"),
-					},
-					{
-						Name:        "default_route_action_url_rewrite_host_rewrite",
-						Description: "Prior to forwarding the request to the selected service, the request's host header is replaced with contents of hostRewrite The value must be between 1 and 255 characters",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("DefaultRouteAction.UrlRewrite.HostRewrite"),
-					},
-					{
-						Name:        "default_route_action_url_rewrite_path_prefix_rewrite",
-						Description: "Prior to forwarding the request to the selected backend service, the matching portion of the request's path is replaced by pathPrefixRewrite The value must be between 1 and 1024 characters",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("DefaultRouteAction.UrlRewrite.PathPrefixRewrite"),
+						Name:        "default_route_action",
+						Description: "defaultRouteAction takes effect when none of the pathRules or routeRules match The load balancer performs advanced routing actions like URL rewrites, header transformations, etc prior to forwarding the request to the selected backend If defaultRouteAction specifies any weightedBackendServices, defaultService must not be set Conversely if defaultService is set, defaultRouteAction cannot contain any  weightedBackendServices Only one of defaultRouteAction or defaultUrlRedirect must be set UrlMaps for external HTTP(S) load balancers support only the urlRewrite action within a pathMatcher's defaultRouteAction",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveComputeURLMapPathMatcherDefaultRouteAction,
 					},
 					{
 						Name:        "default_service",
@@ -583,21 +440,27 @@ func ComputeURLMaps() *schema.Table {
 						Type:        schema.TypeString,
 					},
 					{
-						Name:        "header_action_request_headers_to_remove",
-						Description: "A list of header names for headers that need to be removed from the request prior to forwarding the request to the backendService",
-						Type:        schema.TypeStringArray,
-						Resolver:    schema.PathResolver("HeaderAction.RequestHeadersToRemove"),
-					},
-					{
-						Name:        "header_action_response_headers_to_remove",
-						Description: "A list of header names for headers that need to be removed from the response prior to sending the response back to the client",
-						Type:        schema.TypeStringArray,
-						Resolver:    schema.PathResolver("HeaderAction.ResponseHeadersToRemove"),
+						Name:        "header_action",
+						Description: "Specifies changes to request and response headers that need to take effect for the selected backendService HeaderAction specified here are applied after the matching HttpRouteRule HeaderAction and before the HeaderAction in the UrlMap  Note that headerAction is not supported for Loadbalancers that have their loadBalancingScheme set to EXTERNAL Not supported when the URL map is bound to target gRPC proxy that has validateForProxyless field set to true",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveComputeURLMapPathMatcherHeaderAction,
 					},
 					{
 						Name:        "name",
 						Description: "The name to which this PathMatcher is referred by the HostRule",
 						Type:        schema.TypeString,
+					},
+					{
+						Name:        "path_rules",
+						Description: "The list of path rules Use this list instead of routeRules when routing based on simple path matching is all that's required The order by which path rules are specified does not matter Matches are always done on the longest-path-first basis For example: a pathRule with a path /a/b/c/* will match before /a/b/* irrespective of the order in which those paths appear in this list Within a given pathMatcher, only one of pathRules or routeRules must be set",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveComputeURLMapPathMatcherPathRules,
+					},
+					{
+						Name:        "route_rules",
+						Description: "The list of HTTP route rules Use this list instead of pathRules when advanced route matching and routing actions are desired routeRules are evaluated in order of priority, from the lowest to highest number Within a given pathMatcher, you can set only one of pathRules or routeRules",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveComputeURLMapPathMatcherRouteRules,
 					},
 				},
 			},
@@ -626,6 +489,12 @@ func ComputeURLMaps() *schema.Table {
 						Name:        "expected_redirect_response_code",
 						Description: "For rules with urlRedirect, the test passes only if expectedRedirectResponseCode matches the HTTP status code in load balancer's redirect response expectedRedirectResponseCode cannot be set when service is set",
 						Type:        schema.TypeBigInt,
+					},
+					{
+						Name:        "headers",
+						Description: "HTTP headers for this request If headers contains a host header, then host must also match the header value",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveComputeURLMapTestHeaders,
 					},
 					{
 						Name:        "host",
@@ -684,6 +553,22 @@ func fetchComputeUrlMapWeightedBackendServices(ctx context.Context, meta schema.
 	res <- r.DefaultRouteAction.WeightedBackendServices
 	return nil
 }
+func resolveComputeURLMapWeightedBackendServiceHeaderAction(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	r, ok := resource.Item.(*compute.WeightedBackendService)
+	if !ok {
+		return fmt.Errorf("expected to have *compute.WeightedBackendService but got %T", resource.Item)
+	}
+	var j map[string]interface{}
+	data, err := json.Marshal(r.HeaderAction)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(data, &j); err != nil {
+		return err
+	}
+
+	return resource.Set(c.Name, j)
+}
 func fetchComputeUrlMapHeaderActionRequestHeadersToAdds(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	r, ok := parent.Item.(*compute.UrlMap)
 	if !ok {
@@ -736,6 +621,70 @@ func fetchComputeUrlMapPathMatchers(ctx context.Context, meta schema.ClientMeta,
 	res <- r.PathMatchers
 	return nil
 }
+func resolveComputeURLMapPathMatcherDefaultRouteAction(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	r, ok := resource.Item.(*compute.PathMatcher)
+	if !ok {
+		return fmt.Errorf("expected to have *compute.PathMatcher but got %T", resource.Item)
+	}
+	var j map[string]interface{}
+	data, err := json.Marshal(r.DefaultRouteAction)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(data, &j); err != nil {
+		return err
+	}
+
+	return resource.Set(c.Name, j)
+}
+func resolveComputeURLMapPathMatcherHeaderAction(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	r, ok := resource.Item.(*compute.PathMatcher)
+	if !ok {
+		return fmt.Errorf("expected to have *compute.PathMatcher but got %T", resource.Item)
+	}
+	var j map[string]interface{}
+	data, err := json.Marshal(r.HeaderAction)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(data, &j); err != nil {
+		return err
+	}
+
+	return resource.Set(c.Name, j)
+}
+func resolveComputeURLMapPathMatcherPathRules(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	r, ok := resource.Item.(*compute.PathMatcher)
+	if !ok {
+		return fmt.Errorf("expected to have *compute.PathMatcher but got %T", resource.Item)
+	}
+	var j []interface{}
+	data, err := json.Marshal(r.PathRules)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(data, &j); err != nil {
+		return err
+	}
+
+	return resource.Set(c.Name, j)
+}
+func resolveComputeURLMapPathMatcherRouteRules(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	r, ok := resource.Item.(*compute.PathMatcher)
+	if !ok {
+		return fmt.Errorf("expected to have *compute.PathMatcher but got %T", resource.Item)
+	}
+	var j []interface{}
+	data, err := json.Marshal(r.RouteRules)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(data, &j); err != nil {
+		return err
+	}
+
+	return resource.Set(c.Name, j)
+}
 func fetchComputeUrlMapTests(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	r, ok := parent.Item.(*compute.UrlMap)
 	if !ok {
@@ -748,4 +697,20 @@ func fetchComputeUrlMapTests(ctx context.Context, meta schema.ClientMeta, parent
 
 	res <- r.Tests
 	return nil
+}
+func resolveComputeURLMapTestHeaders(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	r, ok := resource.Item.(*compute.UrlMapTest)
+	if !ok {
+		return fmt.Errorf("expected to have *compute.UrlMapTest but got %T", resource.Item)
+	}
+	j := make(map[string]interface{})
+	if r.Headers == nil {
+		return nil
+	}
+
+	for _, h := range r.Headers {
+		j[h.Name] = h.Value
+	}
+
+	return resource.Set(c.Name, j)
 }
