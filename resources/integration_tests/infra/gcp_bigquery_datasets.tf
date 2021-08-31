@@ -1,6 +1,6 @@
 resource "google_bigquery_dataset" "gcp_bigquery_datasets_ds" {
-  dataset_id = "ds_${var.test_prefix}${var.test_suffix}"
-  friendly_name = "ds_${var.test_prefix}${var.test_suffix}"
+  dataset_id = "bigquery_dataset_${var.test_prefix}${var.test_suffix}"
+  friendly_name = "bigquery_dataset_${var.test_prefix}${var.test_suffix}"
   description = "This is a test description"
   location = "EU"
   default_table_expiration_ms = 3600000
@@ -12,7 +12,7 @@ resource "google_bigquery_dataset" "gcp_bigquery_datasets_ds" {
 
   access {
     role = "OWNER"
-    user_by_email = google_service_account.bqowner.email
+    user_by_email = google_service_account.service_account.email
   }
 
   access {
@@ -24,7 +24,7 @@ resource "google_bigquery_dataset" "gcp_bigquery_datasets_ds" {
 }
 
 resource "google_bigquery_table" "gcp_bigquery_datasets_tb1" {
-  dataset_id = time_sleep.aws_directconnect_virtual_interfaces_wait_for_id.triggers["id"]
+  dataset_id = google_bigquery_dataset.gcp_bigquery_datasets_ds.dataset_id
   table_id = "test"
 
   time_partitioning {
@@ -55,21 +55,4 @@ EOF
   depends_on = [
     google_bigquery_dataset.gcp_bigquery_datasets_ds]
 
-}
-
-
-resource "time_sleep" "aws_directconnect_virtual_interfaces_wait_for_id" {
-  depends_on = [
-    google_bigquery_dataset.gcp_bigquery_datasets_ds]
-
-  create_duration = "2m"
-
-  triggers = {
-    # This sets up a proper dependency on the RAM association
-    id = google_bigquery_dataset.gcp_bigquery_datasets_ds.dataset_id
-  }
-}
-
-resource "google_service_account" "bqowner" {
-  account_id = "bqowner${var.test_suffix}"
 }

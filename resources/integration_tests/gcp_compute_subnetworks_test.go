@@ -14,13 +14,13 @@ func TestIntegrationComputeSubnetworks(t *testing.T) {
 		return providertest.ResourceIntegrationVerification{
 			Name: resources.ComputeSubnetworks().Name,
 			Filter: func(sq squirrel.SelectBuilder, res *providertest.ResourceIntegrationTestData) squirrel.SelectBuilder {
-				return sq.Where(squirrel.Eq{"name": fmt.Sprintf("sub-%s%s", res.Prefix, res.Suffix)})
+				return sq.Where(squirrel.Eq{"name": fmt.Sprintf("network-subnetwork-%s%s", res.Prefix, res.Suffix)})
 			},
 			ExpectedValues: []providertest.ExpectedValue{
 				{
 					Count: 1,
 					Data: map[string]interface{}{
-						"name":                       fmt.Sprintf("sub-%s%s", res.Prefix, res.Suffix),
+						"name":                       fmt.Sprintf("network-subnetwork-%s%s", res.Prefix, res.Suffix),
 						"enable_flow_logs":           false,
 						"description":                "",
 						"log_config_flow_sampling":   float64(0),

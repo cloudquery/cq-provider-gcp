@@ -35,7 +35,7 @@ func TestIntegrationComputeNetworks(t *testing.T) {
 						{
 							Count: 1,
 							Data: map[string]interface{}{
-								"name":                                fmt.Sprintf("p-%s%s", res.Prefix, res.Suffix),
+								"name":                                fmt.Sprintf("network-peering-%s%s", res.Prefix, res.Suffix),
 								"auto_create_routes":                  true,
 								"exchange_subnet_routes":              true,
 								"export_custom_routes":                false,

@@ -10,20 +10,20 @@ import (
 )
 
 func TestIntegrationComputeFirewalls(t *testing.T) {
-	testIntegrationHelper(t, resources.ComputeFirewalls(), nil, func(res *providertest.ResourceIntegrationTestData) providertest.ResourceIntegrationVerification {
+	testIntegrationHelper(t, resources.ComputeFirewalls(), []string{"gcp_compute_firewalls.tf", "network.tf"}, func(res *providertest.ResourceIntegrationTestData) providertest.ResourceIntegrationVerification {
 		return providertest.ResourceIntegrationVerification{
 			Name: resources.ComputeFirewalls().Name,
 			Filter: func(sq squirrel.SelectBuilder, res *providertest.ResourceIntegrationTestData) squirrel.SelectBuilder {
-				return sq.Where(squirrel.Eq{"name": fmt.Sprintf("f-%s%s", res.Prefix, res.Suffix)})
+				return sq.Where(squirrel.Eq{"name": fmt.Sprintf("google-compute-firewalls-firewall-%s", res.Suffix)})
 			},
 			ExpectedValues: []providertest.ExpectedValue{
 				{
 					Count: 1,
 					Data: map[string]interface{}{
-						"name":      fmt.Sprintf("f-%s%s", res.Prefix, res.Suffix),
+						"name":      fmt.Sprintf("google-compute-firewalls-firewall-%s", res.Suffix),
 						"disabled":  false,
 						"direction": "INGRESS",
-						"source_tags": []string{
+						"source_tags": []interface{}{
 							"web",
 						},
 					},
