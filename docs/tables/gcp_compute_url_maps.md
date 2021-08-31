@@ -39,7 +39,9 @@ Represents a URL Map resource
 |default_url_redirect_strip_query|boolean|If set to true, any accompanying query portion of the original URL is removed prior to redirecting the request If set to false, the query portion of the original URL is retained The default is set to false|
 |description|text|An optional description of this resource Provide this property when you create the resource|
 |fingerprint|text|Fingerprint of this resource A hash of the contents stored in this object This field is used in optimistic locking This field will be ignored when inserting a UrlMap An up-to-date fingerprint must be provided in order to update the UrlMap, otherwise the request will fail with error 412 conditionNotMet  To see the latest fingerprint, make a get() request to retrieve a UrlMap|
+|header_action_request_headers_to_add|jsonb|Headers to add to a matching request prior to forwarding the request to the backendService|
 |header_action_request_headers_to_remove|text[]|A list of header names for headers that need to be removed from the request prior to forwarding the request to the backendService|
+|header_action_response_headers_to_add|jsonb|Headers to add the response prior to sending the response back to the client|
 |header_action_response_headers_to_remove|text[]|A list of header names for headers that need to be removed from the response prior to sending the response back to the client|
 |id|bigint|The unique identifier for the resource This identifier is defined by the server|
 |kind|text|Type of the resource Always compute#urlMaps for url maps|

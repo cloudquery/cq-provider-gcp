@@ -7,7 +7,7 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	compute "google.golang.org/api/compute/v1"
+	"google.golang.org/api/compute/v1"
 )
 
 func ComputeURLMaps() *schema.Table {
@@ -226,10 +226,22 @@ func ComputeURLMaps() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
+				Name:        "header_action_request_headers_to_add",
+				Description: "Headers to add to a matching request prior to forwarding the request to the backendService",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveComputeURLMapHeaderActionRequestHeadersToAdd,
+			},
+			{
 				Name:        "header_action_request_headers_to_remove",
 				Description: "A list of header names for headers that need to be removed from the request prior to forwarding the request to the backendService",
 				Type:        schema.TypeStringArray,
 				Resolver:    schema.PathResolver("HeaderAction.RequestHeadersToRemove"),
+			},
+			{
+				Name:        "header_action_response_headers_to_add",
+				Description: "Headers to add the response prior to sending the response back to the client",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveComputeURLMapHeaderActionResponseHeadersToAdd,
 			},
 			{
 				Name:        "header_action_response_headers_to_remove",
@@ -290,62 +302,6 @@ func ComputeURLMaps() *schema.Table {
 						Name:        "weight",
 						Description: "Specifies the fraction of traffic sent to backendService, computed as weight / (sum of all weightedBackendService weights in routeAction)  The selection of a backend service is determined only for new traffic Once a user's request has been directed to a backendService, subsequent requests will be sent to the same backendService as determined by the BackendService's session affinity policy",
 						Type:        schema.TypeBigInt,
-					},
-				},
-			},
-			{
-				Name:        "gcp_compute_url_map_header_action_request_headers_to_adds",
-				Description: "Specification determining how headers are added to requests or responses",
-				Resolver:    fetchComputeUrlMapHeaderActionRequestHeadersToAdds,
-				Columns: []schema.Column{
-					{
-						Name:        "url_map_cq_id",
-						Description: "Unique CloudQuery ID of gcp_compute_url_maps table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "header_name",
-						Description: "The name of the header",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "header_value",
-						Description: "The value of the header to add",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "replace",
-						Description: "If false, headerValue is appended to any values that already exist for the header If true, headerValue is set for the header, discarding any values that were set for that header The default value is false",
-						Type:        schema.TypeBool,
-					},
-				},
-			},
-			{
-				Name:        "gcp_compute_url_map_header_action_response_headers_to_adds",
-				Description: "Specification determining how headers are added to requests or responses",
-				Resolver:    fetchComputeUrlMapHeaderActionResponseHeadersToAdds,
-				Columns: []schema.Column{
-					{
-						Name:        "url_map_cq_id",
-						Description: "Unique CloudQuery ID of gcp_compute_url_maps table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "header_name",
-						Description: "The name of the header",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "header_value",
-						Description: "The value of the header to add",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "replace",
-						Description: "If false, headerValue is appended to any values that already exist for the header If true, headerValue is set for the header, discarding any values that were set for that header The default value is false",
-						Type:        schema.TypeBool,
 					},
 				},
 			},
@@ -541,6 +497,48 @@ func fetchComputeUrlMaps(ctx context.Context, meta schema.ClientMeta, parent *sc
 	}
 	return nil
 }
+func resolveComputeURLMapHeaderActionRequestHeadersToAdd(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	r, ok := resource.Item.(*compute.UrlMap)
+	if !ok {
+		return fmt.Errorf("expected to have *compute.UrlMap but got %T", resource.Item)
+	}
+
+	if r.HeaderAction == nil || r.HeaderAction.RequestHeadersToAdd == nil {
+		return nil
+	}
+
+	var j []interface{}
+	data, err := json.Marshal(r.HeaderAction.RequestHeadersToAdd)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(data, &j); err != nil {
+		return err
+	}
+
+	return resource.Set(c.Name, j)
+}
+func resolveComputeURLMapHeaderActionResponseHeadersToAdd(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	r, ok := resource.Item.(*compute.UrlMap)
+	if !ok {
+		return fmt.Errorf("expected to have *compute.UrlMap but got %T", resource.Item)
+	}
+
+	if r.HeaderAction == nil || r.HeaderAction.ResponseHeadersToAdd == nil {
+		return nil
+	}
+
+	var j []interface{}
+	data, err := json.Marshal(r.HeaderAction.ResponseHeadersToAdd)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(data, &j); err != nil {
+		return err
+	}
+
+	return resource.Set(c.Name, j)
+}
 func fetchComputeUrlMapWeightedBackendServices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	r, ok := parent.Item.(*compute.UrlMap)
 	if !ok {
@@ -569,32 +567,6 @@ func resolveComputeURLMapWeightedBackendServiceHeaderAction(ctx context.Context,
 	}
 
 	return resource.Set(c.Name, j)
-}
-func fetchComputeUrlMapHeaderActionRequestHeadersToAdds(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	r, ok := parent.Item.(*compute.UrlMap)
-	if !ok {
-		return fmt.Errorf("expected to have *compute.UrlMap but got %T", parent.Item)
-	}
-
-	if r.HeaderAction == nil || r.HeaderAction.RequestHeadersToAdd == nil {
-		return nil
-	}
-
-	res <- r.HeaderAction.RequestHeadersToAdd
-	return nil
-}
-func fetchComputeUrlMapHeaderActionResponseHeadersToAdds(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
-	r, ok := parent.Item.(*compute.UrlMap)
-	if !ok {
-		return fmt.Errorf("expected to have *compute.UrlMap but got %T", parent.Item)
-	}
-
-	if r.HeaderAction == nil || r.HeaderAction.ResponseHeadersToAdd == nil {
-		return nil
-	}
-
-	res <- r.HeaderAction.ResponseHeadersToAdd
-	return nil
 }
 func fetchComputeUrlMapHostRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
 	r, ok := parent.Item.(*compute.UrlMap)
