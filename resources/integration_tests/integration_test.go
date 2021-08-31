@@ -2,10 +2,11 @@ package integration_tests
 
 import (
 	"fmt"
-	"github.com/cloudquery/cq-provider-gcp/client"
-	"github.com/cloudquery/cq-provider-gcp/resources"
 	"os"
 	"testing"
+
+	"github.com/cloudquery/cq-provider-gcp/client"
+	"github.com/cloudquery/cq-provider-gcp/resources"
 
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	providertest "github.com/cloudquery/cq-provider-sdk/provider/testing"
@@ -14,13 +15,6 @@ import (
 // IntegrationTestsEnabledVar is the name of the environment variable that enables integration tests from this package.
 // Set it to one of "1", "y", "yes", "true" to enable the tests.
 const IntegrationTestsEnabledVar = "INTEGRATION_TESTS"
-
-func firstN(s string, n int) string {
-	if len(s) > n {
-		return s[:n]
-	}
-	return s
-}
 
 func testIntegrationHelper(t *testing.T, table *schema.Table, resourceFiles []string, verificationBuilder func(res *providertest.ResourceIntegrationTestData) providertest.ResourceIntegrationVerification) {
 	cfg := client.Config{}
