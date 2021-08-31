@@ -1,3 +1,4 @@
 provider "google" {
-  //  region  = "us-central1"
+    region  = var.region
 }
+
