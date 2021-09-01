@@ -1,6 +1,6 @@
 resource "google_compute_firewall" "google_compute_firewalls_firewall" {
-  name = "f-${var.test_prefix}${var.test_suffix}"
-  network = google_compute_network.google_compute_firewalls_network.name
+  name = "google-compute-firewalls-firewall-${var.test_suffix}"
+  network = google_compute_network.network.name
 
 
   allow {
@@ -15,8 +15,4 @@ resource "google_compute_firewall" "google_compute_firewalls_firewall" {
 
   source_tags = [
     "web"]
-}
-
-resource "google_compute_network" "google_compute_firewalls_network" {
-  name = "n-${var.test_prefix}${var.test_suffix}"
 }
