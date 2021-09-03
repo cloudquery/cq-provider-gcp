@@ -17,7 +17,7 @@ func TestIntegrationComputeTargetSslProxies(t *testing.T) {
 		return providertest.ResourceIntegrationVerification{
 			Name: resources.ComputeTargetSslProxies().Name,
 			Filter: func(sq squirrel.SelectBuilder, res *providertest.ResourceIntegrationTestData) squirrel.SelectBuilder {
-				return sq.Where(squirrel.Like{"name": fmt.Sprintf("ssl-proxy-%s%s", res.Prefix, res.Suffix)})
+				return sq.Where(squirrel.Eq{"name": fmt.Sprintf("ssl-proxy-%s%s", res.Prefix, res.Suffix)})
 			},
 			ExpectedValues: []providertest.ExpectedValue{
 				{
