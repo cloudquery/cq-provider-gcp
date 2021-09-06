@@ -14,27 +14,29 @@ resource "google_compute_region_backend_service" "gcp_forwarding_rules_backend_s
 
 # MIG
 resource "google_compute_region_instance_group_manager" "gcp_forwarding_rules_instance_group_manager" {
-  name     = "l4-ilb-mig1"
+  name = "url-maps-igm-${var.test_prefix}${var.test_suffix}"
   provider = google-beta
-  region   = var.region
+  region = var.region
   version {
     instance_template = google_compute_instance_template.gcp_forwarding_rules_instance_template.id
-    name              = "primary"
+    name = "primary"
   }
   base_instance_name = "vm"
-  target_size        = 1
+  target_size = 1
 }
 
 
 # instance template
 resource "google_compute_instance_template" "gcp_forwarding_rules_instance_template" {
-  name         = "l4-ilb-mig-template"
-  provider     = google-beta
+  name = "url-maps-it-${var.test_prefix}${var.test_suffix}"
+  provider = google-beta
   machine_type = "e2-small"
-  tags         = ["allow-ssh","allow-health-check"]
+  tags = [
+    "allow-ssh",
+    "allow-health-check"]
 
   network_interface {
-    network    = google_compute_network.network.id
+    network = google_compute_network.network.id
     subnetwork = google_compute_subnetwork.network-subnetwork.id
     access_config {
       # add external ip to fetch packages
@@ -42,8 +44,8 @@ resource "google_compute_instance_template" "gcp_forwarding_rules_instance_templ
   }
   disk {
     source_image = "debian-cloud/debian-10"
-    auto_delete  = true
-    boot         = true
+    auto_delete = true
+    boot = true
   }
 
   # install nginx and serve a simple web page

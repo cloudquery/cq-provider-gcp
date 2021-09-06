@@ -27,32 +27,6 @@ func TestIntegrationComputeForwardingRules(t *testing.T) {
 						"all_ports":              true,
 						"allow_global_access":    true,
 						"network_tier":           "PREMIUM",
-						//"labels": map[string]interface{}{
-						//	"test": "test",
-						//},
-					},
-				},
-			},
-			Relations: []*providertest.ResourceIntegrationVerification{
-				{
-					Name:           "gcp_compute_backend_service_backends",
-					ForeignKeyName: "backend_service_cq_id",
-					ExpectedValues: []providertest.ExpectedValue{
-						{
-							Count: 1,
-							Data: map[string]interface{}{
-								"failover":                     false,
-								"balancing_mode":               "CONNECTION",
-								"max_utilization":              float64(0),
-								"max_connections":              float64(0),
-								"max_connections_per_endpoint": float64(0),
-								"max_connections_per_instance": float64(0),
-								"0.0":                          float64(0),
-								"capacity_scaler":              float64(0),
-								"max_rate_per_endpoint":        float64(0),
-								"max_rate_per_instance":        float64(0),
-							},
-						},
 					},
 				},
 			},
