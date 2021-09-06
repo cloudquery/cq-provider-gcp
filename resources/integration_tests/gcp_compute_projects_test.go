@@ -21,6 +21,18 @@ func TestIntegrationComputeProjects(t *testing.T) {
 					Data:  map[string]interface{}{},
 				},
 			},
+			Relations: []*providertest.ResourceIntegrationVerification{
+				{
+					Name:           "gcp_compute_project_quotas",
+					ForeignKeyName: "project_cq_id",
+					ExpectedValues: []providertest.ExpectedValue{
+						{
+							Count: 39,
+							Data:  map[string]interface{}{},
+						},
+					},
+				},
+			},
 		}
 	})
 }

@@ -66,6 +66,36 @@ func TestIntegrationComputeInstances(t *testing.T) {
 							},
 						},
 					},
+					Relations: []*providertest.ResourceIntegrationVerification{
+						{
+							Name:           "gcp_compute_instance_network_interface_access_configs",
+							ForeignKeyName: "instance_network_interface_cq_id",
+							ExpectedValues: []providertest.ExpectedValue{
+								{
+									Count: 1,
+									Data: map[string]interface{}{
+										"name":                            "external-nat",
+										"instance_network_interface_name": "nic0",
+									},
+								},
+							},
+						},
+						//todo add gcp_compute_instance_network_interface_alias_ip_ranges relation
+					},
+				},
+				{
+					Name:           "gcp_compute_instance_service_accounts",
+					ForeignKeyName: "instance_cq_id",
+					ExpectedValues: []providertest.ExpectedValue{
+						{
+							Count: 1,
+							Data: map[string]interface{}{
+								"scopes": []interface{}{
+									"https://www.googleapis.com/auth/cloud-platform",
+								},
+							},
+						},
+					},
 				},
 			},
 		}

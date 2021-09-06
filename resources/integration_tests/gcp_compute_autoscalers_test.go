@@ -36,6 +36,23 @@ func TestIntegrationComputeAutoscalers(t *testing.T) {
 					},
 				},
 			},
+			Relations: []*providertest.ResourceIntegrationVerification{
+				{
+					Name:           "gcp_compute_autoscaler_custom_metric_utilizations",
+					ForeignKeyName: "autoscaler_cq_id",
+					ExpectedValues: []providertest.ExpectedValue{
+						{
+							Count: 1,
+							Data: map[string]interface{}{
+								"metric":                     "pubsub.googleapis.com/subscription/num_undelivered_messages",
+								"single_instance_assignment": float64(0),
+								"utilization_target":         float64(100),
+								"utilization_target_type":    "DELTA_PER_MINUTE",
+							},
+						},
+					},
+				},
+			},
 		}
 	})
 }

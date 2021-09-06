@@ -33,6 +33,29 @@ func TestIntegrationComputeBackendServices(t *testing.T) {
 					},
 				},
 			},
+			Relations: []*providertest.ResourceIntegrationVerification{
+				{
+					Name:           "gcp_compute_backend_service_backends",
+					ForeignKeyName: "backend_service_cq_id",
+					ExpectedValues: []providertest.ExpectedValue{
+						{
+							Count: 1,
+							Data: map[string]interface{}{
+								"balancing_mode":               "CONNECTION",
+								"capacity_scaler":              float64(0),
+								"failover":                     false,
+								"max_connections":              float64(0),
+								"max_connections_per_endpoint": float64(0),
+								"max_connections_per_instance": float64(0),
+								"max_rate":                     float64(0),
+								"max_rate_per_endpoint":        float64(0),
+								"max_rate_per_instance":        float64(0),
+								"max_utilization":              float64(0),
+							},
+						},
+					},
+				},
+			},
 		}
 	})
 }

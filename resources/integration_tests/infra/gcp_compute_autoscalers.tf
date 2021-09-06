@@ -1,4 +1,4 @@
-resource "google_compute_autoscaler" "gcp_compute_autoscalers_autpscaler" {
+resource "google_compute_autoscaler" "gcp_compute_autoscalers_autoscaler" {
   name = "autoscaler${var.test_prefix}${var.test_suffix}"
   zone = "${var.region}-f"
   target = google_compute_instance_group_manager.gcp_compute_autoscalers_instance_group_manager.id
@@ -11,7 +11,16 @@ resource "google_compute_autoscaler" "gcp_compute_autoscalers_autpscaler" {
     cpu_utilization {
       target = 0.5
     }
+
+    metric {
+      name = "pubsub.googleapis.com/subscription/num_undelivered_messages"
+      //      filter = "resource.type = pubsub_subscription AND resource.label.subscription_id = \"test\""
+      target = 100
+      type = "DELTA_PER_MINUTE"
+    }
   }
+
+
 }
 
 resource "google_compute_instance_template" "gcp_compute_autoscalers_instance_template" {
