@@ -25,5 +25,11 @@ resource "google_compute_network_peering" "network-peering" {
   peer_network = google_compute_network.network1.id
 }
 
+resource "google_compute_vpn_gateway" "vpn_gateway" {
+  name = "vpn-gateway-${var.test_prefix}${var.test_suffix}"
+  network = google_compute_network.network.id
+  description = "a description"
+}
+
 
 
