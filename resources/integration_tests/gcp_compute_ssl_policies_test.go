@@ -9,26 +9,46 @@ import (
 	providertest "github.com/cloudquery/cq-provider-sdk/provider/testing"
 )
 
-func TestIntegrationComputeSslPolicies(t *testing.T) {
-	testIntegrationHelper(t, resources.ComputeSslPolicies(), nil, func(res *providertest.ResourceIntegrationTestData) providertest.ResourceIntegrationVerification {
+func TestIntegrationComputeSSLPolicies(t *testing.T) {
+	table := resources.ComputeSslPolicies()
+	testIntegrationHelper(t, table, nil, func(res *providertest.ResourceIntegrationTestData) providertest.ResourceIntegrationVerification {
 		return providertest.ResourceIntegrationVerification{
-			Name: resources.ComputeSslPolicies().Name,
+			Name: table.Name,
 			Filter: func(sq squirrel.SelectBuilder, res *providertest.ResourceIntegrationTestData) squirrel.SelectBuilder {
-				return sq.Where(squirrel.Eq{"name": fmt.Sprintf("ssl-policies-policy-%s%s", res.Prefix, res.Suffix)})
+				return sq
 			},
 			ExpectedValues: []providertest.ExpectedValue{
 				{
 					Count: 1,
 					Data: map[string]interface{}{
-						"name":            fmt.Sprintf("ssl-policies-policy-%s%s", res.Prefix, res.Suffix),
-						"description":     "",
+						"name":            fmt.Sprintf("prod-ssl-policy-%s%s", res.Prefix, res.Suffix),
+						"profile":         "MODERN",
 						"kind":            "compute#sslPolicy",
+						"custom_features": nil,
+						"min_tls_version": "TLS_1_0",
+					},
+				},
+				{
+					Count: 1,
+					Data: map[string]interface{}{
+						"name":            fmt.Sprintf("nonprod-ssl-policy-%s%s", res.Prefix, res.Suffix),
+						"profile":         "MODERN",
+						"kind":            "compute#sslPolicy",
+						"custom_features": nil,
 						"min_tls_version": "TLS_1_2",
-						"profile":         "CUSTOM",
+					},
+				},
+				{
+					Count: 1,
+					Data: map[string]interface{}{
+						"name":    fmt.Sprintf("custom-ssl-policy-%s%s", res.Prefix, res.Suffix),
+						"profile": "CUSTOM",
+						"kind":    "compute#sslPolicy",
 						"custom_features": []interface{}{
 							"TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
 							"TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
 						},
+						"min_tls_version": "TLS_1_2",
 					},
 				},
 			},
