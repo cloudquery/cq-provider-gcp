@@ -26,7 +26,7 @@ resource "google_storage_bucket" "gpc_storage_buckets_bucket" {
 }
 
 resource "google_storage_bucket_acl" "gpc_storage_buckets_bucket_acl" {
-  bucket = google_storage_bucket.gcp_domains_registrations_bucket.name
+  bucket = google_storage_bucket.gpc_storage_buckets_bucket.name
 
   default_acl = "projectPrivate"
   role_entity = [
@@ -35,7 +35,7 @@ resource "google_storage_bucket_acl" "gpc_storage_buckets_bucket_acl" {
 }
 
 resource "google_storage_default_object_acl" "image-store-default-acl" {
-  bucket = google_storage_bucket.gcp_domains_registrations_bucket.name
+  bucket = google_storage_bucket.gpc_storage_buckets_bucket.name
 
   role_entity = [
     "READER:allAuthenticatedUsers",

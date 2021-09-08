@@ -3,7 +3,7 @@ resource "google_compute_target_https_proxy" "gcp_compute_target_https_proxies" 
   url_map = google_compute_url_map.gcp_compute_target_https_proxies_urlmap.id
   ssl_certificates = [
     google_compute_ssl_certificate.gcp_compute_ssl_certificates_cert.id]
-  ssl_policy = google_compute_ssl_policy.gcp_compute_ssl_policies_policy.id
+  ssl_policy = google_compute_ssl_policy.custom-ssl-policy.id
 }
 
 resource "google_compute_url_map" "gcp_compute_target_https_proxies_urlmap" {
