@@ -10,9 +10,7 @@ import (
 
 // made to fetch only one
 func TestIntegrationResourceManagerProjects(t *testing.T) {
-	testIntegrationHelper(t, resources.ResourceManagerProjects(), []string{
-		"service-account.tf",
-	}, func(res *providertest.ResourceIntegrationTestData) providertest.ResourceIntegrationVerification {
+	testIntegrationHelper(t, resources.ResourceManagerProjects(), nil, func(res *providertest.ResourceIntegrationTestData) providertest.ResourceIntegrationVerification {
 		return providertest.ResourceIntegrationVerification{
 			Name: resources.ResourceManagerProjects().Name,
 			Filter: func(sq squirrel.SelectBuilder, res *providertest.ResourceIntegrationTestData) squirrel.SelectBuilder {

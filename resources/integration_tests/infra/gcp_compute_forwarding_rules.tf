@@ -14,7 +14,7 @@ resource "google_compute_region_backend_service" "gcp_forwarding_rules_backend_s
 
 # MIG
 resource "google_compute_region_instance_group_manager" "gcp_forwarding_rules_instance_group_manager" {
-  name = "url-maps-igm-${var.test_prefix}${var.test_suffix}"
+  name = "forwarding-rules-igm-${var.test_prefix}${var.test_suffix}"
   provider = google-beta
   region = var.region
   version {
@@ -28,7 +28,7 @@ resource "google_compute_region_instance_group_manager" "gcp_forwarding_rules_in
 
 # instance template
 resource "google_compute_instance_template" "gcp_forwarding_rules_instance_template" {
-  name = "url-maps-it-${var.test_prefix}${var.test_suffix}"
+  name = "forwarding-rules-it-${var.test_prefix}${var.test_suffix}"
   provider = google-beta
   machine_type = "e2-small"
   tags = [

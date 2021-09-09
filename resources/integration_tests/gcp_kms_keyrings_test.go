@@ -10,11 +10,14 @@ import (
 )
 
 func TestIntegrationKmsKeyrings(t *testing.T) {
-	testIntegrationHelper(t, resources.KmsKeyrings(), nil, func(res *providertest.ResourceIntegrationTestData) providertest.ResourceIntegrationVerification {
+	testIntegrationHelper(t, resources.KmsKeyrings(), []string{
+		"gcp_kms_keyrings.tf",
+		"service-account.tf",
+	}, func(res *providertest.ResourceIntegrationTestData) providertest.ResourceIntegrationVerification {
 		return providertest.ResourceIntegrationVerification{
 			Name: resources.KmsKeyrings().Name,
 			Filter: func(sq squirrel.SelectBuilder, res *providertest.ResourceIntegrationTestData) squirrel.SelectBuilder {
-				return sq.Where(squirrel.Like{"name": fmt.Sprintf("%%keyring-%s%s", res.Prefix, res.Suffix)})
+				return sq.Where(squirrel.Like{"name": fmt.Sprintf("%%kms-keyring-%s%s", res.Prefix, res.Suffix)})
 			},
 			ExpectedValues: []providertest.ExpectedValue{
 				{
