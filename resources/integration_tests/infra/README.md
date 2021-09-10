@@ -8,6 +8,7 @@ Export the current s3 bucket for tfstate file
 ```shell
 export TF_BACKEND_BUCKET=cq-integration-tests-tf
 export TF_BACKEND_KEY=gcp/terraform.tfstate
+export GCLOUD_PROJECT=cq-e2e
 ```
 
 Init terraform

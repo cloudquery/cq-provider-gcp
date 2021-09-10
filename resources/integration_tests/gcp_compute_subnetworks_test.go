@@ -23,7 +23,6 @@ func TestIntegrationComputeSubnetworks(t *testing.T) {
 						"name":                       fmt.Sprintf("network-subnetwork-%s%s", res.Prefix, res.Suffix),
 						"enable_flow_logs":           false,
 						"description":                "",
-						"log_config_flow_sampling":   float64(0),
 						"private_ip_google_access":   false,
 						"private_ipv6_google_access": "DISABLE_GOOGLE_ACCESS",
 						"purpose":                    "PRIVATE",

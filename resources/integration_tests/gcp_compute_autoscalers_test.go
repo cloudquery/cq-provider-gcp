@@ -22,7 +22,6 @@ func TestIntegrationComputeAutoscalers(t *testing.T) {
 					Data: map[string]interface{}{
 						"name":                             fmt.Sprintf("autoscaler%s%s", res.Prefix, res.Suffix),
 						"kind":                             "compute#autoscaler",
-						"recommended_size":                 float64(1),
 						"scale_in_control_time_window_sec": float64(0),
 						"scale_in_control_max_scaled_in_replicas_percent":    float64(0),
 						"scale_in_control_max_scaled_in_replicas_fixed":      float64(0),
