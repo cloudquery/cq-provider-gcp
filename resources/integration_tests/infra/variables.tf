@@ -7,6 +7,6 @@ variable "test_prefix" {
 }
 
 variable "region" {
-  type = string
+  type    = string
   default = "us-central1"
 }

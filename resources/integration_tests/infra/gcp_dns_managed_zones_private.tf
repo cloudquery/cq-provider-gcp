@@ -1,6 +1,6 @@
 resource "google_dns_managed_zone" "gcp_dns_managed_zones_zone_private" {
-  name = "private-zone${var.test_prefix}${var.test_suffix}"
-  dns_name = "example-p-${var.test_suffix}.com."
+  name        = "private-zone${var.test_prefix}${var.test_suffix}"
+  dns_name    = "example-p-${var.test_suffix}.com."
   description = "Example DNS zone"
   labels = {
     test = "test"

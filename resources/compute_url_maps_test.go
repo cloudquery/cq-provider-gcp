@@ -13,7 +13,6 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/resources"
 	"github.com/cloudquery/cq-provider-sdk/logging"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	providertest "github.com/cloudquery/cq-provider-sdk/provider/testing"
 	"github.com/cloudquery/faker/v3"
 	"github.com/hashicorp/go-hclog"
 	"github.com/julienschmidt/httprouter"

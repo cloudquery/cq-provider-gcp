@@ -1,15 +1,15 @@
 data "google_compute_image" "gcp_compute_images_image" {
-  name = "cos-89-16108-470-16"
+  name    = "cos-89-16108-470-16"
   project = "cos-cloud"
 }
 
 resource "google_compute_instance" "gcp_compute_images_instance" {
-  name = "gcp-compute-images-compute-instance-${var.test_suffix}"
+  name         = "gcp-compute-images-compute-instance-${var.test_suffix}"
   machine_type = "f1-micro"
-  zone = "${var.region}-a"
+  zone         = "${var.region}-a"
 
   tags = [
-    "test"]
+  "test"]
 
 
   boot_disk {
@@ -34,6 +34,6 @@ resource "google_compute_instance" "gcp_compute_images_instance" {
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     email = google_service_account.service_account.email
     scopes = [
-      "cloud-platform"]
+    "cloud-platform"]
   }
 }

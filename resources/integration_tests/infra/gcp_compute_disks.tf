@@ -6,6 +6,6 @@ resource "google_compute_disk" "gcp_compute_disks_disk" {
   labels = {
     environment = "dev"
   }
-  size = 10
+  size                      = 10
   physical_block_size_bytes = 4096
 }
