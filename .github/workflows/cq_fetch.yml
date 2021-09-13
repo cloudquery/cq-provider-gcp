@@ -52,6 +52,8 @@ jobs:
         with:
           path: cloudquery
           key: ${{ runner.os }}-${{ hashFiles('cloudquery') }}
+        env:
+          OS: Linux
 
       - name: Download Cloudquery
         if: steps.cache-cq-binary.cache-hit != 'true'
@@ -71,5 +73,4 @@ jobs:
           rm -rf .cq_reattach
           CQ_PROVIDER_DEBUG=1 go run main.go & while [ ! -f .cq_reattach ]; do sleep 1; done && ./cloudquery fetch --config ./client/testdata/nightly.hcl --enable-console-log --fail-on-error
         env:
-          OS: Linux
           CQ_REATTACH_PROVIDERS: .cq_reattach
