@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/cloudquery/cq-provider-sdk v0.4.4
+	github.com/Masterminds/squirrel v1.5.0
 	github.com/cloudquery/faker/v3 v3.7.4
 	github.com/googleapis/gax-go/v2 v2.0.5
 	github.com/hashicorp/go-hclog v0.16.2
@@ -17,7 +18,6 @@ require (
 
 require (
 	cloud.google.com/go v0.81.0 // indirect
-	github.com/Masterminds/squirrel v1.5.0 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/creasty/defaults v1.5.1 // indirect
