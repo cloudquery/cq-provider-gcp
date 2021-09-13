@@ -52,14 +52,14 @@ jobs:
         with:
           path: cloudquery
           key: ${{ runner.os }}-${{ hashFiles('cloudquery') }}
-        env:
-          OS: Linux
 
       - name: Download Cloudquery
         if: steps.cache-cq-binary.cache-hit != 'true'
         run: |
           curl -L https://github.com/cloudquery/cloudquery/releases/latest/download/cloudquery_${OS}_x86_64 -o cloudquery
           chmod a+x cloudquery
+        env:
+          OS: Linux
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@master
