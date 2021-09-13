@@ -221,7 +221,7 @@ func StorageBuckets() *schema.Table {
 				Name:        "gcp_storage_bucket_acls",
 				Description: "Access controls on the bucket.",
 				Resolver:    fetchStorageBucketAcls,
-				IgnoreError:  client.IgnoreErrorHandler,
+				IgnoreError: client.IgnoreErrorHandler,
 				Options:     schema.TableCreationOptions{PrimaryKeys: []string{"bucket_cq_id", "id"}},
 				Columns: []schema.Column{
 					{
