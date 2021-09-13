@@ -580,6 +580,7 @@ func resolveBucketPolicy(ctx context.Context, meta schema.ClientMeta, resource *
 	data, err := json.Marshal(output)
 	if err != nil {
 		if client.IgnoreErrorHandler(err) {
+			meta.Logger().Warn("permission denied", "error", err)
 			return nil
 		}
 		return err
