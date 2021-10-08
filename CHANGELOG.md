@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### :gear: Changed
 * Upgraded to SDK Version [v0.4.9](https://github.com/cloudquery/cq-provider-sdk/blob/main/CHANGELOG.md)
+* Dropped column `post_key_revocation_action_type` from `gcp_compute_instances`
 
 
 ## [v0.4.7] - 2021-10-03
