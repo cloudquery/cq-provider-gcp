@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 ###### SDK Version: 0.5.7
+### :spider: Fixed
+* Fixed issues with disabled services [#84](https://github.com/cloudquery/cq-provider-gcp/pull/84)
 
 ## [v0.5.0] - 2021-11-21
 ###### SDK Version: 0.5.0
