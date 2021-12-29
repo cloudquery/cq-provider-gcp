@@ -13,7 +13,7 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/client"
 	faker "github.com/cloudquery/faker/v3"
 	"github.com/julienschmidt/httprouter"
-	bigquery "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/option"
 )
 

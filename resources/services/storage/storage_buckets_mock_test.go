@@ -14,19 +14,19 @@ import (
 	faker "github.com/cloudquery/faker/v3"
 	"github.com/julienschmidt/httprouter"
 	"google.golang.org/api/option"
-	storage2 "google.golang.org/api/storage/v1"
+	storage "google.golang.org/api/storage/v1"
 )
 
 func createStorageTestServer() (*client.Services, error) {
 	ctx := context.Background()
-	var bucket storage2.Bucket
+	var bucket storage.Bucket
 	if err := faker.FakeData(&bucket); err != nil {
 		return nil, err
 	}
 	bucket.Name = "testBucket"
 	mux := httprouter.New()
 	mux.GET("/b", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-		resp := &storage2.Buckets{Items: []*storage2.Bucket{&bucket}}
+		resp := &storage.Buckets{Items: []*storage.Bucket{&bucket}}
 		b, err := json.Marshal(resp)
 		if err != nil {
 			http.Error(w, "unable to marshal request: "+err.Error(), http.StatusBadRequest)
@@ -38,7 +38,7 @@ func createStorageTestServer() (*client.Services, error) {
 		}
 	})
 
-	var policy storage2.Policy
+	var policy storage.Policy
 	if err := faker.FakeData(&policy); err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func createStorageTestServer() (*client.Services, error) {
 	})
 
 	ts := httptest.NewServer(mux)
-	svc, err := storage2.NewService(ctx, option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
+	svc, err := storage.NewService(ctx, option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
 	if err != nil {
 		return nil, err
 	}

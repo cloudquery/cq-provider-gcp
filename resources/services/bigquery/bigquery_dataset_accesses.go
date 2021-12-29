@@ -7,7 +7,7 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/client"
 
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	bigquery "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/bigquery/v2"
 )
 
 func BigqueryDatasetAccesses() *schema.Table {

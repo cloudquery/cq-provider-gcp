@@ -3,21 +3,21 @@ module github.com/cloudquery/cq-provider-gcp
 go 1.17
 
 require (
-	github.com/Masterminds/squirrel v1.5.0 // indirect
 	github.com/cloudquery/cq-provider-sdk v0.6.0-beta
-	github.com/cloudquery/faker/v3 v3.7.4
+	github.com/cloudquery/faker/v3 v3.7.5
 	github.com/googleapis/gax-go/v2 v2.0.5
 	github.com/hashicorp/go-hclog v1.0.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/spf13/cast v1.4.1
 	github.com/thoas/go-funk v0.9.1
-	golang.org/x/sys v0.0.0-20211025201205-69cdffdb9359 // indirect
+	golang.org/x/sys v0.0.0-20211210111614-af8b64212486 // indirect
 	google.golang.org/api v0.51.0
 	google.golang.org/grpc v1.42.0
 )
 
 require (
-	cloud.google.com/go v0.88.0 // indirect
+	cloud.google.com/go v0.90.0 // indirect
+	github.com/Masterminds/squirrel v1.5.0 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/creasty/defaults v1.5.2 // indirect
@@ -76,11 +76,11 @@ require (
 	go.uber.org/atomic v1.6.0 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/net v0.0.0-20210825183410-e898025ed96a // indirect
-	golang.org/x/oauth2 v0.0.0-20210628180205-a41e5a781914 // indirect
+	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8 // indirect
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20211129164237-f09f9a12af12 // indirect
+	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
