@@ -92,10 +92,11 @@ func ComputeAutoscalers() *schema.Table {
 				Resolver:    schema.PathResolver("AutoscalingPolicy.ScaleInControl.TimeWindowSec"),
 			},
 			{
-				Name:        "scaling_schedules",
-				Description: "Scaling schedules defined for an autoscaler Multiple schedules can be set on an autoscaler, and they can overlap During overlapping periods the greatest min_required_replicas of all scaling schedules is applied Up to 128 scaling schedules are allowed",
-				Type:        schema.TypeJSON,
-				Resolver:    schema.PathResolver("AutoscalingPolicy.ScalingSchedules"),
+				Name:          "scaling_schedules",
+				Description:   "Scaling schedules defined for an autoscaler Multiple schedules can be set on an autoscaler, and they can overlap During overlapping periods the greatest min_required_replicas of all scaling schedules is applied Up to 128 scaling schedules are allowed",
+				Type:          schema.TypeJSON,
+				IgnoreInTests: true, // TODO test again
+				Resolver:      schema.PathResolver("AutoscalingPolicy.ScalingSchedules"),
 			},
 			{
 				Name:        "creation_timestamp",
@@ -134,9 +135,10 @@ func ComputeAutoscalers() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "scaling_schedule_status",
-				Description: "Status information of existing scaling schedules",
-				Type:        schema.TypeJSON,
+				Name:          "scaling_schedule_status",
+				Description:   "Status information of existing scaling schedules",
+				Type:          schema.TypeJSON,
+				IgnoreInTests: true, // TODO test again
 			},
 			{
 				Name:        "self_link",
@@ -216,7 +218,7 @@ func ComputeAutoscalers() *schema.Table {
 // ====================================================================================================================
 //                                               Table Resolver Functions
 // ====================================================================================================================
-func fetchComputeAutoscalers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchComputeAutoscalers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	nextPageToken := ""
 	c := meta.(*client.Client)
 	for {
@@ -248,7 +250,7 @@ func resolveComputeAutoscalerStatusDetails(ctx context.Context, meta schema.Clie
 	}
 	return resource.Set("status_details", res)
 }
-func fetchComputeAutoscalerCustomMetricUtilizations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchComputeAutoscalerCustomMetricUtilizations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	autoscaler := parent.Item.(*compute.Autoscaler)
 	if autoscaler.AutoscalingPolicy != nil {
 		res <- autoscaler.AutoscalingPolicy.CustomMetricUtilizations

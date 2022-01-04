@@ -118,10 +118,11 @@ func LoggingMetrics() *schema.Table {
 				Resolver:    schema.PathResolver("MetricDescriptor.MetricKind"),
 			},
 			{
-				Name:        "metric_descriptor_monitored_resource_types",
-				Description: "Read-only If present, then a time series, which is identified partially by a metric type and a MonitoredResourceDescriptor, that is associated with this metric type can only be associated with one of the monitored resource types listed here",
-				Type:        schema.TypeStringArray,
-				Resolver:    schema.PathResolver("MetricDescriptor.MonitoredResourceTypes"),
+				Name:          "metric_descriptor_monitored_resource_types",
+				Description:   "Read-only If present, then a time series, which is identified partially by a metric type and a MonitoredResourceDescriptor, that is associated with this metric type can only be associated with one of the monitored resource types listed here",
+				Type:          schema.TypeStringArray,
+				IgnoreInTests: true, // TODO test again
+				Resolver:      schema.PathResolver("MetricDescriptor.MonitoredResourceTypes"),
 			},
 			{
 				Name:        "metric_descriptor_name",
@@ -205,7 +206,7 @@ func LoggingMetrics() *schema.Table {
 // ====================================================================================================================
 //                                               Table Resolver Functions
 // ====================================================================================================================
-func fetchLoggingMetrics(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchLoggingMetrics(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
@@ -226,7 +227,7 @@ func fetchLoggingMetrics(ctx context.Context, meta schema.ClientMeta, parent *sc
 	}
 	return nil
 }
-func fetchLoggingMetricDescriptorLabels(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchLoggingMetricDescriptorLabels(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(*logging.LogMetric)
 	if !ok {
 		return fmt.Errorf("expected *logging.LogMetric but got %T", p)

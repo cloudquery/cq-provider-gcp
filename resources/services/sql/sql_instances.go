@@ -613,9 +613,10 @@ func SQLInstances() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "suspension_reason",
-				Description: "If the instance state is SUSPENDED, the reason for the suspension  Possible values:   \"SQL_SUSPENSION_REASON_UNSPECIFIED\" - This is an unknown suspension reason   \"BILLING_ISSUE\" - The instance is suspended due to billing issues (for example:, GCP account issue)   \"LEGAL_ISSUE\" - The instance is suspended due to illegal content (for example:, child pornography, copyrighted material, etc)   \"OPERATIONAL_ISSUE\" - The instance is causing operational issues (for example:, causing the database to crash)",
-				Type:        schema.TypeStringArray,
+				Name:          "suspension_reason",
+				Description:   "If the instance state is SUSPENDED, the reason for the suspension  Possible values:   \"SQL_SUSPENSION_REASON_UNSPECIFIED\" - This is an unknown suspension reason   \"BILLING_ISSUE\" - The instance is suspended due to billing issues (for example:, GCP account issue)   \"LEGAL_ISSUE\" - The instance is suspended due to illegal content (for example:, child pornography, copyrighted material, etc)   \"OPERATIONAL_ISSUE\" - The instance is causing operational issues (for example:, causing the database to crash)",
+				Type:          schema.TypeStringArray,
+				IgnoreInTests: true, // TODO: test again
 			},
 		},
 		Relations: []*schema.Table{
@@ -653,9 +654,10 @@ func SQLInstances() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_sql_instance_settings_deny_maintenance_periods",
-				Description: "Deny Maintenance Periods This specifies a date range during when all CSA rollout will be denied",
-				Resolver:    fetchSqlInstanceSettingsDenyMaintenancePeriods,
+				Name:          "gcp_sql_instance_settings_deny_maintenance_periods",
+				Description:   "Deny Maintenance Periods This specifies a date range during when all CSA rollout will be denied",
+				Resolver:      fetchSqlInstanceSettingsDenyMaintenancePeriods,
+				IgnoreInTests: true, // TODO: test again
 				Columns: []schema.Column{
 					{
 						Name:        "instance_cq_id",
@@ -686,9 +688,10 @@ func SQLInstances() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_sql_instance_settings_ip_config_authorized_networks",
-				Description: "An entry for an Access Control list",
-				Resolver:    fetchSqlInstanceSettingsIpConfigurationAuthorizedNetworks,
+				Name:          "gcp_sql_instance_settings_ip_config_authorized_networks",
+				Description:   "An entry for an Access Control list",
+				Resolver:      fetchSqlInstanceSettingsIpConfigurationAuthorizedNetworks,
+				IgnoreInTests: true, // TODO: test again after adding instance
 				Columns: []schema.Column{
 					{
 						Name:        "instance_cq_id",
@@ -730,7 +733,7 @@ func SQLInstances() *schema.Table {
 // ====================================================================================================================
 //                                               Table Resolver Functions
 // ====================================================================================================================
-func fetchSqlInstances(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchSqlInstances(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
@@ -758,19 +761,19 @@ func resolveSQLInstanceSettingsDatabaseFlags(ctx context.Context, meta schema.Cl
 	}
 	return resource.Set("settings_database_flags", flags)
 }
-func fetchSqlInstanceIpAddresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchSqlInstanceIpAddresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	db := parent.Item.(*sql.DatabaseInstance)
 	res <- db.IpAddresses
 	return nil
 }
-func fetchSqlInstanceSettingsDenyMaintenancePeriods(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchSqlInstanceSettingsDenyMaintenancePeriods(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	db := parent.Item.(*sql.DatabaseInstance)
 	if db.Settings != nil {
 		res <- db.Settings.DenyMaintenancePeriods
 	}
 	return nil
 }
-func fetchSqlInstanceSettingsIpConfigurationAuthorizedNetworks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchSqlInstanceSettingsIpConfigurationAuthorizedNetworks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	db := parent.Item.(*sql.DatabaseInstance)
 	if db.Settings != nil && db.Settings.IpConfiguration != nil {
 		res <- db.Settings.IpConfiguration.AuthorizedNetworks

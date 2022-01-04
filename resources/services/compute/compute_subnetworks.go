@@ -101,10 +101,11 @@ func ComputeSubnetworks() *schema.Table {
 				Resolver:    schema.PathResolver("LogConfig.Metadata"),
 			},
 			{
-				Name:        "log_config_metadata_fields",
-				Description: "Can only be specified if VPC flow logs for this subnetwork is enabled and \"metadata\" was set to CUSTOM_METADATA",
-				Type:        schema.TypeStringArray,
-				Resolver:    schema.PathResolver("LogConfig.MetadataFields"),
+				Name:          "log_config_metadata_fields",
+				Description:   "Can only be specified if VPC flow logs for this subnetwork is enabled and \"metadata\" was set to CUSTOM_METADATA",
+				Type:          schema.TypeStringArray,
+				IgnoreInTests: true, // TODO test again
+				Resolver:      schema.PathResolver("LogConfig.MetadataFields"),
 			},
 			{
 				Name:        "name",
@@ -188,7 +189,7 @@ func ComputeSubnetworks() *schema.Table {
 // ====================================================================================================================
 //                                               Table Resolver Functions
 // ====================================================================================================================
-func fetchComputeSubnetworks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchComputeSubnetworks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
@@ -212,7 +213,7 @@ func fetchComputeSubnetworks(ctx context.Context, meta schema.ClientMeta, parent
 	}
 	return nil
 }
-func fetchComputeSubnetworkSecondaryIpRanges(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchComputeSubnetworkSecondaryIpRanges(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*compute.Subnetwork)
 	res <- r.SecondaryIpRanges
 	return nil

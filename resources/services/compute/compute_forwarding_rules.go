@@ -93,9 +93,10 @@ func ComputeForwardingRules() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "labels",
-				Description: "Labels for this resource",
-				Type:        schema.TypeJSON,
+				Name:          "labels",
+				Description:   "Labels for this resource",
+				Type:          schema.TypeJSON,
+				IgnoreInTests: true, // TODO test again
 			},
 			{
 				Name:        "load_balancing_scheme",
@@ -123,9 +124,10 @@ func ComputeForwardingRules() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "ports",
-				Description: "The ports field is only supported when the forwarding rule references a backend_service directly Supported load balancing products are Internal TCP/UDP Load Balancing and Network Load Balancing Only packets addressed to the specified list of ports are forwarded to backends  You can only use one of ports and port_range, or allPorts The three are mutually exclusive  You can specify a list of up to five ports, which can be non-contiguous  For Internal TCP/UDP Load Balancing, if you specify allPorts, you should not specify ports  For more information, see Port specifications (/load-balancing/docs/forwarding-rule-concepts#port_specifications)",
-				Type:        schema.TypeStringArray,
+				Name:          "ports",
+				Description:   "The ports field is only supported when the forwarding rule references a backend_service directly Supported load balancing products are Internal TCP/UDP Load Balancing and Network Load Balancing Only packets addressed to the specified list of ports are forwarded to backends  You can only use one of ports and port_range, or allPorts The three are mutually exclusive  You can specify a list of up to five ports, which can be non-contiguous  For Internal TCP/UDP Load Balancing, if you specify allPorts, you should not specify ports  For more information, see Port specifications (/load-balancing/docs/forwarding-rule-concepts#port_specifications)",
+				Type:          schema.TypeStringArray,
+				IgnoreInTests: true, // TODO test again
 			},
 			{
 				Name:        "psc_connection_id",
@@ -168,7 +170,7 @@ func ComputeForwardingRules() *schema.Table {
 // ====================================================================================================================
 //                                               Table Resolver Functions
 // ====================================================================================================================
-func fetchComputeForwardingRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchComputeForwardingRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {

@@ -44,12 +44,8 @@ func GcpMockTestHelper(t *testing.T, table *schema.Table, createService func() (
 	})
 }
 
-func GcpTestHelper(t *testing.T, table *schema.Table, snapshotDirPath string) {
+func GcpTestHelper(t *testing.T, table *schema.Table) {
 	t.Helper()
-	cfg := `
-	gcp_debug = false
-	`
-
 	providertest.TestResource(t, providertest.ResourceTestCase{
 		Provider: &provider.Provider{
 			Name:      "gcp_mock_test_provider",
@@ -62,9 +58,6 @@ func GcpTestHelper(t *testing.T, table *schema.Table, snapshotDirPath string) {
 				"test_resource": table,
 			},
 		},
-		Table:        table,
-		Config:       cfg,
-		SnapshotsDir: snapshotDirPath,
+		Table: table,
 	})
-
 }

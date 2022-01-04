@@ -39,9 +39,10 @@ func IamRoles() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "included_permissions",
-				Description: "The names of the permissions this role grants when bound in an IAM policy",
-				Type:        schema.TypeStringArray,
+				Name:          "included_permissions",
+				Description:   "The names of the permissions this role grants when bound in an IAM policy",
+				Type:          schema.TypeStringArray,
+				IgnoreInTests: true, // TODO: test again
 			},
 			{
 				Name:        "name",
@@ -65,7 +66,7 @@ func IamRoles() *schema.Table {
 // ====================================================================================================================
 //                                               Table Resolver Functions
 // ====================================================================================================================
-func fetchIamRoles(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchIamRoles(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {

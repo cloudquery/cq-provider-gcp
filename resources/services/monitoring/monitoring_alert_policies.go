@@ -82,9 +82,10 @@ func MonitoringAlertPolicies() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:        "notification_channels",
-				Description: "Identifies the notification channels to which notifications should be sent when incidents are opened or closed or when new violations occur on an already opened incident Each element of this array corresponds to the name field in each of the NotificationChannel objects that are returned from the ListNotificationChannels method",
-				Type:        schema.TypeStringArray,
+				Name:          "notification_channels",
+				Description:   "Identifies the notification channels to which notifications should be sent when incidents are opened or closed or when new violations occur on an already opened incident Each element of this array corresponds to the name field in each of the NotificationChannel objects that are returned from the ListNotificationChannels method",
+				Type:          schema.TypeStringArray,
+				IgnoreInTests: true, // TODO add notification channel
 			},
 			{
 				Name:        "labels",
@@ -328,7 +329,7 @@ func MonitoringAlertPolicies() *schema.Table {
 // ====================================================================================================================
 //                                               Table Resolver Functions
 // ====================================================================================================================
-func fetchMonitoringAlertPolicies(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchMonitoringAlertPolicies(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
@@ -350,7 +351,7 @@ func fetchMonitoringAlertPolicies(ctx context.Context, meta schema.ClientMeta, p
 	}
 	return nil
 }
-func fetchMonitoringAlertPolicyConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchMonitoringAlertPolicyConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(*monitoring.AlertPolicy)
 	if !ok {
 		return fmt.Errorf("expected *monitoring.AlertPolicy but got %T", p)
@@ -359,7 +360,7 @@ func fetchMonitoringAlertPolicyConditions(ctx context.Context, meta schema.Clien
 	res <- p.Conditions
 	return nil
 }
-func fetchMonitoringAlertPolicyConditionAbsentAggregations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchMonitoringAlertPolicyConditionAbsentAggregations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(*monitoring.Condition)
 	if !ok {
 		return fmt.Errorf("expected *monitoring.Condition but got %T", p)
@@ -371,7 +372,7 @@ func fetchMonitoringAlertPolicyConditionAbsentAggregations(ctx context.Context, 
 	res <- p.ConditionAbsent.Aggregations
 	return nil
 }
-func fetchMonitoringAlertPolicyConditionThresholdAggregations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchMonitoringAlertPolicyConditionThresholdAggregations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(*monitoring.Condition)
 	if !ok {
 		return fmt.Errorf("expected *monitoring.Condition but got %T", p)
@@ -383,7 +384,7 @@ func fetchMonitoringAlertPolicyConditionThresholdAggregations(ctx context.Contex
 	res <- p.ConditionThreshold.Aggregations
 	return nil
 }
-func fetchMonitoringAlertPolicyConditionDenominatorAggregations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan interface{}) error {
+func fetchMonitoringAlertPolicyConditionDenominatorAggregations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, ok := parent.Item.(*monitoring.Condition)
 	if !ok {
 		return fmt.Errorf("expected *monitoring.Condition but got %T", p)
