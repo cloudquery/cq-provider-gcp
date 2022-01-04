@@ -73,10 +73,9 @@ func DNSManagedZones() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:          "labels",
-				Description:   "User assigned labels for this resource",
-				Type:          schema.TypeJSON,
-				IgnoreInTests: true, // TODO - tf module not support labels
+				Name:        "labels",
+				Description: "User assigned labels for this resource",
+				Type:        schema.TypeJSON,
 			},
 			{
 				Name:        "name",
@@ -189,7 +188,6 @@ func DNSManagedZones() *schema.Table {
 						Type: schema.TypeString,
 					},
 				},
-				IgnoreInTests: true, // TODO can be solved
 			},
 			{
 				Name:     "gcp_dns_managed_zone_forwarding_config_target_name_servers",

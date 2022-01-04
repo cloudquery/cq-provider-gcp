@@ -45,7 +45,7 @@ module "dns-forwarding-zone" {
 
 module "dns-private-zone" {
   source     = "terraform-google-modules/cloud-dns/google"
-  version    = "3.0.0"
+  version    = "4.1.0"
   project_id = local.project
   type       = "private"
   name       = "${local.prefix}-private-zone"
@@ -73,6 +73,8 @@ module "dns-private-zone" {
       ]
     },
   ]
+
+  labels = local.labels
 }
 
 ################################################################################
@@ -81,7 +83,7 @@ module "dns-private-zone" {
 
 module "dns-public-zone" {
   source     = "terraform-google-modules/cloud-dns/google"
-  version    = "3.0.0"
+  version    = "4.1.0"
   project_id = local.project
   type       = "public"
   name       = "${local.prefix}-public-zone"
@@ -110,4 +112,12 @@ module "dns-public-zone" {
     },
   ]
 
+  dnssec_config = {
+    algorithm  = "rsasha256"
+    key_length = 1024
+    key_type   = "zoneSigning"
+    kind       = "dns#dnsKeySpec"
+  }
+
+  labels = local.labels
 }
