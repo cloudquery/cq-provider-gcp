@@ -7,6 +7,8 @@ locals {
   region  = "us-central1"
   prefix  = "cq-integration-test"
 
+  domain = "cq.example.com"
+
   labels = {
     "integration-test" = "true"
     "environment"      = "dev"

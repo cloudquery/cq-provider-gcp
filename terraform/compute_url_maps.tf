@@ -9,14 +9,14 @@ resource "google_compute_url_map" "url_map" {
 
   host_rule {
     hosts = [
-      "cq.example.com"
+      local.domain
     ]
     path_matcher = "root"
   }
 
   host_rule {
     hosts = [
-      "beta.cq.example.com"
+      "beta.${local.domain}",
     ]
     path_matcher = "secondary"
   }
@@ -73,8 +73,37 @@ resource "google_compute_url_map" "url_map" {
 
   test {
     service = google_compute_backend_service.internal-backend-service.id
-    host    = "beta.cq.example.com"
+    host    = "beta.${local.domain}"
     path    = "/healthcheck"
+  }
+
+  depends_on = [
+    google_compute_backend_service.internal-backend-service
+  ]
+}
+
+resource "google_compute_url_map" "external_url_map" {
+  name        = "${local.prefix}-external-urlmap"
+
+  default_service = google_compute_backend_service.backend-service.id
+
+  host_rule {
+    hosts = [
+      "ex.${local.domain}",
+    ]
+    path_matcher = "external-1"
+  }
+
+  path_matcher {
+    name            = "external-1"
+    default_service = google_compute_backend_service.backend-service.id
+
+    path_rule {
+      paths = [
+        "/home"
+      ]
+      service = google_compute_backend_service.backend-service.id
+    }
   }
 
   depends_on = [
