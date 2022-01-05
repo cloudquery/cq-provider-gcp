@@ -287,10 +287,9 @@ func ComputeImages() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:          "storage_locations",
-				Description:   "Cloud Storage bucket storage location of the image (regional or multi-regional)",
-				Type:          schema.TypeStringArray,
-				IgnoreInTests: true,
+				Name:        "storage_locations",
+				Description: "Cloud Storage bucket storage location of the image (regional or multi-regional)",
+				Type:        schema.TypeStringArray,
 			},
 		},
 	}
