@@ -50,10 +50,9 @@ func ResourceManagerProjects() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:          "labels",
-				Description:   "The labels associated with this project",
-				Type:          schema.TypeJSON,
-				IgnoreInTests: true,
+				Name:        "labels",
+				Description: "The labels associated with this project",
+				Type:        schema.TypeJSON,
 			},
 			{
 				Name:        "name",

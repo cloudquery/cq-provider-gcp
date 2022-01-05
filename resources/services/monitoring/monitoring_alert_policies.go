@@ -82,10 +82,9 @@ func MonitoringAlertPolicies() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:          "notification_channels",
-				Description:   "Identifies the notification channels to which notifications should be sent when incidents are opened or closed or when new violations occur on an already opened incident Each element of this array corresponds to the name field in each of the NotificationChannel objects that are returned from the ListNotificationChannels method",
-				Type:          schema.TypeStringArray,
-				IgnoreInTests: true,
+				Name:        "notification_channels",
+				Description: "Identifies the notification channels to which notifications should be sent when incidents are opened or closed or when new violations occur on an already opened incident Each element of this array corresponds to the name field in each of the NotificationChannel objects that are returned from the ListNotificationChannels method",
+				Type:        schema.TypeStringArray,
 			},
 			{
 				Name:        "labels",
