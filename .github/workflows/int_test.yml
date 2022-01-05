@@ -54,7 +54,7 @@ jobs:
 
       - name: Integration Test
         run: |
-          go test --timeout=5m ./...
+          go test --timeout=5m --tags=integration ./...
         env:
           CQ_NO_TELEMETRY: 1
 
