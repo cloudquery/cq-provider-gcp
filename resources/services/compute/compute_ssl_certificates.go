@@ -59,14 +59,14 @@ func ComputeSslCertificates() *schema.Table {
 				Name:          "managed_domain_status",
 				Description:   "[Output only] Detailed statuses of the domains specified for managed certificate resource",
 				Type:          schema.TypeJSON,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("Managed.DomainStatus"),
 			},
 			{
 				Name:          "managed_domains",
 				Description:   "The domains for which a managed SSL certificate will be generated Each Google-managed SSL certificate supports up to the maximum number of domains per Google-managed SSL certificate (/load-balancing/docs/quotas#ssl_certificates)",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("Managed.Domains"),
 			},
 			{
@@ -111,7 +111,7 @@ func ComputeSslCertificates() *schema.Table {
 				Name:          "subject_alternative_names",
 				Description:   "Domains associated with the certificate via Subject Alternative Name",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "type",

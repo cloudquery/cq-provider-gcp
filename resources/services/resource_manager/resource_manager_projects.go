@@ -36,7 +36,7 @@ func ResourceManagerProjects() *schema.Table {
 				Name:          "delete_time",
 				Description:   "The time at which this resource was requested for deletion",
 				Type:          schema.TypeTimestamp,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      client.ISODateResolver("DeleteTime"),
 			},
 			{
@@ -53,7 +53,7 @@ func ResourceManagerProjects() *schema.Table {
 				Name:          "labels",
 				Description:   "The labels associated with this project",
 				Type:          schema.TypeJSON,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "name",

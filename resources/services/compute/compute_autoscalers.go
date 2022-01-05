@@ -95,7 +95,7 @@ func ComputeAutoscalers() *schema.Table {
 				Name:          "scaling_schedules",
 				Description:   "Scaling schedules defined for an autoscaler Multiple schedules can be set on an autoscaler, and they can overlap During overlapping periods the greatest min_required_replicas of all scaling schedules is applied Up to 128 scaling schedules are allowed",
 				Type:          schema.TypeJSON,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("AutoscalingPolicy.ScalingSchedules"),
 			},
 			{
@@ -138,7 +138,7 @@ func ComputeAutoscalers() *schema.Table {
 				Name:          "scaling_schedule_status",
 				Description:   "Status information of existing scaling schedules",
 				Type:          schema.TypeJSON,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "self_link",

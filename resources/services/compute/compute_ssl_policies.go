@@ -35,7 +35,7 @@ func ComputeSslPolicies() *schema.Table {
 				Name:          "custom_features",
 				Description:   "A list of features enabled when the selected profile is CUSTOM The - method returns the set of features that can be specified in this list This field must be empty if the profile is not CUSTOM",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "description",
@@ -46,7 +46,7 @@ func ComputeSslPolicies() *schema.Table {
 				Name:          "enabled_features",
 				Description:   "The list of features enabled in the SSL policy",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "fingerprint",
@@ -89,7 +89,7 @@ func ComputeSslPolicies() *schema.Table {
 			{
 				Name:          "gcp_compute_ssl_policy_warnings",
 				Resolver:      fetchComputeSslPolicyWarnings,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "ssl_policy_cq_id",

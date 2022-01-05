@@ -109,21 +109,21 @@ func KmsKeyrings() *schema.Table {
 						Name:          "primary_attestation_cert_chains_cavium_certs",
 						Description:   "Cavium certificate chain corresponding to the attestation",
 						Type:          schema.TypeStringArray,
-						IgnoreInTests: true, // TODO: test again - not sure can be set
+						IgnoreInTests: true,
 						Resolver:      schema.PathResolver("Primary.Attestation.CertChains.CaviumCerts"),
 					},
 					{
 						Name:          "primary_attestation_cert_chains_google_card_certs",
 						Description:   "Google card certificate chain corresponding to the attestation",
 						Type:          schema.TypeStringArray,
-						IgnoreInTests: true, // TODO: test again - not sure can be set
+						IgnoreInTests: true,
 						Resolver:      schema.PathResolver("Primary.Attestation.CertChains.GoogleCardCerts"),
 					},
 					{
 						Name:          "primary_attestation_cert_chains_google_partition_certs",
 						Description:   "Google partition certificate chain corresponding to the attestation",
 						Type:          schema.TypeStringArray,
-						IgnoreInTests: true, // TODO: test again - not sure can be set
+						IgnoreInTests: true,
 						Resolver:      schema.PathResolver("Primary.Attestation.CertChains.GooglePartitionCerts"),
 					},
 					{
@@ -148,14 +148,14 @@ func KmsKeyrings() *schema.Table {
 						Name:          "primary_destroy_event_time",
 						Description:   "The time this CryptoKeyVersion's key material was destroyed Only present if state is DESTROYED",
 						Type:          schema.TypeTimestamp,
-						IgnoreInTests: true, // TODO: test again - not sure can be set
+						IgnoreInTests: true,
 						Resolver:      client.ISODateResolver("Primary.DestroyEventTime"),
 					},
 					{
 						Name:          "primary_destroy_time",
 						Description:   "The time this CryptoKeyVersion's key material is scheduled for destruction Only present if state is DESTROY_SCHEDULED",
 						Type:          schema.TypeTimestamp,
-						IgnoreInTests: true, // TODO: test again - not sure can be set
+						IgnoreInTests: true,
 						Resolver:      client.ISODateResolver("Primary.DestroyTime"),
 					},
 					{
@@ -186,7 +186,7 @@ func KmsKeyrings() *schema.Table {
 						Name:          "primary_import_time",
 						Description:   "The time at which this CryptoKeyVersion's key material was imported",
 						Type:          schema.TypeTimestamp,
-						IgnoreInTests: true, // TODO: test again - not sure can be set
+						IgnoreInTests: true,
 						Resolver:      client.ISODateResolver("Primary.ImportTime"),
 					},
 					{

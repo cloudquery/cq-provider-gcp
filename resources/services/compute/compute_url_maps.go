@@ -40,28 +40,28 @@ func ComputeURLMaps() *schema.Table {
 				Name:          "cors_policy_allow_headers",
 				Description:   "Specifies the content for the Access-Control-Allow-Headers header",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("DefaultRouteAction.CorsPolicy.AllowHeaders"),
 			},
 			{
 				Name:          "cors_policy_allow_methods",
 				Description:   "Specifies the content for the Access-Control-Allow-Methods header",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("DefaultRouteAction.CorsPolicy.AllowMethods"),
 			},
 			{
 				Name:          "cors_policy_allow_origin_regexes",
 				Description:   "Specifies the regualar expression patterns that match allowed origins For regular expression grammar please see githubcom/google/re2/wiki/Syntax An origin is allowed if it matches either an item in allowOrigins or an item in allowOriginRegexes",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("DefaultRouteAction.CorsPolicy.AllowOriginRegexes"),
 			},
 			{
 				Name:          "cors_policy_allow_origins",
 				Description:   "Specifies the list of origins that will be allowed to do CORS requests An origin is allowed if it matches either an item in allowOrigins or an item in allowOriginRegexes",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("DefaultRouteAction.CorsPolicy.AllowOrigins"),
 			},
 			{
@@ -74,7 +74,7 @@ func ComputeURLMaps() *schema.Table {
 				Name:          "cors_policy_expose_headers",
 				Description:   "Specifies the content for the Access-Control-Expose-Headers header",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("DefaultRouteAction.CorsPolicy.ExposeHeaders"),
 			},
 			{
@@ -153,7 +153,7 @@ func ComputeURLMaps() *schema.Table {
 				Name:          "retry_policy_retry_conditions",
 				Description:   "Specfies one or more conditions when this retry rule applies",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("DefaultRouteAction.RetryPolicy.RetryConditions"),
 			},
 			{
@@ -235,28 +235,28 @@ func ComputeURLMaps() *schema.Table {
 				Name:          "header_action_request_headers_to_add",
 				Description:   "Headers to add to a matching request prior to forwarding the request to the backendService",
 				Type:          schema.TypeJSON,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      resolveComputeURLMapHeaderActionRequestHeadersToAdd,
 			},
 			{
 				Name:          "header_action_request_headers_to_remove",
 				Description:   "A list of header names for headers that need to be removed from the request prior to forwarding the request to the backendService",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("HeaderAction.RequestHeadersToRemove"),
 			},
 			{
 				Name:          "header_action_response_headers_to_add",
 				Description:   "Headers to add the response prior to sending the response back to the client",
 				Type:          schema.TypeJSON,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      resolveComputeURLMapHeaderActionResponseHeadersToAdd,
 			},
 			{
 				Name:          "header_action_response_headers_to_remove",
 				Description:   "A list of header names for headers that need to be removed from the response prior to sending the response back to the client",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("HeaderAction.ResponseHeadersToRemove"),
 			},
 			{
@@ -290,7 +290,7 @@ func ComputeURLMaps() *schema.Table {
 				Name:          "gcp_compute_url_map_weighted_backend_services",
 				Description:   "In contrast to a single BackendService in HttpRouteAction to which all matching traffic is directed to, WeightedBackendService allows traffic to be split across multiple BackendServices",
 				Resolver:      fetchComputeUrlMapWeightedBackendServices,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "url_map_cq_id",
@@ -359,7 +359,7 @@ func ComputeURLMaps() *schema.Table {
 						Name:          "default_route_action",
 						Description:   "defaultRouteAction takes effect when none of the pathRules or routeRules match The load balancer performs advanced routing actions like URL rewrites, header transformations, etc prior to forwarding the request to the selected backend If defaultRouteAction specifies any weightedBackendServices, defaultService must not be set Conversely if defaultService is set, defaultRouteAction cannot contain any  weightedBackendServices Only one of defaultRouteAction or defaultUrlRedirect must be set UrlMaps for external HTTP(S) load balancers support only the urlRewrite action within a pathMatcher's defaultRouteAction",
 						Type:          schema.TypeJSON,
-						IgnoreInTests: true, // TODO test again
+						IgnoreInTests: true,
 						Resolver:      resolveComputeURLMapPathMatcherDefaultRouteAction,
 					},
 					{
@@ -412,7 +412,7 @@ func ComputeURLMaps() *schema.Table {
 						Name:          "header_action",
 						Description:   "Specifies changes to request and response headers that need to take effect for the selected backendService HeaderAction specified here are applied after the matching HttpRouteRule HeaderAction and before the HeaderAction in the UrlMap  Note that headerAction is not supported for Loadbalancers that have their loadBalancingScheme set to EXTERNAL Not supported when the URL map is bound to target gRPC proxy that has validateForProxyless field set to true",
 						Type:          schema.TypeJSON,
-						IgnoreInTests: true, // TODO test again
+						IgnoreInTests: true,
 						Resolver:      resolveComputeURLMapPathMatcherHeaderAction,
 					},
 					{
@@ -430,7 +430,7 @@ func ComputeURLMaps() *schema.Table {
 						Name:          "route_rules",
 						Description:   "The list of HTTP route rules Use this list instead of pathRules when advanced route matching and routing actions are desired routeRules are evaluated in order of priority, from the lowest to highest number Within a given pathMatcher, you can set only one of pathRules or routeRules",
 						Type:          schema.TypeJSON,
-						IgnoreInTests: true, // TODO test again
+						IgnoreInTests: true,
 						Resolver:      resolveComputeURLMapPathMatcherRouteRules,
 					},
 				},
@@ -465,7 +465,7 @@ func ComputeURLMaps() *schema.Table {
 						Name:          "headers",
 						Description:   "HTTP headers for this request If headers contains a host header, then host must also match the header value",
 						Type:          schema.TypeJSON,
-						IgnoreInTests: true, // TODO test again
+						IgnoreInTests: true,
 						Resolver:      resolveComputeURLMapTestHeaders,
 					},
 					{

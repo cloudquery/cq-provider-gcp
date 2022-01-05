@@ -30,7 +30,7 @@ func BigqueryDatasetAccesses() *schema.Table {
 				Name:          "target_types",
 				Description:   "Which resources in the dataset this entry applies to.",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      resolveBigqueryDatasetAccessTargetTypes,
 			},
 			{

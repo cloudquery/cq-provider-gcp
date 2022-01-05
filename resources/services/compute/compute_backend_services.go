@@ -35,7 +35,7 @@ func ComputeBackendServices() *schema.Table {
 				Name:          "cdn_policy_bypass_cache_on_request_headers",
 				Description:   "Bypass the cache when the specified request headers are matched - eg Pragma or Authorization headers Up to 5 headers can be specified The cache is bypassed for all cdnPolicycacheMode settings",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      resolveComputeBackendServiceCdnPolicyBypassCacheOnRequestHeaders,
 			},
 			{
@@ -60,14 +60,14 @@ func ComputeBackendServices() *schema.Table {
 				Name:          "cdn_policy_cache_key_policy_query_string_blacklist",
 				Description:   "Names of query string parameters to exclude in cache keys All other parameters will be included Either specify query_string_whitelist or query_string_blacklist, not both '&' and '=' will be percent encoded and not treated as delimiters",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("CdnPolicy.CacheKeyPolicy.QueryStringBlacklist"),
 			},
 			{
 				Name:          "cdn_policy_cache_key_policy_query_string_whitelist",
 				Description:   "Names of query string parameters to include in cache keys All other parameters will be excluded Either specify query_string_whitelist or query_string_blacklist, not both '&' and '=' will be percent encoded and not treated as delimiters",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("CdnPolicy.CacheKeyPolicy.QueryStringWhitelist"),
 			},
 			{
@@ -104,7 +104,7 @@ func ComputeBackendServices() *schema.Table {
 				Name:          "cdn_policy_negative_caching_policy",
 				Description:   "Sets a cache TTL for the specified HTTP status code negative_caching must be enabled to configure negative_caching_policy Omitting the policy and leaving negative_caching enabled will use Cloud CDN's default cache TTLs Note that when specifying an explicit negative_caching_policy, you should take care to specify a cache TTL for all response codes that you wish to cache Cloud CDN will not apply any default negative caching when a policy exists",
 				Type:          schema.TypeJSON,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      resolveComputeBackendServiceCdnPolicyNegativeCachingPolicy,
 			},
 			{
@@ -129,7 +129,7 @@ func ComputeBackendServices() *schema.Table {
 				Name:          "cdn_policy_signed_url_key_names",
 				Description:   "Names of the keys for signing request URLs",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("CdnPolicy.SignedUrlKeyNames"),
 			},
 			{
@@ -213,13 +213,13 @@ func ComputeBackendServices() *schema.Table {
 				Name:          "custom_request_headers",
 				Description:   "Headers that the HTTP/S load balancer should add to proxied requests",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 			},
 			{
 				Name:          "custom_response_headers",
 				Description:   "Headers that the HTTP/S load balancer should add to proxied responses",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "description",
@@ -452,7 +452,7 @@ func ComputeBackendServices() *schema.Table {
 				Name:          "security_settings_subject_alt_names",
 				Description:   "A list of Subject Alternative Names (SANs) that the client verifies during a mutual TLS handshake with an server/endpoint for this BackendService When the server presents its X509 certificate to the client, the client inspects the certificate's subjectAltName field If the field contains one of the specified values, the communication continues Otherwise, it fails This additional check enables the client to verify that the server is authorized to run the requested service Note that the contents of the server certificate's subjectAltName field are configured by the Public Key Infrastructure which provisions server identities Only applies to a global BackendService with loadBalancingScheme set to INTERNAL_SELF_MANAGED Only applies when BackendService has an attached clientTlsPolicy with clientCertificate (mTLS mode) Note: This field currently has no impact",
 				Type:          schema.TypeStringArray,
-				IgnoreInTests: true, // TODO test again
+				IgnoreInTests: true,
 				Resolver:      schema.PathResolver("SecuritySettings.SubjectAltNames"),
 			},
 			{
