@@ -12,6 +12,35 @@ resource "google_compute_image" "image" {
   labels = local.labels
 }
 
+resource "google_compute_resource_policy" "regional-disk-replica-policy" {
+  name = "${local.prefix}-regional-disk-replica-policy"
+  region = local.region
+  snapshot_schedule_policy {
+    schedule {
+      daily_schedule {
+        days_in_cycle = 1
+        start_time = "04:00"
+      }
+    }
+  }
+}
+
+resource "google_compute_region_disk_resource_policy_attachment" "regional-disk-replica-policy-attachment" {
+  name = google_compute_resource_policy.regional-disk-replica-policy.name
+  disk = google_compute_region_disk.region-disk.name
+  region = local.region
+}
+
+resource "google_compute_region_disk" "region-disk" {
+  name  = "${local.prefix}-disk"
+  type  = "pd-ssd"
+  region  = local.region
+  labels = local.labels
+  size = 10
+
+  replica_zones = ["${local.region}-a", "${local.region}-b"]
+}
+
 ################################################################################
 # Compute Module
 ################################################################################

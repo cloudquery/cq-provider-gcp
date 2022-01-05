@@ -81,10 +81,9 @@ func ComputeDisks() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:          "labels",
-				Description:   "Labels to apply to this disk These can be later modified by the setLabels method",
-				Type:          schema.TypeJSON,
-				IgnoreInTests: true,
+				Name:        "labels",
+				Description: "Labels to apply to this disk These can be later modified by the setLabels method",
+				Type:        schema.TypeJSON,
 			},
 			{
 				Name:        "last_attach_timestamp",
@@ -132,16 +131,14 @@ func ComputeDisks() *schema.Table {
 				Type:        schema.TypeString,
 			},
 			{
-				Name:          "replica_zones",
-				Description:   "URLs of the zones where the disk should be replicated to Only applicable for regional resources",
-				Type:          schema.TypeStringArray,
-				IgnoreInTests: true,
+				Name:        "replica_zones",
+				Description: "URLs of the zones where the disk should be replicated to Only applicable for regional resources",
+				Type:        schema.TypeStringArray,
 			},
 			{
-				Name:          "resource_policies",
-				Description:   "Resource policies applied to this disk for automatic snapshot creations",
-				Type:          schema.TypeStringArray,
-				IgnoreInTests: true,
+				Name:        "resource_policies",
+				Description: "Resource policies applied to this disk for automatic snapshot creations",
+				Type:        schema.TypeStringArray,
 			},
 			{
 				Name:        "satisfies_pzs",
