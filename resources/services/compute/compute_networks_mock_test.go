@@ -1,4 +1,4 @@
-// +build mock
+//go:build !integration
 
 package compute
 
