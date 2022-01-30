@@ -1,5 +1,3 @@
-//go:build !integration
-
 package resource_manager
 
 import (
