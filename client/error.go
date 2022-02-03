@@ -4,8 +4,9 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/cloudquery/cq-provider-sdk/provider/diag"
+	"github.com/cloudquery/cq-provider-sdk/provider/execution"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"github.com/cloudquery/cq-provider-sdk/provider/schema/diag"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -44,7 +45,7 @@ var httpCodeToGRPCCode = map[int]codes.Code{
 	http.StatusNotImplemented:  codes.Unimplemented,
 }
 
-func ErrorClassifier(meta schema.ClientMeta, resourceName string, err error) []diag.Diagnostic {
+func ErrorClassifier(meta schema.ClientMeta, resourceName string, err error) diag.Diagnostics {
 	// https://pkg.go.dev/cloud.google.com/go#hdr-Inspecting_errors:
 	// Most of the errors returned by the generated clients can be converted into a `grpc.Status`
 	if err == nil {
@@ -53,9 +54,7 @@ func ErrorClassifier(meta schema.ClientMeta, resourceName string, err error) []d
 
 	if s, ok := status.FromError(err); ok {
 		if v, ok := grpcCodeToDiag[s.Code()]; ok {
-			return []diag.Diagnostic{
-				diag.FromError(err, v.severity, v.typ, resourceName, v.summary, s.Message()),
-			}
+			return execution.FromError(err, execution.WithSeverity(v.severity), execution.WithType(v.typ), execution.WithResource(resourceName), execution.WithSummary(v.summary), execution.WithDetails(s.Message()))
 		}
 	}
 
@@ -64,9 +63,7 @@ func ErrorClassifier(meta schema.ClientMeta, resourceName string, err error) []d
 	if ok := errors.As(err, &gerr); ok {
 		if grpcCode, ok := httpCodeToGRPCCode[gerr.Code]; ok {
 			if v, ok := grpcCodeToDiag[grpcCode]; ok {
-				return []diag.Diagnostic{
-					diag.FromError(err, v.severity, v.typ, resourceName, v.summary, err.Error()),
-				}
+				return execution.FromError(err, execution.WithSeverity(v.severity), execution.WithType(v.typ), execution.WithResource(resourceName), execution.WithSummary(v.summary), execution.WithDetails(err.Error()))
 			}
 		}
 	}
