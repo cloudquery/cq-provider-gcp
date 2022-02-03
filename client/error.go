@@ -63,7 +63,7 @@ func ErrorClassifier(meta schema.ClientMeta, resourceName string, err error) dia
 	if ok := errors.As(err, &gerr); ok {
 		if grpcCode, ok := httpCodeToGRPCCode[gerr.Code]; ok {
 			if v, ok := grpcCodeToDiag[grpcCode]; ok {
-				return execution.FromError(err, execution.WithSeverity(v.severity), execution.WithType(v.typ), execution.WithResource(resourceName), execution.WithSummary(v.summary), execution.WithDetails(err.Error()))
+				return execution.FromError(err, execution.WithSeverity(v.severity), execution.WithType(v.typ), execution.WithResource(resourceName), execution.WithSummary(v.summary))
 			}
 		}
 	}
