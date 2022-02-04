@@ -103,6 +103,7 @@ func RedactError(projects []string, e diag.Diagnostic) diag.Diagnostic {
 var (
 	codeRegex      = regexp.MustCompile(`\(Code: '[A-Z0-9\.]+'\)`)
 	projectIdRegex = regexp.MustCompile(`project(_number|s)?(\W)[0-9]+(\W)`)
+	userIdRegex    = regexp.MustCompile(`(\W)[^@ ]+@(.+?)\.iam\.gserviceaccount\.com`)
 )
 
 func removePII(projects []string, msg string) string {
@@ -112,7 +113,8 @@ func removePII(projects []string, msg string) string {
 		}
 	}
 
+	msg = userIdRegex.ReplaceAllString(msg, `${1}xxxx@xxxx.iam.gserviceaccount.com`)
 	msg = codeRegex.ReplaceAllLiteralString(msg, `(Code: 'xxxx')`)
-	msg = projectIdRegex.ReplaceAllString(msg, `project$1$2xxxx$3`)
+	msg = projectIdRegex.ReplaceAllString(msg, `project${1}${2}xxxx${3}`)
 	return msg
 }
