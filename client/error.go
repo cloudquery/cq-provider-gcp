@@ -3,9 +3,10 @@ package client
 import (
 	"errors"
 	"net/http"
+	"regexp"
+	"strings"
 
 	"github.com/cloudquery/cq-provider-sdk/provider/diag"
-	"github.com/cloudquery/cq-provider-sdk/provider/execution"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
@@ -51,10 +52,20 @@ func ErrorClassifier(meta schema.ClientMeta, resourceName string, err error) dia
 	if err == nil {
 		return nil
 	}
+	client := meta.(*Client)
+
+	// Don't override if already a diagnostic, just redact
+	if d, ok := err.(diag.Diagnostic); ok {
+		return diag.Diagnostics{
+			RedactError(client.projects, d),
+		}
+	}
 
 	if s, ok := status.FromError(err); ok {
 		if v, ok := grpcCodeToDiag[s.Code()]; ok {
-			return execution.FromError(err, execution.WithSeverity(v.severity), execution.WithType(v.typ), execution.WithResource(resourceName), execution.WithSummary(v.summary), execution.WithDetails(s.Message()))
+			return diag.Diagnostics{
+				RedactError(client.projects, diag.NewBaseError(err, v.severity, v.typ, resourceName, v.summary, s.Message())),
+			}
 		}
 	}
 
@@ -63,11 +74,45 @@ func ErrorClassifier(meta schema.ClientMeta, resourceName string, err error) dia
 	if ok := errors.As(err, &gerr); ok {
 		if grpcCode, ok := httpCodeToGRPCCode[gerr.Code]; ok {
 			if v, ok := grpcCodeToDiag[grpcCode]; ok {
-				return execution.FromError(err, execution.WithSeverity(v.severity), execution.WithType(v.typ), execution.WithResource(resourceName), execution.WithSummary(v.summary))
+				return diag.Diagnostics{
+					RedactError(client.projects, diag.NewBaseError(err, v.severity, v.typ, resourceName, v.summary, "")),
+				}
 			}
 		}
 	}
 
-	// failure to classify
-	return nil
+	// Take over from SDK and always return diagnostics, redacting PII
+	return diag.Diagnostics{
+		RedactError(client.projects, diag.NewBaseError(err, diag.ERROR, diag.RESOLVING, resourceName, err.Error(), "")),
+	}
+}
+
+// RedactError redacts a given diagnostic and returns a RedactedDiagnostic containing both original and redacted versions
+func RedactError(projects []string, e diag.Diagnostic) diag.Diagnostic {
+	r := diag.NewBaseError(
+		errors.New(removePII(projects, e.Error())),
+		e.Severity(),
+		e.Type(),
+		e.Description().Resource,
+		removePII(projects, e.Description().Summary),
+		removePII(projects, e.Description().Detail),
+	)
+	return diag.NewRedactedDiagnostic(e, r)
+}
+
+var (
+	codeRegex      = regexp.MustCompile(`\(Code: '[A-Z0-9\.]+'\)`)
+	projectIdRegex = regexp.MustCompile(`project(_number|s)?(\W)[0-9]+(\W)`)
+)
+
+func removePII(projects []string, msg string) string {
+	for i := range projects {
+		if projects[i] != "" {
+			msg = strings.ReplaceAll(msg, projects[i], "xxxx")
+		}
+	}
+
+	msg = codeRegex.ReplaceAllLiteralString(msg, `(Code: 'xxxx')`)
+	msg = projectIdRegex.ReplaceAllString(msg, `project$1$2xxxx$3`)
+	return msg
 }
