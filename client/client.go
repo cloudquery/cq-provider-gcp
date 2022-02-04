@@ -128,9 +128,9 @@ func getProjects(serviceAccountKeyJSON []byte, logger hclog.Logger, filter strin
 
 	if len(projects) == 0 {
 		if inactiveProjects > 0 {
-			return nil, fmt.Errorf("project list failed: no active projects")
+			return nil, fmt.Errorf("project listing failed: no active projects")
 		}
-		return nil, fmt.Errorf("project list failed")
+		return nil, fmt.Errorf("project listing failed")
 	}
 
 	return projects, nil
