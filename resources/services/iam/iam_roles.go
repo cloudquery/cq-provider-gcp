@@ -5,6 +5,8 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+
+	adminpb "google.golang.org/genproto/googleapis/iam/admin/v1"
 )
 
 func IamRoles() *schema.Table {
@@ -70,9 +72,10 @@ func fetchIamRoles(ctx context.Context, meta schema.ClientMeta, parent *schema.R
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Iam.Projects.Roles.List("projects/" + c.ProjectId).Context(ctx)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		output, err := c.Services.Iam.ListRoles(ctx, &adminpb.ListRolesRequest{
+			Parent:    "projects/" + c.ProjectId,
+			PageToken: nextPageToken,
+		})
 		if err != nil {
 			return err
 		}
@@ -82,5 +85,6 @@ func fetchIamRoles(ctx context.Context, meta schema.ClientMeta, parent *schema.R
 		}
 		nextPageToken = output.NextPageToken
 	}
+
 	return nil
 }

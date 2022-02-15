@@ -5,7 +5,10 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+
+	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeSubnetworks() *schema.Table {
@@ -191,30 +194,35 @@ func ComputeSubnetworks() *schema.Table {
 // ====================================================================================================================
 func fetchComputeSubnetworks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	ca, err := compute.NewSubnetworksRESTClient(ctx, c.Options()...)
+	if err != nil {
+		return err
+	}
+
+	it := ca.AggregatedList(ctx, &computepb.AggregatedListSubnetworksRequest{
+		Project: c.ProjectId,
+	})
+
 	for {
-		call := c.Services.Compute.Subnetworks.AggregatedList(c.ProjectId).Context(ctx)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-
-		var subnetworks []*compute.Subnetwork
-		for _, scopedNetworkList := range output.Items {
-			subnetworks = append(subnetworks, scopedNetworkList.Subnetworks...)
+		if item.Value == nil {
+			continue
 		}
-		res <- subnetworks
 
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item.Value.Subnetworks
 	}
+
 	return nil
 }
 func fetchComputeSubnetworkSecondaryIpRanges(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r := parent.Item.(*compute.Subnetwork)
+	r := parent.Item.(*computepb.Subnetwork)
 	res <- r.SecondaryIpRanges
 	return nil
 }

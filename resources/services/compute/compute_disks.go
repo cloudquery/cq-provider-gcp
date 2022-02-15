@@ -5,7 +5,10 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+
+	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeDisks() *schema.Table {
@@ -266,32 +269,39 @@ func ComputeDisks() *schema.Table {
 // ====================================================================================================================
 func fetchComputeDisks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	ca, err := compute.NewDisksRESTClient(ctx, c.Options()...)
+	if err != nil {
+		return err
+	}
+
+	it := ca.AggregatedList(ctx, &computepb.AggregatedListDisksRequest{
+		Project: c.ProjectId,
+	})
+
 	for {
-		call := c.Services.Compute.Disks.AggregatedList(c.ProjectId).Context(ctx).PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-
-		var diskTypes []*compute.Disk
-		for _, items := range output.Items {
-			diskTypes = append(diskTypes, items.Disks...)
+		if item.Value == nil {
+			continue
 		}
-		res <- diskTypes
 
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item.Value.Disks
 	}
+
 	return nil
 }
+
 func resolveComputeDiskGuestOsFeatures(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r := resource.Item.(*compute.Disk)
+	r := resource.Item.(*computepb.Disk)
 	res := make([]string, len(r.GuestOsFeatures))
 	for i, v := range r.GuestOsFeatures {
-		res[i] = v.Type
+		res[i] = v.GetType()
 	}
 	return resource.Set("guest_os_features", res)
 }

@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	functions "cloud.google.com/go/functions/apiv1"
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/faker/v3"
 	"github.com/julienschmidt/httprouter"
@@ -36,7 +37,7 @@ func createCloudFunctionsTestServer() (*client.Services, error) {
 		}
 	})
 	ts := httptest.NewServer(mux)
-	svc, err := cloudfunctions.NewService(ctx, option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
+	svc, err := functions.NewCloudFunctionsClient(ctx, option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
 	if err != nil {
 		return nil, err
 	}

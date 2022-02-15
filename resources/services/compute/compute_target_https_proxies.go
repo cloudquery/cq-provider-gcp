@@ -5,6 +5,10 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+
+	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeTargetHTTPSProxies() *schema.Table {
@@ -109,23 +113,30 @@ func ComputeTargetHTTPSProxies() *schema.Table {
 // ====================================================================================================================
 func fetchComputeTargetHttpsProxies(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	ca, err := compute.NewTargetHttpsProxiesRESTClient(ctx, c.Options()...)
+	if err != nil {
+		return err
+	}
+
+	it := ca.AggregatedList(ctx, &computepb.AggregatedListTargetHttpsProxiesRequest{
+		Project: c.ProjectId,
+	})
+
 	for {
-		call := c.Services.Compute.TargetHttpsProxies.
-			List(c.ProjectId).
-			Context(ctx).
-			PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-
-		res <- output.Items
-
-		if output.NextPageToken == "" {
-			break
+		if item.Value == nil {
+			continue
 		}
-		nextPageToken = output.NextPageToken
+
+		res <- item.Value.TargetHttpsProxies
 	}
+
 	return nil
 }

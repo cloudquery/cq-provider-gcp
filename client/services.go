@@ -3,48 +3,50 @@ package client
 import (
 	"context"
 
-	"google.golang.org/api/bigquery/v2"
-	"google.golang.org/api/cloudfunctions/v1"
+	"cloud.google.com/go/bigquery"
+	compute "cloud.google.com/go/compute/apiv1"
+	domains "cloud.google.com/go/domains/apiv1beta1"
+	functions "cloud.google.com/go/functions/apiv1"
+	iam "cloud.google.com/go/iam/admin/apiv1"
+	"cloud.google.com/go/logging/logadmin"
+	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	resourcemanager "cloud.google.com/go/resourcemanager/apiv3"
+	"cloud.google.com/go/storage"
 	kms "google.golang.org/api/cloudkms/v1"
-	"google.golang.org/api/cloudresourcemanager/v3"
-	"google.golang.org/api/compute/v1"
-	"google.golang.org/api/dns/v1"
-	domains "google.golang.org/api/domains/v1beta1"
-	"google.golang.org/api/iam/v1"
-	"google.golang.org/api/logging/v2"
-	"google.golang.org/api/monitoring/v3"
-	"google.golang.org/api/option"
+	dns "google.golang.org/api/dns/v1"
 	sql "google.golang.org/api/sqladmin/v1beta4"
-	"google.golang.org/api/storage/v1"
+
+	"google.golang.org/api/option"
 )
 
 type Services struct {
-	Kms             *kms.Service
-	Storage         *storage.Service
-	Sql             *sql.Service
-	Iam             *iam.Service
-	CloudFunctions  *cloudfunctions.Service
-	Domain          *domains.Service
-	Compute         *compute.Service
-	BigQuery        *bigquery.Service
-	Dns             *dns.Service
-	Logging         *logging.Service
-	Monitoring      *monitoring.Service
-	ResourceManager *cloudresourcemanager.Service
+	Kms            *kms.Service
+	Storage        *storage.Client
+	Sql            *sql.Service
+	Iam            *iam.IamClient
+	CloudFunctions *functions.CloudFunctionsClient
+	Domain         *domains.Client
+	Compute        *compute.ProjectsClient
+	BigQuery       bigqueryInstantiator
+	Dns            *dns.Service
+	Logging        loggingInstantiator
+	Monitoring     *monitoring.ServiceMonitoringClient
+
+	ResourceManagerFolders  *resourcemanager.FoldersClient
+	ResourceManagerProjects *resourcemanager.ProjectsClient
 }
 
-func initServices(ctx context.Context, cfg *Config, serviceAccountKeyJSON []byte) (*Services, error) {
-	// Add a fake request reason because it is not possible to pass nil options
-	options := append([]option.ClientOption{option.WithRequestReason("cloudquery resource fetch")}, cfg.ClientOptions()...)
-	if len(serviceAccountKeyJSON) != 0 {
-		options = append(options, option.WithCredentialsJSON(serviceAccountKeyJSON))
-	}
+type (
+	bigqueryInstantiator func(projectID string) (*bigquery.Client, error)
+	loggingInstantiator  func(parent string) (*logadmin.Client, error)
+)
 
+func initServices(ctx context.Context, options []option.ClientOption) (*Services, error) {
 	kmsSvc, err := kms.NewService(ctx, options...)
 	if err != nil {
 		return nil, err
 	}
-	storageSvc, err := storage.NewService(ctx, options...)
+	storageSvc, err := storage.NewClient(ctx, options...)
 	if err != nil {
 		return nil, err
 	}
@@ -52,23 +54,19 @@ func initServices(ctx context.Context, cfg *Config, serviceAccountKeyJSON []byte
 	if err != nil {
 		return nil, err
 	}
-	iamSvc, err := iam.NewService(ctx, options...)
+	iamSvc, err := iam.NewIamClient(ctx, options...)
 	if err != nil {
 		return nil, err
 	}
-	cfSvc, err := cloudfunctions.NewService(ctx, options...)
+	cfSvc, err := functions.NewCloudFunctionsClient(ctx, options...)
 	if err != nil {
 		return nil, err
 	}
-	domainSvc, err := domains.NewService(ctx, options...)
+	domainSvc, err := domains.NewClient(ctx, options...)
 	if err != nil {
 		return nil, err
 	}
-	computeSvc, err := compute.NewService(ctx, options...)
-	if err != nil {
-		return nil, err
-	}
-	bigquerySvc, err := bigquery.NewService(ctx, options...)
+	computeSvc, err := compute.NewProjectsRESTClient(ctx, options...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,31 +74,44 @@ func initServices(ctx context.Context, cfg *Config, serviceAccountKeyJSON []byte
 	if err != nil {
 		return nil, err
 	}
-	loggingSvc, err := logging.NewService(ctx, options...)
+	monitoringSvc, err := monitoring.NewServiceMonitoringClient(ctx, options...)
 	if err != nil {
 		return nil, err
 	}
-	monitoringSvc, err := monitoring.NewService(ctx, options...)
+	resourceManagerFolders, err := resourcemanager.NewFoldersClient(ctx, options...)
 	if err != nil {
 		return nil, err
 	}
-	resourceManagerSvc, err := cloudresourcemanager.NewService(ctx, options...)
+	resourceManagerProjects, err := resourcemanager.NewProjectsClient(ctx, options...)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Services{
-		Kms:             kmsSvc,
-		Storage:         storageSvc,
-		Sql:             sqlSvc,
-		Iam:             iamSvc,
-		CloudFunctions:  cfSvc,
-		Domain:          domainSvc,
-		Compute:         computeSvc,
-		BigQuery:        bigquerySvc,
-		Dns:             dnsSvc,
-		Logging:         loggingSvc,
-		Monitoring:      monitoringSvc,
-		ResourceManager: resourceManagerSvc,
+		Kms:                     kmsSvc,
+		Storage:                 storageSvc,
+		Sql:                     sqlSvc,
+		Iam:                     iamSvc,
+		CloudFunctions:          cfSvc,
+		Domain:                  domainSvc,
+		Compute:                 computeSvc,
+		BigQuery:                bigqueryClient(ctx, options...),
+		Dns:                     dnsSvc,
+		Logging:                 loggingClient(ctx, options...),
+		Monitoring:              monitoringSvc,
+		ResourceManagerFolders:  resourceManagerFolders,
+		ResourceManagerProjects: resourceManagerProjects,
 	}, nil
+}
+
+func bigqueryClient(ctx context.Context, options ...option.ClientOption) bigqueryInstantiator {
+	return func(projectID string) (*bigquery.Client, error) {
+		return bigquery.NewClient(ctx, projectID, options...)
+	}
+}
+
+func loggingClient(ctx context.Context, options ...option.ClientOption) loggingInstantiator {
+	return func(parent string) (*logadmin.Client, error) {
+		return logadmin.NewClient(ctx, parent, options...)
+	}
 }

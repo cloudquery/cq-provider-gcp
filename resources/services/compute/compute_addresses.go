@@ -3,10 +3,11 @@ package compute
 import (
 	"context"
 
+	compute "cloud.google.com/go/compute/apiv1"
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-
-	"google.golang.org/api/compute/v1"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeAddresses() *schema.Table {
@@ -120,24 +121,30 @@ func ComputeAddresses() *schema.Table {
 // ====================================================================================================================
 func fetchComputeAddresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	ca, err := compute.NewAddressesRESTClient(ctx, c.Options()...)
+	if err != nil {
+		return err
+	}
+
+	it := ca.AggregatedList(ctx, &computepb.AggregatedListAddressesRequest{
+		Project: c.ProjectId,
+	})
+
 	for {
-		call := c.Services.Compute.Addresses.AggregatedList(c.ProjectId).Context(ctx)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		address, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-		var addresses []*compute.Address
-		for _, items := range output.Items {
-			addresses = append(addresses, items.Addresses...)
+		if address.Value == nil {
+			continue
 		}
-		res <- addresses
 
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- address.Value.Addresses
 	}
+
 	return nil
 }

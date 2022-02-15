@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"cloud.google.com/go/storage"
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	storage "google.golang.org/api/storage/v1"
+	"google.golang.org/api/iterator"
 )
 
 func StorageBuckets() *schema.Table {
@@ -533,52 +534,46 @@ func StorageBuckets() *schema.Table {
 // ====================================================================================================================
 func fetchStorageBuckets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+	it := c.Services.Storage.Buckets(ctx, c.ProjectId)
 	for {
-		call := c.Services.Storage.Buckets.List(c.ProjectId).Context(ctx).PageToken(nextPageToken)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		bucketAttrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-		res <- output.Items
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- bucketAttrs
 	}
 	return nil
 }
 func fetchStorageBucketAcls(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	bucket := parent.Item.(*storage.Bucket)
-	res <- bucket.Acl
+	bucket := parent.Item.(*storage.BucketAttrs)
+	res <- bucket.ACL
 	return nil
 }
 func fetchStorageBucketCors(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	bucket := parent.Item.(*storage.Bucket)
-	res <- bucket.Cors
+	bucket := parent.Item.(*storage.BucketAttrs)
+	res <- bucket.CORS
 	return nil
 }
 func fetchStorageBucketDefaultObjectAcls(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	bucket := parent.Item.(*storage.Bucket)
-	res <- bucket.DefaultObjectAcl
+	bucket := parent.Item.(*storage.BucketAttrs)
+	res <- bucket.DefaultObjectACL
 	return nil
 }
 func fetchStorageBucketLifecycleRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	bucket := parent.Item.(*storage.Bucket)
-	if bucket.Lifecycle != nil {
-		res <- bucket.Lifecycle.Rule
-	}
+	bucket := parent.Item.(*storage.BucketAttrs)
+	res <- bucket.Lifecycle.Rules
 	return nil
 }
 func resolveBucketPolicy(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*storage.Bucket)
+	p, ok := resource.Item.(*storage.BucketAttrs)
 	if !ok {
-		return fmt.Errorf("expected *storage.Bucket but got %T", p)
+		return fmt.Errorf("expected *storage.BucketAttrs but got %T", p)
 	}
 	svc := meta.(*client.Client)
-	call := svc.Services.Storage.Buckets.GetIamPolicy(p.Name).Context(ctx)
-	output, err := call.Do()
+	output, err := svc.Services.Storage.Bucket(p.Name).IAM().Policy(ctx)
 	if err != nil {
 		if client.IgnoreErrorHandler(err) {
 			meta.Logger().Warn("bucket get IAM policy permission denied", "error", err)

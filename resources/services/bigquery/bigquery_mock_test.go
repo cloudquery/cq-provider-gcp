@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	bq "cloud.google.com/go/bigquery"
 	"github.com/cloudquery/cq-provider-gcp/client"
 	faker "github.com/cloudquery/faker/v3"
 	"github.com/julienschmidt/httprouter"
@@ -133,12 +134,11 @@ func createBigqueryDatasets() (*client.Services, error) {
 	})
 
 	ts := httptest.NewServer(mux)
-	svc, err := bigquery.NewService(context.Background(), option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
-	if err != nil {
-		return nil, err
-	}
+
 	return &client.Services{
-		BigQuery: svc,
+		BigQuery: func(_ string) (*bq.Client, error) {
+			return bq.NewClient(context.Background(), "", option.WithoutAuthentication(), option.WithEndpoint(ts.URL))
+		},
 	}, nil
 }
 

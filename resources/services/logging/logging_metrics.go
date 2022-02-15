@@ -6,7 +6,9 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/logging/v2"
+
+	"cloud.google.com/go/logging/logadmin"
+	"google.golang.org/api/iterator"
 )
 
 func LoggingMetrics() *schema.Table {
@@ -208,31 +210,32 @@ func LoggingMetrics() *schema.Table {
 // ====================================================================================================================
 func fetchLoggingMetrics(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	lg, err := c.Services.Logging(fmt.Sprintf("projects/%s", c.ProjectId))
+	if err != nil {
+		return err
+	}
+
+	it := lg.Metrics(ctx)
 	for {
-		call := c.Services.Logging.Projects.Metrics.
-			List(fmt.Sprintf("projects/%s", c.ProjectId)).
-			Context(ctx).
-			PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-
-		res <- output.Metrics
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item
 	}
 	return nil
 }
 func fetchLoggingMetricDescriptorLabels(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p, ok := parent.Item.(*logging.LogMetric)
+	p, ok := parent.Item.(*logadmin.Metric)
 	if !ok {
-		return fmt.Errorf("expected *logging.LogMetric but got %T", p)
+		return fmt.Errorf("expected *logadmin.Metric but got %T", p)
 	}
 
+	// TODO missing
 	if p.MetricDescriptor == nil {
 		return nil
 	}

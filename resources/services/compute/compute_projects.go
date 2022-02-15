@@ -6,7 +6,9 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+
+	compute "cloud.google.com/go/compute/apiv1"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeProjects() *schema.Table {
@@ -157,31 +159,37 @@ func ComputeProjects() *schema.Table {
 // ====================================================================================================================
 func fetchComputeProjects(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	call := c.Services.Compute.Projects.
-		Get(c.ProjectId).
-		Context(ctx)
-	output, err := call.Do()
+
+	ca, err := compute.NewProjectsRESTClient(ctx, c.Options()...)
 	if err != nil {
 		return err
 	}
-	res <- output
+
+	item, err := ca.Get(ctx, &computepb.GetProjectRequest{
+		Project: c.ProjectId,
+	})
+	if err != nil {
+		return err
+	}
+
+	res <- item
 	return nil
 }
 func resolveComputeProjectCommonInstanceMetadataItems(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*compute.Project)
+	p, ok := resource.Item.(*computepb.Project)
 	if !ok {
-		return fmt.Errorf("expected *compute.Project but got %T", p)
+		return fmt.Errorf("expected *computepb.Project but got %T", p)
 	}
 	m := make(map[string]interface{})
 	for _, i := range p.CommonInstanceMetadata.Items {
-		m[i.Key] = i.Value
+		m[i.GetKey()] = i.GetValue()
 	}
 	return resource.Set(c.Name, m)
 }
 func fetchComputeProjectQuotas(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p, ok := parent.Item.(*compute.Project)
+	p, ok := parent.Item.(*computepb.Project)
 	if !ok {
-		return fmt.Errorf("expected *compute.Project but got %T", p)
+		return fmt.Errorf("expected *computepb.Project but got %T", p)
 	}
 	res <- p.Quotas
 	return nil

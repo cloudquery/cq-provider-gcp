@@ -8,7 +8,8 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 
-	domains "google.golang.org/api/domains/v1beta1"
+	"google.golang.org/api/iterator"
+	domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
 )
 
 func DomainsRegistration() *schema.Table {
@@ -413,46 +414,47 @@ func DomainsRegistration() *schema.Table {
 // ====================================================================================================================
 func fetchDomainsRegistrations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	it := c.Services.Domain.ListRegistrations(ctx, &domainspb.ListRegistrationsRequest{
+		Parent: "projects/" + c.ProjectId + "/locations/-",
+	})
 	for {
-		call := c.Services.Domain.Projects.Locations.Registrations.List("projects/" + c.ProjectId + "/locations/-").Context(ctx)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-		res <- output.Registrations
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item
 	}
+
 	return nil
 }
 func resolveDomainsRegistrationCustomDNSDsRecords(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	reg := resource.Item.(*domains.Registration)
-	if reg.DnsSettings == nil || reg.DnsSettings.CustomDns == nil {
+	reg := resource.Item.(*domainspb.Registration)
+	if reg.DnsSettings == nil || reg.DnsSettings.GetCustomDns() == nil {
 		return nil
 	}
-	data, err := json.Marshal(reg.DnsSettings.CustomDns.DsRecords)
+	data, err := json.Marshal(reg.DnsSettings.GetCustomDns().DsRecords)
 	if err != nil {
 		return fmt.Errorf("failed to marshal custom_dns_ds_records. %w", err)
 	}
 	return resource.Set(c.Name, data)
 }
 func resolveDomainsRegistrationGoogleDomainsDNSDsRecords(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	reg := resource.Item.(*domains.Registration)
-	if reg.DnsSettings == nil || reg.DnsSettings.GoogleDomainsDns == nil {
+	reg := resource.Item.(*domainspb.Registration)
+	if reg.DnsSettings == nil || reg.DnsSettings.GetGoogleDomainsDns() == nil {
 		return nil
 	}
-	data, err := json.Marshal(reg.DnsSettings.GoogleDomainsDns.DsRecords)
+	data, err := json.Marshal(reg.DnsSettings.GetGoogleDomainsDns().DsRecords)
 	if err != nil {
 		return fmt.Errorf("failed to marshal google_domains_dns_ds_records. %w", err)
 	}
 	return resource.Set("google_domains_dns_ds_records", data)
 }
 func fetchDomainsRegistrationGlueRecords(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	reg := parent.Item.(*domains.Registration)
+	reg := parent.Item.(*domainspb.Registration)
 	if reg.DnsSettings != nil {
 		res <- reg.DnsSettings.GlueRecords
 	}

@@ -5,7 +5,10 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+
+	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeSslCertificates() *schema.Table {
@@ -125,25 +128,30 @@ func ComputeSslCertificates() *schema.Table {
 // ====================================================================================================================
 func fetchComputeSslCertificates(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	ca, err := compute.NewSslCertificatesRESTClient(ctx, c.Options()...)
+	if err != nil {
+		return err
+	}
+
+	it := ca.AggregatedList(ctx, &computepb.AggregatedListSslCertificatesRequest{
+		Project: c.ProjectId,
+	})
+
 	for {
-		call := c.Services.Compute.SslCertificates.AggregatedList(c.ProjectId).Context(ctx)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-
-		var sslCertificate []*compute.SslCertificate
-		for _, items := range output.Items {
-			sslCertificate = append(sslCertificate, items.SslCertificates...)
+		if item.Value == nil {
+			continue
 		}
 
-		res <- sslCertificate
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item.Value.SslCertificates
 	}
+
 	return nil
 }

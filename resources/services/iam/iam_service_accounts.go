@@ -6,7 +6,8 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/iam/v1"
+	"google.golang.org/api/iterator"
+	adminpb "google.golang.org/genproto/googleapis/iam/admin/v1"
 )
 
 func IamServiceAccounts() *schema.Table {
@@ -116,31 +117,32 @@ func IamServiceAccounts() *schema.Table {
 // ====================================================================================================================
 func fetchIamServiceAccounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	it := c.Services.Iam.ListServiceAccounts(ctx, &adminpb.ListServiceAccountsRequest{
+		Name: "projects/" + c.ProjectId,
+	})
 	for {
-		call := c.Services.Iam.Projects.ServiceAccounts.List("projects/" + c.ProjectId).Context(ctx)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-		res <- output.Accounts
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item
 	}
 	return nil
 }
 func fetchIamServiceAccountKeys(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	p, ok := parent.Item.(*iam.ServiceAccount)
+	p, ok := parent.Item.(*adminpb.ServiceAccount)
 	if !ok {
-		return fmt.Errorf("expected *iam.ServiceAccount but got %T", p)
+		return fmt.Errorf("expected *adminpb.ServiceAccount but got %T", p)
 	}
-	call := c.Services.Iam.Projects.ServiceAccounts.Keys.List(p.Name).Context(ctx)
 
-	output, err := call.Do()
+	output, err := c.Services.Iam.ListServiceAccountKeys(ctx, &adminpb.ListServiceAccountKeysRequest{
+		Name: p.Name,
+	})
 	if err != nil {
 		return err
 	}

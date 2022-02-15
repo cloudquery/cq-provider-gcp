@@ -5,6 +5,8 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	"google.golang.org/api/iterator"
+	"google.golang.org/genproto/googleapis/cloud/functions/v1"
 )
 
 func CloudfunctionsFunction() *schema.Table {
@@ -189,18 +191,20 @@ func CloudfunctionsFunction() *schema.Table {
 // ====================================================================================================================
 func fetchCloudfunctionsFunctions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	it := c.Services.CloudFunctions.ListFunctions(ctx, &functions.ListFunctionsRequest{
+		Parent: "projects/" + c.ProjectId + "/locations/-",
+	})
 	for {
-		call := c.Services.CloudFunctions.Projects.Locations.Functions.List("projects/" + c.ProjectId + "/locations/-").Context(ctx).PageToken(nextPageToken)
-		output, err := call.Do()
+		fn, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-		res <- output.Functions
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- fn
 	}
+
 	return nil
 }

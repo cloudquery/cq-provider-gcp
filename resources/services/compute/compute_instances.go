@@ -5,7 +5,10 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+
+	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeInstances() *schema.Table {
@@ -724,82 +727,88 @@ func ComputeInstances() *schema.Table {
 // ====================================================================================================================
 func fetchComputeInstances(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	ca, err := compute.NewInstancesRESTClient(ctx, c.Options()...)
+	if err != nil {
+		return err
+	}
+
+	it := ca.AggregatedList(ctx, &computepb.AggregatedListInstancesRequest{
+		Project: c.ProjectId,
+	})
+
 	for {
-		call := c.Services.Compute.Instances.AggregatedList(c.ProjectId).Context(ctx)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
+		if item.Value == nil {
+			continue
+		}
 
-		var instances []*compute.Instance
-		for _, items := range output.Items {
-			instances = append(instances, items.Instances...)
-		}
-		res <- instances
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item.Value.Instances
 	}
+
 	return nil
 }
 func resolveComputeInstanceGuestAccelerators(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r := resource.Item.(*compute.Instance)
-	res := map[string]int64{}
+	r := resource.Item.(*computepb.Instance)
+	res := map[string]int32{}
 	for _, v := range r.GuestAccelerators {
-		res[v.AcceleratorType] = v.AcceleratorCount
+		res[v.GetAcceleratorType()] = v.GetAcceleratorCount()
 	}
 	return resource.Set("guest_accelerators", res)
 }
 func resolveComputeInstanceMetadataItems(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r := resource.Item.(*compute.Instance)
+	r := resource.Item.(*computepb.Instance)
 	res := map[string]string{}
 	if r.Metadata != nil {
 		for _, v := range r.Metadata.Items {
-			res[v.Key] = *v.Value
+			res[v.GetKey()] = v.GetValue()
 		}
 	}
 	return resource.Set("metadata_items", res)
 }
 func fetchComputeInstanceDisks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r := parent.Item.(*compute.Instance)
+	r := parent.Item.(*computepb.Instance)
 	res <- r.Disks
 	return nil
 }
 func resolveComputeInstanceDiskGuestOsFeatures(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r := resource.Item.(*compute.AttachedDisk)
+	r := resource.Item.(*computepb.AttachedDisk)
 	res := make([]string, len(r.GuestOsFeatures))
 	for i, v := range r.GuestOsFeatures {
-		res[i] = v.Type
+		res[i] = v.GetType()
 	}
 	return resource.Set("guest_os_features", res)
 }
 func fetchComputeInstanceNetworkInterfaces(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r := parent.Item.(*compute.Instance)
+	r := parent.Item.(*computepb.Instance)
 	res <- r.NetworkInterfaces
 	return nil
 }
 func fetchComputeInstanceNetworkInterfaceAccessConfigs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r := parent.Item.(*compute.NetworkInterface)
+	r := parent.Item.(*computepb.NetworkInterface)
 	res <- r.AccessConfigs
 	return nil
 }
 func fetchComputeInstanceNetworkInterfaceAliasIpRanges(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r := parent.Item.(*compute.NetworkInterface)
+	r := parent.Item.(*computepb.NetworkInterface)
 	res <- r.AliasIpRanges
 	return nil
 }
 func fetchComputeInstanceSchedulingNodeAffinities(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r := parent.Item.(*compute.Instance)
+	r := parent.Item.(*computepb.Instance)
 	if r.Scheduling != nil {
 		res <- r.Scheduling.NodeAffinities
 	}
 	return nil
 }
 func fetchComputeInstanceServiceAccounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r := parent.Item.(*compute.Instance)
+	r := parent.Item.(*computepb.Instance)
 	if r.Scheduling != nil {
 		res <- r.ServiceAccounts
 	}

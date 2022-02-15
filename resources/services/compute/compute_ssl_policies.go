@@ -6,7 +6,10 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+
+	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeSslPolicies() *schema.Table {
@@ -129,43 +132,46 @@ func ComputeSslPolicies() *schema.Table {
 // ====================================================================================================================
 func fetchComputeSslPolicies(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	ca, err := compute.NewSslPoliciesRESTClient(ctx, c.Options()...)
+	if err != nil {
+		return err
+	}
+
+	it := ca.List(ctx, &computepb.ListSslPoliciesRequest{
+		Project: c.ProjectId,
+	})
+
 	for {
-		call := c.Services.Compute.SslPolicies.
-			List(c.ProjectId).
-			Context(ctx).
-			PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-
-		res <- output.Items
-
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item
 	}
+
 	return nil
 }
 
 func fetchComputeSslPolicyWarnings(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p, ok := parent.Item.(*compute.SslPolicy)
+	p, ok := parent.Item.(*computepb.SslPolicy)
 	if !ok {
-		return fmt.Errorf("expected *compute.SslPolicy but got %T", p)
+		return fmt.Errorf("expected *computepb.SslPolicy but got %T", p)
 	}
 	res <- p.Warnings
 	return nil
 }
 func resolveComputeSslPolicyWarningData(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*compute.SslPolicyWarnings)
+	p, ok := resource.Item.(*computepb.Warnings)
 	if !ok {
-		return fmt.Errorf("expected *compute.SslPolicy but got %T", p)
+		return fmt.Errorf("expected *compute.Warnings but got %T", p)
 	}
 	data := make(map[string]string)
 	for _, v := range p.Data {
-		data[v.Key] = v.Value
+		data[v.GetKey()] = v.GetValue()
 	}
 	return resource.Set(c.Name, data)
 }

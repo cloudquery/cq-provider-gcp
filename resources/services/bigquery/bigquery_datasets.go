@@ -5,6 +5,7 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	"google.golang.org/api/iterator"
 )
 
 func BigqueryDatasets() *schema.Table {
@@ -109,32 +110,22 @@ func BigqueryDatasets() *schema.Table {
 
 func fetchBigqueryDatasets(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	bq, err := c.Services.BigQuery(c.ProjectId)
+	if err != nil {
+		return err
+	}
+
+	it := bq.Datasets(ctx)
 	for {
-		call := c.Services.BigQuery.Datasets.
-			List(c.ProjectId).
-			Context(ctx).
-			PageToken(nextPageToken)
-		output, err := call.Do()
+		dataset, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-
-		for _, d := range output.Datasets {
-			call := c.Services.BigQuery.Datasets.
-				Get(c.ProjectId, d.DatasetReference.DatasetId).
-				Context(ctx)
-			dataset, err := call.Do()
-			if err != nil {
-				return err
-			}
-			res <- dataset
-		}
-
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- dataset
 	}
 	return nil
 }

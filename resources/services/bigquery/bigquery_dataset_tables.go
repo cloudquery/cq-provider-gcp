@@ -7,6 +7,7 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	"google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/iterator"
 )
 
 func BigqueryDatasetTables() *schema.Table {
@@ -415,29 +416,29 @@ func fetchBigqueryDatasetTables(ctx context.Context, meta schema.ClientMeta, par
 	if !ok {
 		return fmt.Errorf("expected *bigquery.Dataset but got %T", p)
 	}
+
 	c := meta.(*client.Client)
-	nextPageToken := ""
+	bq, err := c.Services.BigQuery(c.ProjectId)
+	if err != nil {
+		return err
+	}
+
+	it := bq.Dataset(p.Id).Tables(ctx)
 	for {
-		call := c.Services.BigQuery.Tables.List(c.ProjectId, p.DatasetReference.DatasetId).Context(ctx).PageToken(nextPageToken)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		t, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
 
-		for _, t := range output.Tables {
-			call := c.Services.BigQuery.Tables.Get(c.ProjectId, p.DatasetReference.DatasetId, t.TableReference.TableId)
-			table, err := call.Do()
-			if err != nil {
-				return err
-			}
-			res <- table
+		md, err := t.Metadata(ctx)
+		if err != nil {
+			return err
 		}
 
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- md
 	}
 	return nil
 }

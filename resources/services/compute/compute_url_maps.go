@@ -7,7 +7,10 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+
+	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeURLMaps() *schema.Table {
@@ -494,28 +497,37 @@ func ComputeURLMaps() *schema.Table {
 // ====================================================================================================================
 func fetchComputeUrlMaps(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	ca, err := compute.NewUrlMapsRESTClient(ctx, c.Options()...)
+	if err != nil {
+		return err
+	}
+
+	it := ca.AggregatedList(ctx, &computepb.AggregatedListUrlMapsRequest{
+		Project: c.ProjectId,
+	})
+
 	for {
-		call := c.Services.Compute.UrlMaps.List(c.ProjectId).Context(ctx)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-
-		res <- output.Items
-
-		if output.NextPageToken == "" {
-			break
+		if item.Value == nil {
+			continue
 		}
-		nextPageToken = output.NextPageToken
+
+		res <- item.Value.UrlMaps
 	}
+
 	return nil
 }
 func resolveComputeURLMapHeaderActionRequestHeadersToAdd(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r, ok := resource.Item.(*compute.UrlMap)
+	r, ok := resource.Item.(*computepb.UrlMap)
 	if !ok {
-		return fmt.Errorf("expected to have *compute.UrlMap but got %T", resource.Item)
+		return fmt.Errorf("expected to have *computepb.UrlMap but got %T", resource.Item)
 	}
 
 	if r.HeaderAction == nil || r.HeaderAction.RequestHeadersToAdd == nil {
@@ -534,9 +546,9 @@ func resolveComputeURLMapHeaderActionRequestHeadersToAdd(ctx context.Context, me
 	return resource.Set(c.Name, j)
 }
 func resolveComputeURLMapHeaderActionResponseHeadersToAdd(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r, ok := resource.Item.(*compute.UrlMap)
+	r, ok := resource.Item.(*computepb.UrlMap)
 	if !ok {
-		return fmt.Errorf("expected to have *compute.UrlMap but got %T", resource.Item)
+		return fmt.Errorf("expected to have *computepb.UrlMap but got %T", resource.Item)
 	}
 
 	if r.HeaderAction == nil || r.HeaderAction.ResponseHeadersToAdd == nil {
@@ -555,9 +567,9 @@ func resolveComputeURLMapHeaderActionResponseHeadersToAdd(ctx context.Context, m
 	return resource.Set(c.Name, j)
 }
 func fetchComputeUrlMapWeightedBackendServices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r, ok := parent.Item.(*compute.UrlMap)
+	r, ok := parent.Item.(*computepb.UrlMap)
 	if !ok {
-		return fmt.Errorf("expected to have *compute.UrlMap but got %T", parent.Item)
+		return fmt.Errorf("expected to have *computepb.UrlMap but got %T", parent.Item)
 	}
 
 	if r.DefaultRouteAction == nil || r.DefaultRouteAction.WeightedBackendServices == nil {
@@ -568,9 +580,9 @@ func fetchComputeUrlMapWeightedBackendServices(ctx context.Context, meta schema.
 	return nil
 }
 func resolveComputeURLMapWeightedBackendServiceHeaderAction(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r, ok := resource.Item.(*compute.WeightedBackendService)
+	r, ok := resource.Item.(*computepb.WeightedBackendService)
 	if !ok {
-		return fmt.Errorf("expected to have *compute.WeightedBackendService but got %T", resource.Item)
+		return fmt.Errorf("expected to have *computepb.WeightedBackendService but got %T", resource.Item)
 	}
 	var j map[string]interface{}
 	data, err := json.Marshal(r.HeaderAction)
@@ -584,9 +596,9 @@ func resolveComputeURLMapWeightedBackendServiceHeaderAction(ctx context.Context,
 	return resource.Set(c.Name, j)
 }
 func fetchComputeUrlMapHostRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r, ok := parent.Item.(*compute.UrlMap)
+	r, ok := parent.Item.(*computepb.UrlMap)
 	if !ok {
-		return fmt.Errorf("expected to have *compute.UrlMap but got %T", parent.Item)
+		return fmt.Errorf("expected to have *computepb.UrlMap but got %T", parent.Item)
 	}
 
 	if r.HostRules == nil {
@@ -597,9 +609,9 @@ func fetchComputeUrlMapHostRules(ctx context.Context, meta schema.ClientMeta, pa
 	return nil
 }
 func fetchComputeUrlMapPathMatchers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r, ok := parent.Item.(*compute.UrlMap)
+	r, ok := parent.Item.(*computepb.UrlMap)
 	if !ok {
-		return fmt.Errorf("expected to have *compute.UrlMap but got %T", parent.Item)
+		return fmt.Errorf("expected to have *computepb.UrlMap but got %T", parent.Item)
 	}
 
 	if r.PathMatchers == nil {
@@ -610,9 +622,9 @@ func fetchComputeUrlMapPathMatchers(ctx context.Context, meta schema.ClientMeta,
 	return nil
 }
 func resolveComputeURLMapPathMatcherDefaultRouteAction(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r, ok := resource.Item.(*compute.PathMatcher)
+	r, ok := resource.Item.(*computepb.PathMatcher)
 	if !ok {
-		return fmt.Errorf("expected to have *compute.PathMatcher but got %T", resource.Item)
+		return fmt.Errorf("expected to have *computepb.PathMatcher but got %T", resource.Item)
 	}
 	var j map[string]interface{}
 	data, err := json.Marshal(r.DefaultRouteAction)
@@ -626,9 +638,9 @@ func resolveComputeURLMapPathMatcherDefaultRouteAction(ctx context.Context, meta
 	return resource.Set(c.Name, j)
 }
 func resolveComputeURLMapPathMatcherHeaderAction(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r, ok := resource.Item.(*compute.PathMatcher)
+	r, ok := resource.Item.(*computepb.PathMatcher)
 	if !ok {
-		return fmt.Errorf("expected to have *compute.PathMatcher but got %T", resource.Item)
+		return fmt.Errorf("expected to have *computepb.PathMatcher but got %T", resource.Item)
 	}
 	var j map[string]interface{}
 	data, err := json.Marshal(r.HeaderAction)
@@ -642,9 +654,9 @@ func resolveComputeURLMapPathMatcherHeaderAction(ctx context.Context, meta schem
 	return resource.Set(c.Name, j)
 }
 func resolveComputeURLMapPathMatcherPathRules(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r, ok := resource.Item.(*compute.PathMatcher)
+	r, ok := resource.Item.(*computepb.PathMatcher)
 	if !ok {
-		return fmt.Errorf("expected to have *compute.PathMatcher but got %T", resource.Item)
+		return fmt.Errorf("expected to have *computepb.PathMatcher but got %T", resource.Item)
 	}
 	var j []interface{}
 	data, err := json.Marshal(r.PathRules)
@@ -658,9 +670,9 @@ func resolveComputeURLMapPathMatcherPathRules(ctx context.Context, meta schema.C
 	return resource.Set(c.Name, j)
 }
 func resolveComputeURLMapPathMatcherRouteRules(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r, ok := resource.Item.(*compute.PathMatcher)
+	r, ok := resource.Item.(*computepb.PathMatcher)
 	if !ok {
-		return fmt.Errorf("expected to have *compute.PathMatcher but got %T", resource.Item)
+		return fmt.Errorf("expected to have *computepb.PathMatcher but got %T", resource.Item)
 	}
 	var j []interface{}
 	data, err := json.Marshal(r.RouteRules)
@@ -674,9 +686,9 @@ func resolveComputeURLMapPathMatcherRouteRules(ctx context.Context, meta schema.
 	return resource.Set(c.Name, j)
 }
 func fetchComputeUrlMapTests(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r, ok := parent.Item.(*compute.UrlMap)
+	r, ok := parent.Item.(*computepb.UrlMap)
 	if !ok {
-		return fmt.Errorf("expected to have *compute.UrlMap but got %T", parent.Item)
+		return fmt.Errorf("expected to have *computepb.UrlMap but got %T", parent.Item)
 	}
 
 	if r.Tests == nil {
@@ -687,9 +699,9 @@ func fetchComputeUrlMapTests(ctx context.Context, meta schema.ClientMeta, parent
 	return nil
 }
 func resolveComputeURLMapTestHeaders(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r, ok := resource.Item.(*compute.UrlMapTest)
+	r, ok := resource.Item.(*computepb.UrlMapTest)
 	if !ok {
-		return fmt.Errorf("expected to have *compute.UrlMapTest but got %T", resource.Item)
+		return fmt.Errorf("expected to have *computepb.UrlMapTest but got %T", resource.Item)
 	}
 	j := make(map[string]interface{})
 	if r.Headers == nil {
@@ -697,7 +709,7 @@ func resolveComputeURLMapTestHeaders(ctx context.Context, meta schema.ClientMeta
 	}
 
 	for _, h := range r.Headers {
-		j[h.Name] = h.Value
+		j[h.GetName()] = h.GetValue()
 	}
 
 	return resource.Set(c.Name, j)

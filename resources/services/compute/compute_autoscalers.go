@@ -6,7 +6,9 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 
-	"google.golang.org/api/compute/v1"
+	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeAutoscalers() *schema.Table {
@@ -219,39 +221,44 @@ func ComputeAutoscalers() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchComputeAutoscalers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	nextPageToken := ""
 	c := meta.(*client.Client)
+
+	ca, err := compute.NewAutoscalersRESTClient(ctx, c.Options()...)
+	if err != nil {
+		return err
+	}
+
+	it := ca.AggregatedList(ctx, &computepb.AggregatedListAutoscalersRequest{
+		Project: c.ProjectId,
+	})
+
 	for {
-		call := c.Services.Compute.Autoscalers.AggregatedList(c.ProjectId).Context(ctx)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-
-		var autoscalers []*compute.Autoscaler
-		for _, items := range output.Items {
-			autoscalers = append(autoscalers, items.Autoscalers...)
+		if item.Value == nil {
+			continue
 		}
-		res <- autoscalers
 
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item.Value.Autoscalers
 	}
+
 	return nil
 }
 func resolveComputeAutoscalerStatusDetails(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	autoscaler := resource.Item.(*compute.Autoscaler)
+	autoscaler := resource.Item.(*computepb.Autoscaler)
 	res := map[string]string{}
 	for _, v := range autoscaler.StatusDetails {
-		res[v.Type] = v.Message
+		res[v.GetType()] = v.GetMessage()
 	}
 	return resource.Set("status_details", res)
 }
 func fetchComputeAutoscalerCustomMetricUtilizations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	autoscaler := parent.Item.(*compute.Autoscaler)
+	autoscaler := parent.Item.(*computepb.Autoscaler)
 	if autoscaler.AutoscalingPolicy != nil {
 		res <- autoscaler.AutoscalingPolicy.CustomMetricUtilizations
 	}

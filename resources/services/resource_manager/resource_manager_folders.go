@@ -7,7 +7,10 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/cloudresourcemanager/v3"
+
+	"google.golang.org/api/iterator"
+	resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v3"
+	"google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ResourceManagerFolders() *schema.Table {
@@ -85,28 +88,34 @@ func ResourceManagerFolders() *schema.Table {
 // ====================================================================================================================
 func fetchResourceManagerFolders(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	//Todo service account needs specific permissions to list folders https://cloud.google.com/resource-manager/docs/creating-managing-folders#folder-permissions
-	call := c.Services.ResourceManager.Folders.
-		List().
-		Context(ctx)
-	output, err := call.Do()
-	if err != nil {
-		return err
+	// TODO service account needs specific permissions to list folders https://cloud.google.com/resource-manager/docs/creating-managing-folders#folder-permissions
+
+	it := c.Services.ResourceManagerFolders.ListFolders(ctx, &resourcemanagerpb.ListFoldersRequest{
+		Parent: fmt.Sprintf("folders/%s", ""), // TODO missing
+	})
+	for {
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		res <- item
 	}
-	res <- output.Folders
 	return nil
 }
+
 func resolveResourceManagerFolderPolicy(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	cl := meta.(*client.Client)
-	p, ok := resource.Item.(*cloudresourcemanager.Folder)
+	p, ok := resource.Item.(*resourcemanagerpb.Folder)
 	if !ok {
-		return fmt.Errorf("expected *cloudresourcemanager.Folder but got %T", p)
+		return fmt.Errorf("expected *resourcemanagerpb.Folder but got %T", p)
 	}
 
-	call := cl.Services.ResourceManager.Projects.
-		GetIamPolicy("folders/"+p.Name, &cloudresourcemanager.GetIamPolicyRequest{}).
-		Context(ctx)
-	output, err := call.Do()
+	output, err := cl.Services.ResourceManagerFolders.GetIamPolicy(ctx, &iam.GetIamPolicyRequest{
+		Resource: "folders/" + p.Name,
+	})
 	if err != nil {
 		return err
 	}

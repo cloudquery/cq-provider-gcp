@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"cloud.google.com/go/bigquery"
 	"github.com/cloudquery/cq-provider-gcp/client"
 
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/bigquery/v2"
 )
 
 func BigqueryDatasetAccesses() *schema.Table {
@@ -111,14 +111,20 @@ func fetchBigqueryDatasetAccesses(ctx context.Context, meta schema.ClientMeta, p
 	if !ok {
 		return fmt.Errorf("expected bigquery.Dataset but got %T", p)
 	}
-	res <- p.Access
+	md, err := p.Metadata(ctx)
+	if err != nil {
+		return err
+	}
+
+	res <- md.Access
 	return nil
 }
 func resolveBigqueryDatasetAccessTargetTypes(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*bigquery.DatasetAccess)
+	p, ok := resource.Item.(*bigquery.AccessEntry)
 	if !ok {
-		return fmt.Errorf("expected bigquery.DatasetAccess but got %T", p)
+		return fmt.Errorf("expected bigquery.AccessEntry but got %T", p)
 	}
+
 	if p.Dataset == nil {
 		return nil
 	}

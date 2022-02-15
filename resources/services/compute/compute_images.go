@@ -5,7 +5,10 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+
+	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeImages() *schema.Table {
@@ -300,28 +303,34 @@ func ComputeImages() *schema.Table {
 // ====================================================================================================================
 func fetchComputeImages(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	ca, err := compute.NewImagesRESTClient(ctx, c.Options()...)
+	if err != nil {
+		return err
+	}
+
+	it := ca.List(ctx, &computepb.ListImagesRequest{
+		Project: c.ProjectId,
+	})
+
 	for {
-		call := c.Services.Compute.Images.List(c.ProjectId)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-
-		res <- output.Items
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item
 	}
+
 	return nil
 }
 func resolveComputeImageGuestOsFeatures(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r := resource.Item.(*compute.Image)
+	r := resource.Item.(*computepb.Image)
 	res := make([]string, len(r.GuestOsFeatures))
 	for i, v := range r.GuestOsFeatures {
-		res[i] = v.Type
+		res[i] = v.GetType()
 	}
 	return resource.Set("guest_os_features", res)
 }

@@ -7,7 +7,9 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 
-	"google.golang.org/api/compute/v1"
+	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeBackendServices() *schema.Table {
@@ -557,40 +559,47 @@ func ComputeBackendServices() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchComputeBackendServices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	nextPageToken := ""
 	c := meta.(*client.Client)
+
+	ca, err := compute.NewBackendServicesRESTClient(ctx, c.Options()...)
+	if err != nil {
+		return err
+	}
+
+	it := ca.AggregatedList(ctx, &computepb.AggregatedListBackendServicesRequest{
+		Project: c.ProjectId,
+	})
+
 	for {
-		call := c.Services.Compute.BackendServices.AggregatedList(c.ProjectId).Context(ctx).PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
+		if item.Value == nil {
+			continue
+		}
 
-		var backendServices []*compute.BackendService
-		for _, backendServicesScopedList := range output.Items {
-			backendServices = append(backendServices, backendServicesScopedList.BackendServices...)
-		}
-		res <- backendServices
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item.Value.BackendServices
 	}
+
 	return nil
 }
 func resolveComputeBackendServiceCdnPolicyBypassCacheOnRequestHeaders(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r := resource.Item.(*compute.BackendService)
+	r := resource.Item.(*computepb.BackendService)
 	if r.CdnPolicy == nil {
 		return nil
 	}
 	headers := make([]string, len(r.CdnPolicy.BypassCacheOnRequestHeaders))
 	for i, v := range r.CdnPolicy.BypassCacheOnRequestHeaders {
-		headers[i] = v.HeaderName
+		headers[i] = v.GetHeaderName()
 	}
 	return resource.Set("cdn_policy_bypass_cache_on_request_headers", headers)
 }
 func resolveComputeBackendServiceCdnPolicyNegativeCachingPolicy(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	r := resource.Item.(*compute.BackendService)
+	r := resource.Item.(*computepb.BackendService)
 	if r.CdnPolicy == nil {
 		return nil
 	}
@@ -603,7 +612,7 @@ func resolveComputeBackendServiceCdnPolicyNegativeCachingPolicy(ctx context.Cont
 }
 
 func fetchComputeBackendServiceBackends(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r := parent.Item.(*compute.BackendService)
+	r := parent.Item.(*computepb.BackendService)
 	res <- r.Backends
 	return nil
 }

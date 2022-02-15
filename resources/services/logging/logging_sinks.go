@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"cloud.google.com/go/logging/logadmin"
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/logging/v2"
+	"google.golang.org/api/iterator"
 )
 
 func LoggingSinks() *schema.Table {
@@ -142,31 +143,32 @@ func LoggingSinks() *schema.Table {
 // ====================================================================================================================
 func fetchLoggingSinks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	lg, err := c.Services.Logging(fmt.Sprintf("projects/%s", c.ProjectId))
+	if err != nil {
+		return err
+	}
+
+	it := lg.Sinks(ctx)
 	for {
-		call := c.Services.Logging.Sinks.
-			List(fmt.Sprintf("projects/%s", c.ProjectId)).
-			Context(ctx).
-			PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-
-		res <- output.Sinks
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item
 	}
 	return nil
 }
 func fetchLoggingSinkExclusions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p, ok := parent.Item.(*logging.LogSink)
+	p, ok := parent.Item.(*logadmin.Sink)
 	if !ok {
-		return fmt.Errorf("expected *logging.LogSink but got %T", p)
+		return fmt.Errorf("expected *logadmin.Sink but got %T", p)
 	}
 
+	// TODO missing
 	res <- p.Exclusions
 	return nil
 }

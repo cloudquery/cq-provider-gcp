@@ -5,7 +5,10 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+
+	compute "cloud.google.com/go/compute/apiv1"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeNetworks() *schema.Table {
@@ -172,25 +175,32 @@ func ComputeNetworks() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchComputeNetworks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	nextPageToken := ""
 	c := meta.(*client.Client)
+
+	ca, err := compute.NewNetworksRESTClient(ctx, c.Options()...)
+	if err != nil {
+		return err
+	}
+
+	it := ca.List(ctx, &computepb.ListNetworksRequest{
+		Project: c.ProjectId,
+	})
+
 	for {
-		call := c.Services.Compute.Networks.List(c.ProjectId).Context(ctx)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-		res <- output.Items
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item
 	}
+
 	return nil
 }
 func fetchComputeNetworkPeerings(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r := parent.Item.(*compute.Network)
+	r := parent.Item.(*computepb.Network)
 	res <- r.Peerings
 	return nil
 }

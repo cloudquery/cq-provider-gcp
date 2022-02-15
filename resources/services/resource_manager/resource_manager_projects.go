@@ -7,7 +7,10 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/cloudresourcemanager/v3"
+
+	"google.golang.org/api/iterator"
+	resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v3"
+	"google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ResourceManagerProjects() *schema.Table {
@@ -89,27 +92,32 @@ func ResourceManagerProjects() *schema.Table {
 // ====================================================================================================================
 func fetchResourceManagerProjects(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	call := c.Services.ResourceManager.Projects.
-		Get("projects/" + c.ProjectId).
-		Context(ctx)
-	output, err := call.Do()
-	if err != nil {
-		return err
+
+	it := c.Services.ResourceManagerProjects.ListProjects(ctx, &resourcemanagerpb.ListProjectsRequest{
+		Parent: fmt.Sprintf("projects/" + c.ProjectId), // TODO hope it works?
+	})
+	for {
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		res <- item
 	}
-	res <- output
 	return nil
 }
 func resolveResourceManagerProjectPolicy(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	client := meta.(*client.Client)
-	p, ok := resource.Item.(*cloudresourcemanager.Project)
+	cl := meta.(*client.Client)
+	p, ok := resource.Item.(*resourcemanagerpb.Project)
 	if !ok {
-		return fmt.Errorf("expected *cloudresourcemanager.Project but got %T", p)
+		return fmt.Errorf("expected *resourcemanagerpb.Project but got %T", p)
 	}
 
-	call := client.Services.ResourceManager.Projects.
-		GetIamPolicy("projects/"+p.ProjectId, &cloudresourcemanager.GetIamPolicyRequest{}).
-		Context(ctx)
-	output, err := call.Do()
+	output, err := cl.Services.ResourceManagerProjects.GetIamPolicy(ctx, &iam.GetIamPolicyRequest{
+		Resource: "projects/" + p.ProjectId,
+	})
 	if err != nil {
 		return err
 	}

@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/spf13/cast"
-
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+
+	compute "cloud.google.com/go/compute/apiv1"
+	"github.com/spf13/cast"
+	"google.golang.org/api/iterator"
+	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ComputeDiskTypes() *schema.Table {
@@ -117,33 +119,39 @@ func ComputeDiskTypes() *schema.Table {
 // ====================================================================================================================
 func fetchComputeDiskTypes(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
+
+	ca, err := compute.NewDiskTypesRESTClient(ctx, c.Options()...)
+	if err != nil {
+		return err
+	}
+
+	it := ca.AggregatedList(ctx, &computepb.AggregatedListDiskTypesRequest{
+		Project: c.ProjectId,
+	})
+
 	for {
-		call := c.Services.Compute.DiskTypes.AggregatedList(c.ProjectId).Context(ctx).PageToken(nextPageToken)
-		output, err := call.Do()
+		item, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return err
 		}
-
-		var diskTypes []*compute.DiskType
-		for _, items := range output.Items {
-			diskTypes = append(diskTypes, items.DiskTypes...)
+		if item.Value == nil {
+			continue
 		}
-		res <- diskTypes
 
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
+		res <- item.Value.DiskTypes
 	}
+
 	return nil
 }
 
 func ResolveDiskTypeId(_ context.Context, _ schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	disk := resource.Item.(*compute.DiskType)
-	if disk.Id != 0 {
+	disk := resource.Item.(*computepb.DiskType)
+	if disk.Id != nil && *disk.Id != 0 {
 		return resource.Set(c.Name, cast.ToString(disk.Id))
 	}
-	linkParts := strings.Split(disk.SelfLink, "/")
-	return resource.Set(c.Name, fmt.Sprintf("%s/%s", linkParts[len(linkParts)-3], disk.Name))
+	linkParts := strings.Split(disk.GetSelfLink(), "/")
+	return resource.Set(c.Name, fmt.Sprintf("%s/%s", linkParts[len(linkParts)-3], disk.GetName()))
 }
