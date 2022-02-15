@@ -59,7 +59,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 
 	var err error
 	if len(providerConfig.ProjectIDs) == 0 {
-		projects, err = getProjects(serviceAccountKeyJSON, logger, providerConfig.ProjectFilter)
+		projects, err = getProjects(providerConfig, serviceAccountKeyJSON, logger, providerConfig.ProjectFilter)
 		if err != nil {
 			return nil, err
 		}
@@ -68,7 +68,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 	if err := validateProjects(projects); err != nil {
 		return nil, err
 	}
-	services, err := initServices(context.Background(), serviceAccountKeyJSON)
+	services, err := initServices(context.Background(), providerConfig, serviceAccountKeyJSON)
 	if err != nil {
 		return nil, err
 	}
@@ -85,12 +85,12 @@ func validateProjects(projects []string) error {
 	return nil
 }
 
-func getProjects(serviceAccountKeyJSON []byte, logger hclog.Logger, filter string) ([]string, error) {
+func getProjects(cfg *Config, serviceAccountKeyJSON []byte, logger hclog.Logger, filter string) ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
 	defer cancel()
 
 	// Add a fake request reason because it is not possible to pass nil options
-	options := []option.ClientOption{option.WithRequestReason("cloudquery resource fetch")}
+	options := append([]option.ClientOption{option.WithRequestReason("cloudquery resource fetch")}, cfg.ClientOptions()...)
 	if len(serviceAccountKeyJSON) != 0 {
 		options = append(options, option.WithCredentialsJSON(serviceAccountKeyJSON))
 	}

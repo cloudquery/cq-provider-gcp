@@ -65,7 +65,6 @@ func (c Client) RetryWithDefaultBackoff(ctx context.Context, f func() (stop bool
 	}, f)
 }
 
-//nolint:interfacer
 func (c Client) Retry(ctx context.Context, bo gax.Backoff, f func() (stop bool, err error)) error {
 	var lastErr error
 	for {
