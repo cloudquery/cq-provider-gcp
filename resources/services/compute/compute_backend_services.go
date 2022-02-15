@@ -561,7 +561,7 @@ func fetchComputeBackendServices(ctx context.Context, meta schema.ClientMeta, pa
 	c := meta.(*client.Client)
 	for {
 		call := c.Services.Compute.BackendServices.AggregatedList(c.ProjectId).Context(ctx).PageToken(nextPageToken)
-		output, err := call.Do()
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}

@@ -214,7 +214,7 @@ func fetchLoggingMetrics(ctx context.Context, meta schema.ClientMeta, parent *sc
 			List(fmt.Sprintf("projects/%s", c.ProjectId)).
 			Context(ctx).
 			PageToken(nextPageToken)
-		output, err := call.Do()
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}

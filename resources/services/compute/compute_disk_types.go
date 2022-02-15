@@ -120,7 +120,7 @@ func fetchComputeDiskTypes(ctx context.Context, meta schema.ClientMeta, parent *
 	nextPageToken := ""
 	for {
 		call := c.Services.Compute.DiskTypes.AggregatedList(c.ProjectId).Context(ctx).PageToken(nextPageToken)
-		output, err := call.Do()
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}

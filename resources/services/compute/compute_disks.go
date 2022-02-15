@@ -269,7 +269,7 @@ func fetchComputeDisks(ctx context.Context, meta schema.ClientMeta, parent *sche
 	nextPageToken := ""
 	for {
 		call := c.Services.Compute.Disks.AggregatedList(c.ProjectId).Context(ctx).PageToken(nextPageToken)
-		output, err := call.Do()
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}

@@ -192,10 +192,11 @@ func fetchCloudfunctionsFunctions(ctx context.Context, meta schema.ClientMeta, p
 	nextPageToken := ""
 	for {
 		call := c.Services.CloudFunctions.Projects.Locations.Functions.List("projects/" + c.ProjectId + "/locations/-").Context(ctx).PageToken(nextPageToken)
-		output, err := call.Do()
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
+
 		res <- output.Functions
 		if output.NextPageToken == "" {
 			break

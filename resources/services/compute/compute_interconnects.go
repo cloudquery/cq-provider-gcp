@@ -233,7 +233,7 @@ func fetchComputeInterconnects(ctx context.Context, meta schema.ClientMeta, pare
 	nextPageToken := ""
 	for {
 		call := c.Services.Compute.Interconnects.List(c.ProjectId).Context(ctx).PageToken(nextPageToken)
-		output, err := call.Do()
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}

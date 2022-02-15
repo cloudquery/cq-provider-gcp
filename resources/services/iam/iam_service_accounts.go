@@ -118,12 +118,12 @@ func fetchIamServiceAccounts(ctx context.Context, meta schema.ClientMeta, parent
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Iam.Projects.ServiceAccounts.List("projects/" + c.ProjectId).Context(ctx)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		call := c.Services.Iam.Projects.ServiceAccounts.List("projects/" + c.ProjectId).Context(ctx).PageToken(nextPageToken)
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
+
 		res <- output.Accounts
 		if output.NextPageToken == "" {
 			break
@@ -139,11 +139,11 @@ func fetchIamServiceAccountKeys(ctx context.Context, meta schema.ClientMeta, par
 		return fmt.Errorf("expected *iam.ServiceAccount but got %T", p)
 	}
 	call := c.Services.Iam.Projects.ServiceAccounts.Keys.List(p.Name).Context(ctx)
-
-	output, err := call.Do()
+	output, err := client.Retryer(ctx, c, call.Do)
 	if err != nil {
 		return err
 	}
+
 	res <- output.Keys
 	return nil
 }

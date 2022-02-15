@@ -70,12 +70,12 @@ func fetchIamRoles(ctx context.Context, meta schema.ClientMeta, parent *schema.R
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Iam.Projects.Roles.List("projects/" + c.ProjectId).Context(ctx)
-		call.PageToken(nextPageToken)
-		output, err := call.Do()
+		call := c.Services.Iam.Projects.Roles.List("projects/" + c.ProjectId).Context(ctx).PageToken(nextPageToken)
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
+
 		res <- output.Roles
 		if output.NextPageToken == "" {
 			break
