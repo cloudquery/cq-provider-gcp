@@ -114,14 +114,14 @@ func ComputeTargetHTTPSProxies() *schema.Table {
 func fetchComputeTargetHttpsProxies(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 
-	ca, err := compute.NewTargetHttpsProxiesRESTClient(ctx, c.Options()...)
+	ca, err := compute.NewTargetHttpsProxiesRESTClient(ctx, c.ClientOptions()...)
 	if err != nil {
 		return err
 	}
 
 	it := ca.AggregatedList(ctx, &computepb.AggregatedListTargetHttpsProxiesRequest{
 		Project: c.ProjectId,
-	})
+	}, c.CallOptions()...)
 
 	for {
 		item, err := it.Next()

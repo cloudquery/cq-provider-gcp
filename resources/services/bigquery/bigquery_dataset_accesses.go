@@ -120,17 +120,20 @@ func fetchBigqueryDatasetAccesses(ctx context.Context, meta schema.ClientMeta, p
 	return nil
 }
 func resolveBigqueryDatasetAccessTargetTypes(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*bigquery.AccessEntry)
-	if !ok {
-		return fmt.Errorf("expected bigquery.AccessEntry but got %T", p)
-	}
+	return nil
+	/*
+		p, ok := resource.Item.(*bigquery.AccessEntry)
+		if !ok {
+			return fmt.Errorf("expected bigquery.AccessEntry but got %T", p)
+		}
 
-	if p.Dataset == nil {
-		return nil
-	}
-	result := make([]string, 0, len(p.Dataset.TargetTypes))
-	for _, t := range p.Dataset.TargetTypes {
-		result = append(result, t.TargetType)
-	}
-	return resource.Set(c.Name, result)
+		if p.Dataset == nil {
+			return nil
+		}
+		result := make([]string, 0, len(p.Dataset.TargetTypes))
+		for _, t := range p.Dataset.TargetTypes {
+			result = append(result, t.TargetType)
+		}
+		return resource.Set(c.Name, result)
+	*/
 }

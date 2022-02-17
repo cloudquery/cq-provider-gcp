@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -84,4 +85,21 @@ func (c Client) Retry(ctx context.Context, bo gax.Backoff, f func() (stop bool, 
 			return cerr
 		}
 	}
+}
+
+func shouldRetry(err error) bool {
+	if gerr, ok := err.(*googleapi.Error); ok && len(gerr.Errors) > 0 {
+		switch gerr.Errors[0].Reason {
+		case "accessNotConfigured", "forbidden", "SERVICE_DISABLED":
+			fmt.Println("==== shouldRetry? no1")
+			return false
+		}
+	}
+	if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		fmt.Println("==== shouldRetry? no2")
+		return false
+	}
+
+	fmt.Println("==== shouldRetry? yes")
+	return true
 }

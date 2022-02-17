@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"cloud.google.com/go/logging/logadmin"
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	"google.golang.org/api/iterator"
@@ -163,12 +162,15 @@ func fetchLoggingSinks(ctx context.Context, meta schema.ClientMeta, parent *sche
 	return nil
 }
 func fetchLoggingSinkExclusions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p, ok := parent.Item.(*logadmin.Sink)
-	if !ok {
-		return fmt.Errorf("expected *logadmin.Sink but got %T", p)
-	}
-
-	// TODO missing
-	res <- p.Exclusions
 	return nil
+	/*
+		p, ok := parent.Item.(*logadmin.Sink)
+		if !ok {
+			return fmt.Errorf("expected *logadmin.Sink but got %T", p)
+		}
+
+		// TODO missing
+		res <- p.Exclusions
+		return nil
+	*/
 }

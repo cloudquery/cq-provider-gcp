@@ -122,14 +122,14 @@ func ComputeAddresses() *schema.Table {
 func fetchComputeAddresses(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 
-	ca, err := compute.NewAddressesRESTClient(ctx, c.Options()...)
+	ca, err := compute.NewAddressesRESTClient(ctx, c.ClientOptions()...)
 	if err != nil {
 		return err
 	}
 
 	it := ca.AggregatedList(ctx, &computepb.AggregatedListAddressesRequest{
 		Project: c.ProjectId,
-	})
+	}, c.CallOptions()...)
 
 	for {
 		address, err := it.Next()

@@ -129,14 +129,14 @@ func ComputeSslCertificates() *schema.Table {
 func fetchComputeSslCertificates(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 
-	ca, err := compute.NewSslCertificatesRESTClient(ctx, c.Options()...)
+	ca, err := compute.NewSslCertificatesRESTClient(ctx, c.ClientOptions()...)
 	if err != nil {
 		return err
 	}
 
 	it := ca.AggregatedList(ctx, &computepb.AggregatedListSslCertificatesRequest{
 		Project: c.ProjectId,
-	})
+	}, c.CallOptions()...)
 
 	for {
 		item, err := it.Next()

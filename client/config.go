@@ -1,8 +1,10 @@
 package client
 
 import (
+	"fmt"
 	"time"
 
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/backoff"
@@ -34,12 +36,11 @@ func (c Config) Example() string {
 				// backoff_multiplier = 1.6
 				// backoff_max_delay = 120
 				// backoff_jitter = 0.2
-				// backoff_ = 1.6
 				// backoff_min_connect_timeout = 0
 			}`
 }
 
-func (c Config) ClientOptions() []option.ClientOption {
+func (c Config) ClientOptions() ([]option.ClientOption, []gax.CallOption) {
 	p := grpc.ConnectParams{
 		Backoff: backoff.DefaultConfig,
 	}
@@ -59,7 +60,19 @@ func (c Config) ClientOptions() []option.ClientOption {
 	if c.MinConnectTimeout >= 0 {
 		p.MinConnectTimeout = time.Duration(c.MinConnectTimeout) * time.Second
 	}
-	return []option.ClientOption{
-		option.WithGRPCDialOption(grpc.WithConnectParams(p)),
+
+	bo := gax.Backoff{
+		Initial:    p.Backoff.BaseDelay,
+		Max:        p.Backoff.MaxDelay,
+		Multiplier: p.Backoff.Multiplier,
 	}
+
+	return []option.ClientOption{
+			option.WithGRPCDialOption(grpc.WithConnectParams(p)),
+		}, []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				fmt.Println("==== getting retryer")
+				return gax.OnErrorFunc(bo, shouldRetry)
+			}),
+		}
 }

@@ -7,7 +7,6 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 
-	"cloud.google.com/go/logging/logadmin"
 	"google.golang.org/api/iterator"
 )
 
@@ -230,16 +229,19 @@ func fetchLoggingMetrics(ctx context.Context, meta schema.ClientMeta, parent *sc
 	return nil
 }
 func fetchLoggingMetricDescriptorLabels(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p, ok := parent.Item.(*logadmin.Metric)
-	if !ok {
-		return fmt.Errorf("expected *logadmin.Metric but got %T", p)
-	}
-
-	// TODO missing
-	if p.MetricDescriptor == nil {
-		return nil
-	}
-
-	res <- p.MetricDescriptor.Labels
 	return nil
+	/*
+		p, ok := parent.Item.(*logadmin.Metric)
+		if !ok {
+			return fmt.Errorf("expected *logadmin.Metric but got %T", p)
+		}
+
+		// TODO missing
+		if p.MetricDescriptor == nil {
+			return nil
+		}
+
+		res <- p.MetricDescriptor.Labels
+		return nil
+	*/
 }

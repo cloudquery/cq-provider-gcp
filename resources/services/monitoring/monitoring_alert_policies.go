@@ -329,25 +329,44 @@ func MonitoringAlertPolicies() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 func fetchMonitoringAlertPolicies(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	c := meta.(*client.Client)
-	nextPageToken := ""
-	for {
-		call := c.Services.Monitoring.Projects.AlertPolicies.
-			List(fmt.Sprintf("projects/%s", c.ProjectId)).
-			Context(ctx).
-			PageToken(nextPageToken)
-		output, err := call.Do()
-		if err != nil {
-			return err
-		}
+	/*
+	   	c := meta.(*client.Client)
+	   	nextPageToken := ""
+	   	for {
+	   		c.Services.Monitoring.ListServiceLevelObjectives(ctx, &monitoringpb.ListServiceLevelObjectivesRequest{
 
-		res <- output.AlertPolicies
+	   		})
+	   		it := c.Services.Monitoring.ListServices(ctx, &monitoringpb.ListServicesRequest{
+	   			Parent: "projects/" + c.ProjectId,
+	   		})
+	   		for {
+	   			item, err := it.Next()
+	   			if err == iterator.Done {
+	   				break
+	   			}
+	   			if err != nil {
+	   				return err
+	   			}
+	   //			res <- item
+	   		}
 
-		if output.NextPageToken == "" {
-			break
-		}
-		nextPageToken = output.NextPageToken
-	}
+	   		call := c.Services.Monitoring.Projects.AlertPolicies.
+	   			List(fmt.Sprintf("projects/%s", c.ProjectId)).
+	   			Context(ctx).
+	   			PageToken(nextPageToken)
+	   		output, err := call.Do()
+	   		if err != nil {
+	   			return err
+	   		}
+
+	   		res <- output.AlertPolicies
+
+	   		if output.NextPageToken == "" {
+	   			break
+	   		}
+	   		nextPageToken = output.NextPageToken
+	   	}
+	*/
 	return nil
 }
 func fetchMonitoringAlertPolicyConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {

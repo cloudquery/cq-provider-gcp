@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
@@ -20,7 +21,9 @@ const serviceAccountEnvKey = "CQ_SERVICE_ACCOUNT_KEY_JSON"
 type Client struct {
 	projects []string
 	logger   hclog.Logger
-	options  []option.ClientOption
+
+	clientOpts []option.ClientOption
+	callOpts   []gax.CallOption
 
 	// All gcp services initialized by client
 	Services *Services
@@ -28,11 +31,12 @@ type Client struct {
 	ProjectId string
 }
 
-func NewGcpClient(log hclog.Logger, projects []string, services *Services, options []option.ClientOption) *Client {
+func NewGcpClient(log hclog.Logger, projects []string, services *Services, options []option.ClientOption, callOpts []gax.CallOption) *Client {
 	return &Client{
-		logger:   log,
-		projects: projects,
-		options:  options,
+		logger:     log,
+		projects:   projects,
+		clientOpts: options,
+		callOpts:   callOpts,
 
 		Services: services,
 	}
@@ -42,8 +46,12 @@ func (c Client) Logger() hclog.Logger {
 	return c.logger
 }
 
-func (c Client) Options() []option.ClientOption {
-	return c.options
+func (c Client) ClientOptions() []option.ClientOption {
+	return c.clientOpts
+}
+
+func (c Client) CallOptions() []gax.CallOption {
+	return c.callOpts
 }
 
 // withProject allows multiplexer to create a new client with given subscriptionId
@@ -65,15 +73,16 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 		serviceAccountKeyJSON = []byte(os.Getenv(serviceAccountEnvKey))
 	}
 
+	cio, cao := providerConfig.ClientOptions()
 	// Add a fake request reason because it is not possible to pass nil options
-	options := append([]option.ClientOption{option.WithRequestReason("cloudquery resource fetch")}, providerConfig.ClientOptions()...)
+	options := append([]option.ClientOption{option.WithRequestReason("cloudquery resource fetch")}, cio...)
 	if len(serviceAccountKeyJSON) != 0 {
 		options = append(options, option.WithCredentialsJSON(serviceAccountKeyJSON))
 	}
 
 	var err error
 	if len(providerConfig.ProjectIDs) == 0 {
-		projects, err = getProjects(logger, options, providerConfig.ProjectFilter)
+		projects, err = getProjects(logger, options, cao, providerConfig.ProjectFilter)
 		if err != nil {
 			return nil, err
 		}
@@ -86,7 +95,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 	if err != nil {
 		return nil, err
 	}
-	client := NewGcpClient(logger, projects, services, options)
+	client := NewGcpClient(logger, projects, services, options, cao)
 	return client, nil
 }
 
@@ -99,7 +108,7 @@ func validateProjects(projects []string) error {
 	return nil
 }
 
-func getProjects(logger hclog.Logger, options []option.ClientOption, filter string) ([]string, error) {
+func getProjects(logger hclog.Logger, options []option.ClientOption, callOpts []gax.CallOption, filter string) ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
 	defer cancel()
 

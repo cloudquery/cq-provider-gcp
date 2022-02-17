@@ -5,6 +5,7 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	"golang.org/x/sync/errgroup"
 
 	compute "cloud.google.com/go/compute/apiv1"
 	"google.golang.org/api/iterator"
@@ -195,32 +196,49 @@ func ComputeSubnetworks() *schema.Table {
 func fetchComputeSubnetworks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 
-	ca, err := compute.NewSubnetworksRESTClient(ctx, c.Options()...)
+	errGroup, ctx := errgroup.WithContext(ctx)
+	for i := 0; i < 20; i++ {
+		errGroup.Go(func() error {
+
+			ca, err := compute.NewSubnetworksRESTClient(ctx, c.ClientOptions()...)
+			if err != nil {
+				return err
+			}
+
+			for i := 0; i < 50; i++ {
+				it := ca.AggregatedList(ctx, &computepb.AggregatedListSubnetworksRequest{
+					Project: c.ProjectId,
+				}, c.CallOptions()...)
+
+				for {
+					item, err := it.Next()
+					if err == iterator.Done {
+						break
+					}
+					if err != nil {
+						return err
+					}
+					if true || item.Value == nil {
+						continue
+					}
+
+					res <- item.Value.Subnetworks
+				}
+			}
+
+			return nil
+		})
+	}
+
+	err := errGroup.Wait()
 	if err != nil {
-		return err
+		c.Logger().Warn("ERROR", "err", err.Error())
+	} else {
+		c.Logger().Warn("NO ERROR")
 	}
-
-	it := ca.AggregatedList(ctx, &computepb.AggregatedListSubnetworksRequest{
-		Project: c.ProjectId,
-	})
-
-	for {
-		item, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			return err
-		}
-		if item.Value == nil {
-			continue
-		}
-
-		res <- item.Value.Subnetworks
-	}
-
-	return nil
+	return err
 }
+
 func fetchComputeSubnetworkSecondaryIpRanges(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*computepb.Subnetwork)
 	res <- r.SecondaryIpRanges

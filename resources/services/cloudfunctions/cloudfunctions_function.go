@@ -28,7 +28,7 @@ func CloudfunctionsFunction() *schema.Table {
 			{
 				Name:        "available_memory_mb",
 				Description: "The amount of memory in MB available for a function Defaults to 256MB",
-				Type:        schema.TypeBigInt,
+				Type:        schema.TypeInt,
 			},
 			{
 				Name:        "build_environment_variables",

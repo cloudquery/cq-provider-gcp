@@ -89,7 +89,7 @@ func ComputeFirewalls() *schema.Table {
 			{
 				Name:        "priority",
 				Description: "Priority for this rule This is an integer between `0` and `65535`, both inclusive The default value is `1000` Relative priorities determine which rule takes effect if multiple rules apply Lower values indicate higher priority For example, a rule with priority `0` has higher precedence than a rule with priority `1` DENY rules take precedence over ALLOW rules if they have equal priority Note that VPC networks have implied rules with a priority of `65535` To avoid conflicts with the implied rules, use a priority number less than `65535`",
-				Type:        schema.TypeBigInt,
+				Type:        schema.TypeInt,
 			},
 			{
 				Name:        "self_link",
@@ -191,14 +191,14 @@ func ComputeFirewalls() *schema.Table {
 func fetchComputeFirewalls(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 
-	ca, err := compute.NewFirewallsRESTClient(ctx, c.Options()...)
+	ca, err := compute.NewFirewallsRESTClient(ctx, c.ClientOptions()...)
 	if err != nil {
 		return err
 	}
 
 	it := ca.List(ctx, &computepb.ListFirewallsRequest{
 		Project: c.ProjectId,
-	})
+	}, c.CallOptions()...)
 
 	for {
 		item, err := it.Next()

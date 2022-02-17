@@ -2,10 +2,10 @@ package iam
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-
 	adminpb "google.golang.org/genproto/googleapis/iam/admin/v1"
 )
 
@@ -39,6 +39,7 @@ func IamRoles() *schema.Table {
 				Name:        "etag",
 				Description: "Used to perform a consistent read-modify-write",
 				Type:        schema.TypeString,
+				Resolver:    resolveEtag,
 			},
 			{
 				Name:          "included_permissions",
@@ -87,4 +88,11 @@ func fetchIamRoles(ctx context.Context, meta schema.ClientMeta, parent *schema.R
 	}
 
 	return nil
+}
+func resolveEtag(ctx context.Context, meta schema.ClientMeta, r *schema.Resource, c schema.Column) error {
+	p, ok := r.Item.(*adminpb.Role)
+	if !ok {
+		return fmt.Errorf("expected *adminpb.Role but got %T", p)
+	}
+	return r.Set(c.Name, fmt.Sprintf("%x", p.Etag))
 }

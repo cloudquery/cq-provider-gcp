@@ -31,7 +31,7 @@ func ComputeBackendServices() *schema.Table {
 			{
 				Name:        "affinity_cookie_ttl_sec",
 				Description: "Lifetime of cookies in seconds Only applicable if the loadBalancingScheme is EXTERNAL, INTERNAL_SELF_MANAGED, or INTERNAL_MANAGED, the protocol is HTTP or HTTPS, and the sessionAffinity is GENERATED_COOKIE, or HTTP_COOKIE  If set to 0, the cookie is non-persistent and lasts only until the end of the browser session (or equivalent) The maximum allowed value is one day (86,400)  Not supported when the backend service is referenced by a URL map that is bound to target gRPC proxy that has validateForProxyless field set to true",
-				Type:        schema.TypeBigInt,
+				Type:        schema.TypeInt,
 			},
 			{
 				Name:          "cdn_policy_bypass_cache_on_request_headers",
@@ -561,14 +561,14 @@ func ComputeBackendServices() *schema.Table {
 func fetchComputeBackendServices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 
-	ca, err := compute.NewBackendServicesRESTClient(ctx, c.Options()...)
+	ca, err := compute.NewBackendServicesRESTClient(ctx, c.ClientOptions()...)
 	if err != nil {
 		return err
 	}
 
 	it := ca.AggregatedList(ctx, &computepb.AggregatedListBackendServicesRequest{
 		Project: c.ProjectId,
-	})
+	}, c.CallOptions()...)
 
 	for {
 		item, err := it.Next()

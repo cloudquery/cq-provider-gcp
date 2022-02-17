@@ -177,14 +177,14 @@ func ComputeNetworks() *schema.Table {
 func fetchComputeNetworks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 
-	ca, err := compute.NewNetworksRESTClient(ctx, c.Options()...)
+	ca, err := compute.NewNetworksRESTClient(ctx, c.ClientOptions()...)
 	if err != nil {
 		return err
 	}
 
 	it := ca.List(ctx, &computepb.ListNetworksRequest{
 		Project: c.ProjectId,
-	})
+	}, c.CallOptions()...)
 
 	for {
 		item, err := it.Next()

@@ -160,14 +160,14 @@ func ComputeProjects() *schema.Table {
 func fetchComputeProjects(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 
-	ca, err := compute.NewProjectsRESTClient(ctx, c.Options()...)
+	ca, err := compute.NewProjectsRESTClient(ctx, c.ClientOptions()...)
 	if err != nil {
 		return err
 	}
 
 	item, err := ca.Get(ctx, &computepb.GetProjectRequest{
 		Project: c.ProjectId,
-	})
+	}, c.CallOptions()...)
 	if err != nil {
 		return err
 	}
