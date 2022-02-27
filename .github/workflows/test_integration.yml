@@ -16,7 +16,7 @@ jobs:
     outputs:
       status: ${{ steps.is_organization_member.outputs.result }}
     steps:
-      - uses: yevgenypats/is-organization-member@2cff10d857776aacefe5fb11acea8c1a8d270d3f
+      - uses: yevgenypats/is-organization-member@cfe7b7f6b84b247d93fe793c8ba06d89270808de
         if: github.event_name == 'pull_request_target'
         id: is_organization_member
         with:
@@ -26,7 +26,6 @@ jobs:
       - name: Skip if not member and event is pull_request_target
         if: github.event_name != 'pull_request_target' || steps.is_organization_member.outputs.result == 'false'
         run: |
-            echo "user: ${{ github.event.pull_request.user.login }}, result: ${{ steps.is_organization_member.outputs.result }}"
             echo "user is not part of org. Please run 'go test -run=TestIntegration -tags=integration ./..'"
             echo "and paste the output in the PR"
 
@@ -72,16 +71,12 @@ jobs:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@master
-        with:
-          project_id: ${{ secrets.GCLOUD_PROJECT_ID }}
-          service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-          export_default_credentials: true
+      
 
       - name: Integration Test
         run: |
           go test -run=TestIntegration -tags=integration ./...
+        
 
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
@@ -89,6 +84,6 @@ jobs:
         env:
           SLACK_CHANNEL: oss-tests
           SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: 'AWS - E2E tests failed'
-          SLACK_TITLE: AWS - E2E tests failed
+          SLACK_MESSAGE: ' - E2E tests failed'
+          SLACK_TITLE:  - E2E tests failed
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
