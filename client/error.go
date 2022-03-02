@@ -64,14 +64,14 @@ func ErrorClassifier(meta schema.ClientMeta, resourceName string, err error) dia
 	if ok := errors.As(err, &gerr); ok {
 		if len(gerr.Errors) > 0 && gerr.Errors[0].Reason == "rateLimitExceeded" {
 			return diag.Diagnostics{
-				RedactError(client.projects, diag.NewBaseError(err, diag.THROTTLE, diag.WithType(diag.THROTTLE), diag.WithSeverity(diag.WARNING), diag.WithResourceName(resourceName), diag.WithSummary("%s", gerr.Errors[0].Message))),
+				RedactError(client.projects, diag.NewBaseError(err, diag.THROTTLE, diag.WithType(diag.THROTTLE), diag.WithSeverity(diag.WARNING), diag.WithResourceName(resourceName), diag.WithError(errors.New(gerr.Message)))),
 			}
 		}
 
 		if grpcCode, ok := httpCodeToGRPCCode[gerr.Code]; ok {
 			if v, ok := grpcCodeToDiag[grpcCode]; ok {
 				return diag.Diagnostics{
-					RedactError(client.projects, diag.NewBaseError(err, v.typ, diag.WithType(v.typ), diag.WithResourceName(resourceName), diag.WithNoOverwrite(), diag.WithSummary("%s", v.summary), diag.WithSeverity(v.severity))),
+					RedactError(client.projects, diag.NewBaseError(err, v.typ, diag.WithType(v.typ), diag.WithResourceName(resourceName), diag.WithSummary("%s", v.summary), diag.WithError(errors.New(gerr.Message)), diag.WithNoOverwrite(), diag.WithSeverity(v.severity))),
 				}
 			}
 		}
