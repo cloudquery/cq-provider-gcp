@@ -18,6 +18,7 @@
 #  }
 #}
 
+
 resource "google_compute_router" "vpn_router" {
   name    = "${local.prefix}-${local.region}-vpn-tunnels"
   region  = local.region
