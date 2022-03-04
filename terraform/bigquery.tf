@@ -11,6 +11,7 @@ resource "google_bigquery_dataset_access" "access" {
 # Bigquery Module
 ################################################################################
 
+
 module "bigquery" {
   source  = "terraform-google-modules/bigquery/google"
   version = "~> 5.3"
