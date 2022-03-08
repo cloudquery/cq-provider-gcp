@@ -157,12 +157,11 @@ func ComputeProjects() *schema.Table {
 // ====================================================================================================================
 func fetchComputeProjects(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	call := c.Services.Compute.Projects.Get(c.ProjectId)
-	item, err := c.RetryingDo(ctx, call)
+	call := c.Services.Compute.Projects.Get(c.ProjectId).Context(ctx)
+	output, err := client.Retryer(ctx, c, call.Do)
 	if err != nil {
 		return err
 	}
-	output := item.(*compute.Project)
 
 	res <- output
 	return nil

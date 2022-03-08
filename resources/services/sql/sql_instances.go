@@ -741,12 +741,12 @@ func fetchSqlInstances(ctx context.Context, meta schema.ClientMeta, parent *sche
 	for {
 		call := c.Services.Sql.Instances.
 			List(c.ProjectId).
+			Context(ctx).
 			PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
-		output := list.(*sql.InstancesListResponse)
 
 		res <- output.Items
 		if output.NextPageToken == "" {

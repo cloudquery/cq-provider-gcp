@@ -122,12 +122,11 @@ func fetchComputeAddresses(ctx context.Context, meta schema.ClientMeta, parent *
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Compute.Addresses.AggregatedList(c.ProjectId).PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		call := c.Services.Compute.Addresses.AggregatedList(c.ProjectId).Context(ctx).PageToken(nextPageToken)
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
-		output := list.(*compute.AddressAggregatedList)
 
 		var addresses []*compute.Address
 		for _, items := range output.Items {

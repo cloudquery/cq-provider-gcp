@@ -45,6 +45,10 @@ func (c Client) Logger() hclog.Logger {
 	return c.logger
 }
 
+func (c Client) Backoff() BackoffSettings {
+	return c.backoff
+}
+
 // withProject allows multiplexer to create a new client with given subscriptionId
 func (c Client) withProject(project string) *Client {
 	return &Client{

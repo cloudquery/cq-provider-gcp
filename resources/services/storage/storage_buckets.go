@@ -541,12 +541,11 @@ func fetchStorageBuckets(ctx context.Context, meta schema.ClientMeta, parent *sc
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Storage.Buckets.List(c.ProjectId).PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		call := c.Services.Storage.Buckets.List(c.ProjectId).Context(ctx).PageToken(nextPageToken)
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
-		output := list.(*storage.Buckets)
 
 		res <- output.Items
 		if output.NextPageToken == "" {
@@ -584,12 +583,11 @@ func resolveBucketPolicy(ctx context.Context, meta schema.ClientMeta, resource *
 		return fmt.Errorf("expected *storage.Bucket but got %T", p)
 	}
 	cl := meta.(*client.Client)
-	call := cl.Services.Storage.Buckets.GetIamPolicy(p.Name).OptionsRequestedPolicyVersion(3)
-	list, err := cl.RetryingDo(ctx, call)
+	call := cl.Services.Storage.Buckets.GetIamPolicy(p.Name).OptionsRequestedPolicyVersion(3).Context(ctx)
+	output, err := client.Retryer(ctx, cl, call.Do)
 	if err != nil {
 		return err
 	}
-	output := list.(*storage.Policy)
 
 	var policy map[string]interface{}
 	data, err := json.Marshal(output)

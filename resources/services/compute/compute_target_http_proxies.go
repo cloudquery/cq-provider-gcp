@@ -5,7 +5,6 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
 )
 
 func ComputeTargetHTTPProxies() *schema.Table {
@@ -87,12 +86,11 @@ func fetchComputeTargetHttpProxies(ctx context.Context, meta schema.ClientMeta, 
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Compute.TargetHttpProxies.List(c.ProjectId).PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		call := c.Services.Compute.TargetHttpProxies.List(c.ProjectId).PageToken(nextPageToken).Context(ctx)
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
-		output := list.(*compute.TargetHttpProxyList)
 
 		res <- output.Items
 

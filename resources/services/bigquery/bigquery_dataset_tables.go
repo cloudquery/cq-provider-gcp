@@ -425,11 +425,10 @@ func listBigqueryDatasetTables(ctx context.Context, meta schema.ClientMeta, pare
 	nextPageToken := ""
 	for {
 		call := c.Services.BigQuery.Tables.List(c.ProjectId, p.DatasetReference.DatasetId).Context(ctx).PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
-		output := list.(*bigquery.TableList)
 		errs, ctx := errgroup.WithContext(ctx)
 		for _, t := range output.Tables {
 			if err := sem.Acquire(ctx, 1); err != nil {
@@ -457,12 +456,12 @@ func listBigqueryDatasetTables(ctx context.Context, meta schema.ClientMeta, pare
 }
 
 func fetchBigqueryDatasetTables(ctx context.Context, c *client.Client, p *bigquery.Dataset, t *bigquery.TableListTables, res chan<- interface{}) error {
-	call := c.Services.BigQuery.Tables.Get(c.ProjectId, p.DatasetReference.DatasetId, t.TableReference.TableId)
-	item, err := c.RetryingDo(ctx, call)
+	call := c.Services.BigQuery.Tables.Get(c.ProjectId, p.DatasetReference.DatasetId, t.TableReference.TableId).Context(ctx)
+	item, err := client.Retryer(ctx, c, call.Do)
 	if err != nil {
 		return err
 	}
-	res <- item.(*bigquery.Table)
+	res <- item
 	return nil
 
 }

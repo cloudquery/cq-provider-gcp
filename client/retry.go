@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/http"
-	"reflect"
 
 	"github.com/googleapis/gax-go/v2"
 	"github.com/hashicorp/go-hclog"
@@ -41,68 +40,21 @@ func shouldRetryFunc(log hclog.Logger, maxRetries int) func(err error) bool {
 	}
 }
 
-// RetryingDo runs the given doerIface with retry
-// doerIface needs to have two methods: `Call(...googleapi.CallOption) (T, error)` and `Context(ctx.Context) T`
-func (c *Client) RetryingDo(ctx context.Context, doerIface interface{}, opts ...googleapi.CallOption) (interface{}, error) {
-	var val interface{}
-	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
-		doer := makeDoer(doerIface)
+type loggingBackoffer interface {
+	Logger() hclog.Logger
+	Backoff() BackoffSettings
+}
 
+// Retryer runs the given doFunc with retry
+func Retryer[T any](ctx context.Context, lb loggingBackoffer, doFunc func(...googleapi.CallOption) (T, error), opts ...googleapi.CallOption) (T, error) {
+	var val T
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
-		_ = doer.Context(ctx)
-		val, err = doer.Do(opts...)
+		val, err = doFunc(opts...)
 		return err
 	}, gax.WithRetry(func() gax.Retryer {
-		return gax.OnErrorFunc(c.backoff.Gax, shouldRetryFunc(c.logger, c.backoff.MaxRetries))
+		bo := lb.Backoff()
+		return gax.OnErrorFunc(bo.Gax, shouldRetryFunc(lb.Logger(), bo.MaxRetries))
 	}))
 	return val, err
-}
-
-type doer interface {
-	Do(...googleapi.CallOption) (interface{}, error)
-	Context(context.Context) interface{}
-}
-
-func makeDoer(x interface{}) doer {
-	return &doerWrapper{doer: x}
-}
-
-type doerWrapper struct {
-	doer interface{}
-}
-
-func (d *doerWrapper) Do(opts ...googleapi.CallOption) (interface{}, error) {
-	do, ok := reflect.TypeOf(d.doer).MethodByName("Do")
-	if !ok {
-		panic("passed struct doesn't have a Do method")
-	}
-	if do.Type.NumOut() != 2 {
-		panic("passed struct's Do method doesn't return 2 values")
-	}
-
-	ret := do.Func.CallSlice([]reflect.Value{
-		reflect.ValueOf(d.doer),
-		reflect.ValueOf(opts),
-	})
-	if ret[1].IsNil() {
-		return ret[0].Interface(), nil
-	}
-
-	return ret[0].Interface(), ret[1].Interface().(error)
-}
-
-func (d *doerWrapper) Context(ctx context.Context) interface{} {
-	c, ok := reflect.TypeOf(d.doer).MethodByName("Context")
-	if !ok {
-		panic("passed struct doesn't have a Context method")
-	}
-	if c.Type.NumOut() != 1 {
-		panic("passed struct's Context method doesn't return 1 value")
-	}
-
-	ret := c.Func.Call([]reflect.Value{
-		reflect.ValueOf(d.doer),
-		reflect.ValueOf(ctx),
-	})
-	return ret[0].Interface()
 }

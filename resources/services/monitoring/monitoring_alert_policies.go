@@ -334,12 +334,12 @@ func fetchMonitoringAlertPolicies(ctx context.Context, meta schema.ClientMeta, p
 	for {
 		call := c.Services.Monitoring.Projects.AlertPolicies.
 			List(fmt.Sprintf("projects/%s", c.ProjectId)).
+			Context(ctx).
 			PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
-		output := list.(*monitoring.ListAlertPoliciesResponse)
 
 		res <- output.AlertPolicies
 
