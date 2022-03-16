@@ -17,7 +17,7 @@ jobs:
     strategy:
       matrix:
         dbversion: ["postgres:latest", "postgres:12", "postgres:11"]
-        go: ["1.17"]
+        go: ["1.18"]
         platform: [ubuntu-latest] # can not run in macOS and windowsOS
     runs-on: ${{ matrix.platform }}
     services:
@@ -48,7 +48,7 @@ jobs:
         if: steps.changes.outputs.src == 'true' || github.event_name != 'pull_request'
         uses: actions/setup-go@v3
         with:
-          go-version: ^1.17
+          go-version: ^1.18
       - uses: actions/cache@v3
         if: steps.changes.outputs.src == 'true' || github.event_name != 'pull_request'
         with:
