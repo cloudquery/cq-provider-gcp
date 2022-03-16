@@ -2,6 +2,8 @@ package client
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"time"
@@ -58,6 +60,14 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 	serviceAccountKeyJSON := []byte(providerConfig.ServiceAccountKeyJSON)
 	if len(serviceAccountKeyJSON) == 0 {
 		serviceAccountKeyJSON = []byte(os.Getenv(serviceAccountEnvKey))
+		var v map[interface{}]interface{}
+		err := json.Unmarshal(serviceAccountKeyJSON, &v)
+		var syntaxError *json.SyntaxError
+		if errors.As(err, &syntaxError) {
+			return nil, fmt.Errorf("the environment variable %v should contain valid JSON and not just a file path to a JSON file", serviceAccountEnvKey)
+		} else if err != nil {
+			return nil, err
+		}
 	}
 
 	// Add a fake request reason because it is not possible to pass nil options
