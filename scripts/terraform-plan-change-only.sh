@@ -8,7 +8,7 @@ plans=()
 planjsons=()
 for f in terraform/*; do
     if [ -d $f ]; then
-        CHANGES=$(git diff --name-only HEAD..origin/main ${f})
+        CHANGES=$(git diff --name-only origin/main ${f})
         # if there are any changes run terraform apply
         if [ "$CHANGES" != "" ]; then
             echo "detected changes in $f. Running terraform plan..."
