@@ -71,7 +71,13 @@ func ErrorClassifier(meta schema.ClientMeta, resourceName string, err error) dia
 		if grpcCode, ok := httpCodeToGRPCCode[gerr.Code]; ok {
 			if v, ok := grpcCodeToDiag[grpcCode]; ok {
 				return diag.Diagnostics{
-					RedactError(client.projects, diag.NewBaseError(err, v.typ, diag.WithType(v.typ), diag.WithResourceName(resourceName), diag.WithSummary("%s", v.summary), diag.WithError(errors.New(gerr.Message)), diag.WithNoOverwrite(), diag.WithSeverity(v.severity))),
+					RedactError(client.projects,
+						diag.NewBaseError(err, v.typ,
+							diag.WithType(v.typ),
+							diag.WithResourceName(resourceName),
+							diag.WithSummary("%s", v.summary),
+							diag.WithError(errors.New(gerr.Message)),
+							diag.WithSeverity(v.severity))),
 				}
 			}
 		}
