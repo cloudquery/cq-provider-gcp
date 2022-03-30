@@ -116,6 +116,10 @@ func doTimeSeriesCall(ctx context.Context, cl *client.Client, query string, sett
 		return err
 	}
 	response := list.(*monitoring.QueryTimeSeriesResponse)
+
+	if response.TimeSeriesData == nil {
+		return nil
+	}
 	bucketIndex := getDescriptorIndex(response.TimeSeriesDescriptor.LabelDescriptors, "resource.bucket_name")
 	if bucketIndex == -1 {
 		return fmt.Errorf("failed to get bucket index for timeseries call")
