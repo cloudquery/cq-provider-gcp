@@ -14,14 +14,14 @@ import (
 const (
 	queryACLCount = `
 		fetch gcs_bucket
-		| metric 'storage.googleapis.com/authz/acl_operations_count'
+		| metric 'storage.googleapis.com/authz/acl_based_object_access_count'
 		| group_by 1d,
-			[value_acl_operations_count_aggregate:
-			   aggregate(value.acl_operations_count)]
+			[value_acl_based_object_access_count_aggregate:
+			   aggregate(value.acl_based_object_access_count)]
 		| every 1d
 		| group_by [resource.bucket_name],
-			[value_acl_operations_count_aggregate_aggregate:
-			   aggregate(value_acl_operations_count_aggregate)]`
+			[value_acl_based_object_access_count_aggregate_aggregate:
+       			aggregate(value_acl_based_object_access_count_aggregate)]`
 
 	queryTotalObjects = `
 		fetch gcs_bucket
