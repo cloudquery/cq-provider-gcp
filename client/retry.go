@@ -5,14 +5,18 @@ import (
 	"errors"
 	"reflect"
 
-	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	"github.com/googleapis/gax-go/v2"
 	"github.com/hashicorp/go-hclog"
 	"google.golang.org/api/googleapi"
 )
 
-func shouldRetryFunc(log hclog.Logger) func(err error) bool {
+func shouldRetryFunc(log hclog.Logger, maxRetries int) func(err error) bool {
+	totalRetries := 0
 	return func(err error) bool {
+		totalRetries += 1
+		if totalRetries > maxRetries {
+			return false
+		}
 		if IgnoreErrorHandler(err) {
 			reason := ""
 			var gerr *googleapi.Error
@@ -34,18 +38,6 @@ func shouldRetryFunc(log hclog.Logger) func(err error) bool {
 	}
 }
 
-// RetryingResolver runs the TableResolver with retry. Not very good as it could cause multiple resources with multi-page retries (retrying after fetching some resources)
-func RetryingResolver(f schema.TableResolver) schema.TableResolver {
-	return func(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-		cl := meta.(*Client)
-		return gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
-			return f(ctx, meta, parent, res)
-		}, gax.WithRetry(func() gax.Retryer {
-			return gax.OnErrorFunc(cl.backoff.Gax, shouldRetryFunc(cl.logger))
-		}))
-	}
-}
-
 // RetryingDo runs the given doerIface with retry
 // doerIface needs to have two methods: `Call(...googleapi.CallOption) (T, error)` and `Context(ctx.Context) T`
 func (c *Client) RetryingDo(ctx context.Context, doerIface interface{}, opts ...googleapi.CallOption) (interface{}, error) {
@@ -58,7 +50,7 @@ func (c *Client) RetryingDo(ctx context.Context, doerIface interface{}, opts ...
 		val, err = doer.Do(opts...)
 		return err
 	}, gax.WithRetry(func() gax.Retryer {
-		return gax.OnErrorFunc(c.backoff.Gax, shouldRetryFunc(c.logger))
+		return gax.OnErrorFunc(c.backoff.Gax, shouldRetryFunc(c.logger, c.backoff.MaxRetries))
 	}))
 	return val, err
 }
