@@ -33,9 +33,7 @@ const (
 		fetch gcs_bucket
 		| metric 'storage.googleapis.com/storage/total_bytes'
 		| group_by 1d, [value_total_bytes_mean: mean(value.total_bytes)]
-		| every 1d
-		| group_by [resource.bucket_name],
-			[value_total_bytes_mean_aggregate: aggregate(value_total_bytes_mean)]`
+		| every 1d`
 )
 
 func Metrics() *schema.Table {
