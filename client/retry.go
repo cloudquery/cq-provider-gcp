@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"errors"
+	"net/http"
 	"reflect"
 
 	"github.com/googleapis/gax-go/v2"
@@ -17,15 +18,16 @@ func shouldRetryFunc(log hclog.Logger, maxRetries int) func(err error) bool {
 		if totalRetries > maxRetries {
 			return false
 		}
-		if IgnoreErrorHandler(err) {
-			reason := ""
-			var gerr *googleapi.Error
-			if errors.As(err, &gerr) && len(gerr.Errors) > 0 {
-				reason = gerr.Errors[0].Reason
+		var gerr *googleapi.Error
+		if ok := errors.As(err, &gerr); ok {
+			if gerr.Code == http.StatusForbidden {
+				var reason string
+				if len(gerr.Errors) > 0 {
+					reason = gerr.Errors[0].Reason
+				}
+				log.Debug("retrier not retrying: ignore error", "err", err, "err_reason", reason)
+				return false
 			}
-
-			log.Debug("retrier not retrying: ignore error", "err", err, "err_reason", reason)
-			return false
 		}
 
 		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
