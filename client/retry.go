@@ -16,6 +16,7 @@ func shouldRetryFunc(log hclog.Logger, maxRetries int) func(err error) bool {
 	return func(err error) bool {
 		totalRetries += 1
 		if totalRetries > maxRetries {
+			log.Debug("retrier not retrying, reached max retries", "err", err, "max_retries", maxRetries)
 			return false
 		}
 		var gerr *googleapi.Error
@@ -25,17 +26,17 @@ func shouldRetryFunc(log hclog.Logger, maxRetries int) func(err error) bool {
 				if len(gerr.Errors) > 0 {
 					reason = gerr.Errors[0].Reason
 				}
-				log.Debug("retrier not retrying: ignore error", "err", err, "err_reason", reason)
+				log.Debug("retrier not retrying: ignore error", "err", err, "err_reason", reason, "total_retries", totalRetries, "max_retries", maxRetries)
 				return false
 			}
 		}
 
 		if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-			log.Debug("retrier not retrying", "err", err)
+			log.Debug("retrier not retrying", "err", err, "total_retries", totalRetries, "max_retries", maxRetries)
 			return false
 		}
 
-		log.Debug("retrying error", "err", err)
+		log.Debug("retrying api call", "err", err, "total_retries", totalRetries, "max_retries", maxRetries)
 		return true
 	}
 }
