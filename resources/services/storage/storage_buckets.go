@@ -603,10 +603,7 @@ func resolveBucketPolicy(ctx context.Context, meta schema.ClientMeta, resource *
 	return resource.Set(c.Name, policy)
 }
 func resolveBucketEncryptionType(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	p, ok := resource.Item.(*storage.Bucket)
-	if !ok {
-		return fmt.Errorf("expected *storage.Bucket but got %T", p)
-	}
+	p := resource.Item.(*storage.Bucket)
 	if p.Encryption == nil {
 		return resource.Set(c.Name, "GMKE")
 	}
