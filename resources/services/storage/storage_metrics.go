@@ -108,12 +108,11 @@ func fetchStorageMetrics(ctx context.Context, meta schema.ClientMeta, parent *sc
 func doTimeSeriesCall(ctx context.Context, cl *client.Client, query string, setter storageSetter, metrics map[string]*storageMetric) error {
 	call := cl.Services.Monitoring.Projects.TimeSeries.Query(fmt.Sprintf("projects/%s", cl.ProjectId), &monitoring.QueryTimeSeriesRequest{
 		Query: query,
-	})
-	list, err := cl.RetryingDo(ctx, call)
+	}).Context(ctx)
+	response, err := client.Retryer(ctx, cl, call.Do)
 	if err != nil {
 		return err
 	}
-	response := list.(*monitoring.QueryTimeSeriesResponse)
 
 	if response.TimeSeriesData == nil {
 		return nil
