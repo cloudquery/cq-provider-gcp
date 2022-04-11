@@ -2,10 +2,11 @@ package compute
 
 import (
 	"context"
+	"strings"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	compute "google.golang.org/api/compute/v1"
-	"strings"
 )
 
 func InstanceGroups() *schema.Table {

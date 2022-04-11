@@ -4,14 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/faker/v3"
 	"github.com/julienschmidt/httprouter"
 	"google.golang.org/api/compute/v1"
 	"google.golang.org/api/option"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
 func createInstanceGroups() (*client.Services, error) {
