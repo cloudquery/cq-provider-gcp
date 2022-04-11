@@ -2,11 +2,10 @@ package compute
 
 import (
 	"context"
-	"strings"
-
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	compute "google.golang.org/api/compute/v1"
+	"strings"
 )
 
 func InstanceGroups() *schema.Table {
@@ -163,8 +162,13 @@ func fetchComputeInstanceGroupInstances(ctx context.Context, meta schema.ClientM
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
+		if r.Zone == "" {
+			return nil
+		}
 		zoneParts := strings.Split(r.Zone, "/")
-		call := c.Services.Compute.InstanceGroups.ListInstances(c.ProjectId, zoneParts[len(zoneParts)-1], r.Name, &compute.InstanceGroupsListInstancesRequest{}).PageToken(nextPageToken)
+		zone := zoneParts[len(zoneParts)-1]
+
+		call := c.Services.Compute.InstanceGroups.ListInstances(c.ProjectId, zone, r.Name, &compute.InstanceGroupsListInstancesRequest{}).PageToken(nextPageToken)
 		list, err := c.RetryingDo(ctx, call)
 		if err != nil {
 			return err
