@@ -2,4 +2,9 @@
 -- CHANGEME: Verify or edit this file before proceeding
 
 -- Resource: storage.buckets
-ALTER TABLE IF EXISTS "gcp_storage_buckets" DROP COLUMN IF EXISTS "encryption_type";
+ALTER TABLE IF EXISTS "gcp_storage_buckets"
+    DROP COLUMN IF EXISTS "encryption_type";
+
+-- Resource: compute.instance_groups
+DROP TABLE IF EXISTS gcp_compute_instance_group_instances;
+DROP TABLE IF EXISTS gcp_compute_instance_groups;
