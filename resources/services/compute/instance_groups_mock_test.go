@@ -22,6 +22,7 @@ func createInstanceGroups() (*client.Services, error) {
 		return nil, err
 	}
 	instanceGroup.Zone = "test/test"
+	instanceGroup.CreationTimestamp = "2021-06-02T14:13:54.470Z"
 	mux := httprouter.New()
 	mux.GET("/projects/testProject/aggregated/InstanceGroups", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		resp := &compute.InstanceGroupAggregatedList{
