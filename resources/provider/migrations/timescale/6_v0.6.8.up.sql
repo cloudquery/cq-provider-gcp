@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS "gcp_compute_instance_groups"
     "size"               bigint,
     "subnetwork"         text,
     "zone"               text,
-    CONSTRAINT gcp_compute_instance_groups_pk PRIMARY KEY (cq_fetch_date, cq_id),
+    CONSTRAINT gcp_compute_instance_groups_pk PRIMARY KEY (cq_fetch_date, project_id, id),
     UNIQUE (cq_fetch_date, cq_id)
 );
 SELECT setup_tsdb_parent('gcp_compute_instance_groups');
