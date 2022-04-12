@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS "gcp_compute_instance_groups"
     "cq_id"              uuid NOT NULL,
     "cq_meta"            jsonb,
     "project_id"         text,
-    "creation_timestamp" text,
+    "creation_timestamp" timestamp,
     "description"        text,
     "fingerprint"        text,
     "id"                 bigint,

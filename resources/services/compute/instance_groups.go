@@ -2,11 +2,10 @@ package compute
 
 import (
 	"context"
-	"strings"
-
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+	compute "google.golang.org/api/compute/v1"
+	"strings"
 )
 
 func InstanceGroups() *schema.Table {
@@ -15,6 +14,7 @@ func InstanceGroups() *schema.Table {
 		Description: "Represents an Instance Group resource",
 		Resolver:    fetchComputeInstanceGroups,
 		Multiplex:   client.ProjectMultiplex,
+		Options:     schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",
@@ -25,7 +25,8 @@ func InstanceGroups() *schema.Table {
 			{
 				Name:        "creation_timestamp",
 				Description: "The creation timestamp for this instance group in RFC3339 text format",
-				Type:        schema.TypeString,
+				Type:        schema.TypeTimestamp,
+				Resolver:    client.ISODateResolver("CreationTimestamp"),
 			},
 			{
 				Name:        "description",
@@ -113,7 +114,7 @@ func InstanceGroups() *schema.Table {
 					},
 					{
 						Name:        "status",
-						Description: "\"DEPROVISIONING\" - The Nanny is halted and we are performing tear down tasks like network deprogramming, releasing quota, IP, tearing down disks etc   \"PROVISIONING\" - Resources are being allocated for the instance   \"REPAIRING\" - The instance is in repair   \"RUNNING\" - The instance is running   \"STAGING\" - All required resources have been allocated and the instance is being started   \"STOPPED\" - The instance has stopped successfully   \"STOPPING\" - The instance is currently stopping (either being deleted or killed)   \"SUSPENDED\" - The instance has suspended   \"SUSPENDING\" - The instance is suspending   \"TERMINATED\" - The instance has stopped (either by explicit action or underlying failure)",
+						Description: "Status of the instance One of DEPROVISIONING, PROVISIONING, REPAIRING, RUNNING, STAGING, STOPPED, STOPPING, SUSPENDED, SUSPENDING, TERMINATED",
 						Type:        schema.TypeString,
 					},
 				},

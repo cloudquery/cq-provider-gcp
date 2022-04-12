@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS "gcp_compute_instance_groups"
     "cq_meta"            jsonb,
     "cq_fetch_date"      timestamp without time zone NOT NULL,
     "project_id"         text,
-    "creation_timestamp" text,
+    "creation_timestamp" timestamp,
     "description"        text,
     "fingerprint"        text,
     "id"                 bigint,
