@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	crmv1 "google.golang.org/api/cloudresourcemanager/v1"
 
 	"github.com/hashicorp/go-hclog"
 	"google.golang.org/api/cloudresourcemanager/v3"
@@ -88,8 +89,8 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 		options = append(options, option.WithCredentialsJSON(serviceAccountKeyJSON))
 	}
 
-	if providerConfig.ProjectFilter != "" {
-		return nil, errors.New("ProjectFilter config option is deprecated")
+	if providerConfig.ProjectFilter != "" && len(providerConfig.Folders) > 0 {
+		logger.Warn("ProjectFilter config option is deprecated and will not work with the folders feature")
 	}
 
 	services, err := initServices(context.Background(), options)
@@ -120,7 +121,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 	if len(projects) == 0 {
 		logger.Info("No project_ids specified, assuming all active projects")
 		var err error
-		projects, err = getProjects(logger, services.ResourceManager, nil)
+		projects, err = getProjectsV1(logger, providerConfig.ProjectFilter, options...)
 		if err != nil {
 			return nil, err
 		}
@@ -143,6 +144,7 @@ func validateProjects(projects []string) error {
 	return nil
 }
 
+// getProjects requires the `resourcemanager.projects.list` permission
 func getProjects(logger hclog.Logger, service *cloudresourcemanager.Service, folders []string) ([]string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -180,6 +182,54 @@ func getProjects(logger hclog.Logger, service *cloudresourcemanager.Service, fol
 			}
 			call.PageToken(output.NextPageToken)
 		}
+	}
+
+	if len(projects) == 0 {
+		if inactive > 0 {
+			return nil, fmt.Errorf("project listing failed: no active projects")
+		}
+		return nil, fmt.Errorf("project listing failed")
+	}
+
+	return projects, nil
+}
+
+// getProjectsV1 requires the `resourcemanager.projects.get` permission to list projects
+func getProjectsV1(logger hclog.Logger, filter string, options ...option.ClientOption) ([]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	service, err := crmv1.NewService(ctx, options...)
+	if err != nil {
+		return nil, err
+	}
+	var (
+		projects []string
+		inactive int
+	)
+
+	call := service.Projects.List().Context(ctx)
+	if filter != "" {
+		call.Filter(filter)
+	}
+
+	for {
+		output, err := call.Do()
+		if err != nil {
+			return nil, err
+		}
+		for _, project := range output.Projects {
+			if project.LifecycleState == "ACTIVE" {
+				projects = append(projects, project.ProjectId)
+			} else {
+				logger.Info("Project state is not active. Project will be ignored", "project_id", project.ProjectId, "project_state", project.LifecycleState)
+				inactive++
+			}
+		}
+		if output.NextPageToken == "" {
+			break
+		}
+		call.PageToken(output.NextPageToken)
 	}
 
 	if len(projects) == 0 {

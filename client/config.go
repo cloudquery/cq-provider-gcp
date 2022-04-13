@@ -27,7 +27,7 @@ type Config struct {
 
 func (c Config) Example() string {
 	return `configuration {
-				// Optional. List of folders to get projects from.
+				// Optional. List of folders to get projects from. Required permission: resourcemanager.projects.list
 				// folders = [ "" ]
 				// Optional. Maximum level of folders to recurse into
 				// folders_max_depth = 5
