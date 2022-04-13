@@ -106,7 +106,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 
 		var folderList []string
 		for _, f := range folderList {
-			folderAndChildren, err := listFolders(ctx, logger, services.ResourceManager, f, int(providerConfig.FolderMaxDepth))
+			folderAndChildren, err := listFolders(ctx, logger, services.ResourceManager.Folders, f, int(providerConfig.FolderMaxDepth))
 			if err != nil {
 				return nil, err
 			}
@@ -242,7 +242,7 @@ func getProjectsV1(logger hclog.Logger, filter string, options ...option.ClientO
 	return projects, nil
 }
 
-func listFolders(ctx context.Context, logger hclog.Logger, service *cloudresourcemanager.Service, parent string, maxDepth int) ([]string, error) {
+func listFolders(ctx context.Context, logger hclog.Logger, service *cloudresourcemanager.FoldersService, parent string, maxDepth int) ([]string, error) {
 	folders := []string{
 		parent,
 	}
@@ -250,7 +250,10 @@ func listFolders(ctx context.Context, logger hclog.Logger, service *cloudresourc
 		return folders, nil
 	}
 
-	call := service.Folders.List().Context(ctx).Parent("folders/" + parent)
+	call := service.List().Context(ctx)
+	if parent != "" {
+		call.Parent("folders/" + parent)
+	}
 	for {
 		output, err := call.Do()
 		if err != nil {
