@@ -70,6 +70,9 @@ func isValidJson(content []byte) error {
 func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, error) {
 	providerConfig := config.(*Config)
 	projects := providerConfig.ProjectIDs
+	if providerConfig.FolderMaxDepth == 0 {
+		providerConfig.FolderMaxDepth = 5
+	}
 
 	serviceAccountKeyJSON := []byte(providerConfig.ServiceAccountKeyJSON)
 	if len(serviceAccountKeyJSON) == 0 {
@@ -89,21 +92,26 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 		return nil, errors.New("ProjectFilter config option is deprecated")
 	}
 
-	if len(providerConfig.Folders) > 0 {
-		logger.Debug("Adding projects in specified folders", "folders", providerConfig.Folders)
-		proj, err := getProjects(logger, providerConfig.Folders, options...)
-		if err != nil {
-			return nil, err
-		}
-		appendWithoutDupes(&projects, proj)
+	services, err := initServices(context.Background(), options)
+	if err != nil {
+		return nil, err
 	}
-	if providerConfig.FolderQuery != "" {
-		logger.Debug("Querying folders", "query", providerConfig.FolderQuery)
-		queriedFolders, err := getFolders(logger, providerConfig.FolderQuery, options...)
-		if err != nil {
-			return nil, err
+
+	if len(providerConfig.Folders) > 0 {
+		logger.Debug("Listing folders", "folders", providerConfig.Folders)
+
+		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+		defer cancel()
+
+		var folderList []string
+		for _, f := range folderList {
+			folderAndChildren, err := listFolders(ctx, logger, services.ResourceManager, f, int(providerConfig.FolderMaxDepth))
+			if err != nil {
+				return nil, err
+			}
+			folderList = append(folderList, folderAndChildren...)
 		}
-		proj, err := getProjects(logger, queriedFolders, options...)
+		proj, err := getProjects(logger, services.ResourceManager, folderList)
 		if err != nil {
 			return nil, err
 		}
@@ -112,17 +120,13 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 	if len(projects) == 0 {
 		logger.Info("No project_ids specified, assuming all active projects")
 		var err error
-		projects, err = getProjects(logger, []string{""}, options...)
+		projects, err = getProjects(logger, services.ResourceManager, nil)
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	if err := validateProjects(projects); err != nil {
-		return nil, err
-	}
-	services, err := initServices(context.Background(), options)
-	if err != nil {
 		return nil, err
 	}
 
@@ -139,17 +143,12 @@ func validateProjects(projects []string) error {
 	return nil
 }
 
-func getProjects(logger hclog.Logger, folders []string, options ...option.ClientOption) ([]string, error) {
-	if len(folders) == 0 {
-		return nil, nil
-	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
+func getProjects(logger hclog.Logger, service *cloudresourcemanager.Service, folders []string) ([]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
-	service, err := cloudresourcemanager.NewService(ctx, options...)
-	if err != nil {
-		return nil, err
+	if len(folders) == 0 {
+		folders = []string{""}
 	}
 
 	var (
@@ -158,7 +157,7 @@ func getProjects(logger hclog.Logger, folders []string, options ...option.Client
 	)
 
 	for _, folder := range folders {
-		call := service.Projects.List()
+		call := service.Projects.List().Context(ctx)
 		if folder != "" {
 			call.Parent(folder)
 		}
@@ -193,29 +192,30 @@ func getProjects(logger hclog.Logger, folders []string, options ...option.Client
 	return projects, nil
 }
 
-func getFolders(logger hclog.Logger, query string, options ...option.ClientOption) ([]string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
-	defer cancel()
-
-	service, err := cloudresourcemanager.NewService(ctx, options...)
-	if err != nil {
-		return nil, err
+func listFolders(ctx context.Context, logger hclog.Logger, service *cloudresourcemanager.Service, parent string, maxDepth int) ([]string, error) {
+	folders := []string{
+		parent,
+	}
+	if maxDepth < 0 {
+		return folders, nil
 	}
 
-	var folders []string
-
-	call := service.Folders.Search().Query(query)
+	call := service.Folders.List().Context(ctx).Parent("folders/" + parent)
 	for {
 		output, err := call.Do()
 		if err != nil {
 			return nil, err
 		}
 		for _, folder := range output.Folders {
-			if folder.State == "ACTIVE" {
-				folders = append(folders, folder.Name)
-			} else {
+			if folder.State != "ACTIVE" {
 				logger.Info("Folder state is not active. Folder will be ignored", "folder_name", folder.Name, "folder_state", folder.State)
+				continue
 			}
+			fList, err := listFolders(ctx, logger, service, folder.Name, maxDepth-1)
+			if err != nil {
+				return nil, err
+			}
+			folders = append(folders, fList...)
 		}
 		if output.NextPageToken == "" {
 			break
@@ -223,7 +223,7 @@ func getFolders(logger hclog.Logger, query string, options ...option.ClientOptio
 		call.PageToken(output.NextPageToken)
 	}
 
-	logger.Debug("Search query found folders", "folders", folders)
+	logger.Debug("List query found folders", "folders", folders)
 
 	return folders, nil
 }
