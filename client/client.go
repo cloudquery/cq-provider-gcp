@@ -90,7 +90,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 	}
 
 	if len(providerConfig.Folders) > 0 {
-		logger.Debug("Adding projects in specified folders")
+		logger.Debug("Adding projects in specified folders", "folders", providerConfig.Folders)
 		proj, err := getProjects(logger, providerConfig.Folders, options...)
 		if err != nil {
 			return nil, err
@@ -98,7 +98,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 		appendWithoutDupes(&projects, proj)
 	}
 	if providerConfig.FolderQuery != "" {
-		logger.Debug("Querying folders")
+		logger.Debug("Querying folders", "query", providerConfig.FolderQuery)
 		queriedFolders, err := getFolders(logger, providerConfig.FolderQuery, options...)
 		if err != nil {
 			return nil, err
