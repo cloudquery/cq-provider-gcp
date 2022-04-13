@@ -11,7 +11,7 @@ import (
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 
 	"github.com/hashicorp/go-hclog"
-	"google.golang.org/api/cloudresourcemanager/v1"
+	"google.golang.org/api/cloudresourcemanager/v3"
 	"google.golang.org/api/option"
 )
 
@@ -85,14 +85,39 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 		options = append(options, option.WithCredentialsJSON(serviceAccountKeyJSON))
 	}
 
-	var err error
-	if len(providerConfig.ProjectIDs) == 0 {
-		projects, err = getProjects(logger, providerConfig.ProjectFilter, options...)
+	if providerConfig.ProjectFilter != "" {
+		return nil, errors.New("ProjectFilter config option is deprecated")
+	}
+
+	if len(providerConfig.Folders) > 0 {
+		logger.Debug("Adding projects in specified folders")
+		proj, err := getProjects(logger, providerConfig.Folders, options...)
 		if err != nil {
 			return nil, err
 		}
-		logger.Info("No project_ids specified in config.yml assuming all active projects", "count", len(projects))
+		appendWithoutDupes(&projects, proj)
 	}
+	if providerConfig.FolderQuery != "" {
+		logger.Debug("Querying folders")
+		queriedFolders, err := getFolders(logger, providerConfig.FolderQuery, options...)
+		if err != nil {
+			return nil, err
+		}
+		proj, err := getProjects(logger, queriedFolders, options...)
+		if err != nil {
+			return nil, err
+		}
+		appendWithoutDupes(&projects, proj)
+	}
+	if len(projects) == 0 {
+		logger.Info("No project_ids specified, assuming all active projects")
+		var err error
+		projects, err = getProjects(logger, []string{""}, options...)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	if err := validateProjects(projects); err != nil {
 		return nil, err
 	}
@@ -114,7 +139,11 @@ func validateProjects(projects []string) error {
 	return nil
 }
 
-func getProjects(logger hclog.Logger, filter string, options ...option.ClientOption) ([]string, error) {
+func getProjects(logger hclog.Logger, folders []string, options ...option.ClientOption) ([]string, error) {
+	if len(folders) == 0 {
+		return nil, nil
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
 	defer cancel()
 
@@ -123,24 +152,69 @@ func getProjects(logger hclog.Logger, filter string, options ...option.ClientOpt
 		return nil, err
 	}
 
-	call := service.Projects.List()
-	if filter != "" {
-		call.Filter(filter)
+	var (
+		projects []string
+		inactive int
+	)
+
+	for _, folder := range folders {
+		call := service.Projects.List()
+		if folder != "" {
+			call.Parent(folder)
+		}
+
+		for {
+			output, err := call.Do()
+			if err != nil {
+				return nil, err
+			}
+			for _, project := range output.Projects {
+				if project.State == "ACTIVE" {
+					projects = append(projects, project.ProjectId)
+				} else {
+					logger.Info("Project state is not active. Project will be ignored", "project_id", project.ProjectId, "project_state", project.State)
+					inactive++
+				}
+			}
+			if output.NextPageToken == "" {
+				break
+			}
+			call.PageToken(output.NextPageToken)
+		}
 	}
 
-	projects := make([]string, 0)
-	inactiveProjects := 0
+	if len(projects) == 0 {
+		if inactive > 0 {
+			return nil, fmt.Errorf("project listing failed: no active projects")
+		}
+		return nil, fmt.Errorf("project listing failed")
+	}
+
+	return projects, nil
+}
+
+func getFolders(logger hclog.Logger, query string, options ...option.ClientOption) ([]string, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*60)
+	defer cancel()
+
+	service, err := cloudresourcemanager.NewService(ctx, options...)
+	if err != nil {
+		return nil, err
+	}
+
+	var folders []string
+
+	call := service.Folders.Search().Query(query)
 	for {
 		output, err := call.Do()
 		if err != nil {
 			return nil, err
 		}
-		for _, project := range output.Projects {
-			if project.LifecycleState == "ACTIVE" {
-				projects = append(projects, project.ProjectId)
+		for _, folder := range output.Folders {
+			if folder.State == "ACTIVE" {
+				folders = append(folders, folder.Name)
 			} else {
-				logger.Info("Project state is not active. Project will be ignored", "project_id", project.ProjectId)
-				inactiveProjects++
+				logger.Info("Folder state is not active. Folder will be ignored", "folder_name", folder.Name, "folder_state", folder.State)
 			}
 		}
 		if output.NextPageToken == "" {
@@ -149,12 +223,21 @@ func getProjects(logger hclog.Logger, filter string, options ...option.ClientOpt
 		call.PageToken(output.NextPageToken)
 	}
 
-	if len(projects) == 0 {
-		if inactiveProjects > 0 {
-			return nil, fmt.Errorf("project listing failed: no active projects")
-		}
-		return nil, fmt.Errorf("project listing failed")
-	}
+	logger.Debug("Search query found folders", "folders", folders)
 
-	return projects, nil
+	return folders, nil
+}
+
+func appendWithoutDupes(dst *[]string, src []string) {
+	dstMap := make(map[string]struct{}, len(*dst))
+	for i := range *dst {
+		dstMap[(*dst)[i]] = struct{}{}
+	}
+	for i := range src {
+		if _, ok := dstMap[src[i]]; ok {
+			continue
+		}
+		dstMap[src[i]] = struct{}{}
+		*dst = append(*dst, src[i])
+	}
 }
