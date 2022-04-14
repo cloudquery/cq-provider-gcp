@@ -63,17 +63,17 @@ func TestListFolders(t *testing.T) {
 		},
 		{
 			BaseFolder: "",
-			MaxDepth:   2,
+			MaxDepth:   3,
 			Expected:   []string{"", "root_0", "root_1", "root1.sub1_0", "root1.sub1.sub2_0", "root1.sub1.sub2_1", "root1.sub1.sub2_2", "root1.sub1_1", "root_2"},
 		},
 		{
 			BaseFolder: "root_1",
-			MaxDepth:   0,
+			MaxDepth:   1,
 			Expected:   []string{"root_1", "root1.sub1_0", "root1.sub1_1"},
 		},
 		{
 			BaseFolder: "root_1",
-			MaxDepth:   1,
+			MaxDepth:   2,
 			Expected:   []string{"root_1", "root1.sub1_0", "root1.sub1.sub2_0", "root1.sub1.sub2_1", "root1.sub1.sub2_2", "root1.sub1_1"},
 		},
 	}
@@ -92,7 +92,7 @@ func mockCRMFolders() (*cloudresourcemanager.FoldersService, error) {
 			var folder cloudresourcemanager.Folder
 			_ = faker.FakeData(&folder)
 			folder.State = "ACTIVE"
-			folder.Name = baseName + "_" + strconv.Itoa(i)
+			folder.Name = baseName + "_" + strconv.Itoa(i) // we're omitting the 'folders/' prefix here to simplify the testdata
 			folders[i] = &folder
 		}
 		return folders

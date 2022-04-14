@@ -13,7 +13,7 @@ import (
 type Config struct {
 	ProjectFilter         string   `hcl:"project_filter,optional"` // Deprecated
 	ProjectIDs            []string `hcl:"project_ids,optional"`
-	Folders               []string `hcl:"folders,optional"`
+	FolderIDs             []string `hcl:"folder_ids,optional"`
 	FolderMaxDepth        uint     `hcl:"folders_max_depth,optional"`
 	ServiceAccountKeyJSON string   `hcl:"service_account_key_json,optional"`
 
@@ -28,7 +28,7 @@ type Config struct {
 func (c Config) Example() string {
 	return `configuration {
 				// Optional. List of folders to get projects from. Required permission: resourcemanager.projects.list
-				// folders = [ "" ]
+				// folder_ids = [ "organizations/<ORG_ID>", "folders/<FOLDER_ID>" ]
 				// Optional. Maximum level of folders to recurse into
 				// folders_max_depth = 5
 				// Optional. If not specified either using all projects accessible.

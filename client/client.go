@@ -89,8 +89,8 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 		options = append(options, option.WithCredentialsJSON(serviceAccountKeyJSON))
 	}
 
-	if providerConfig.ProjectFilter != "" && len(providerConfig.Folders) > 0 {
-		logger.Warn("ProjectFilter config option is deprecated and will not work with the folders feature")
+	if providerConfig.ProjectFilter != "" && len(providerConfig.FolderIDs) > 0 {
+		logger.Warn("ProjectFilter config option is deprecated and will not work with the folder_ids feature")
 	}
 
 	services, err := initServices(context.Background(), options)
@@ -98,20 +98,22 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 		return nil, err
 	}
 
-	if len(providerConfig.Folders) > 0 {
-		logger.Debug("Listing folders", "folders", providerConfig.Folders)
+	if len(providerConfig.FolderIDs) > 0 {
+		logger.Debug("Listing folders", "folder_ids", providerConfig.FolderIDs)
 
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 		defer cancel()
 
 		var folderList []string
-		for _, f := range folderList {
-			folderAndChildren, err := listFolders(ctx, logger, services.ResourceManager.Folders, f, int(providerConfig.FolderMaxDepth))
+		for _, f := range providerConfig.FolderIDs {
+			folderAndChildren, err := listFolders(ctx, logger, services.ResourceManager.Folders, f, int(providerConfig.FolderMaxDepth)-1)
 			if err != nil {
 				return nil, fmt.Errorf("folder listing failed: %w", err)
 			}
 			folderList = append(folderList, folderAndChildren...)
 		}
+		logger.Debug("Found folders", "folder_ids", folderList)
+
 		proj, err := getProjects(logger, services.ResourceManager, folderList)
 		if err != nil {
 			return nil, fmt.Errorf("get projects failed: %w", err)
@@ -123,9 +125,11 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 		var err error
 		projects, err = getProjectsV1(logger, providerConfig.ProjectFilter, options...)
 		if err != nil {
-			return nil, fmt.Errorf("get projects failed: %w", err)
+			return nil, fmt.Errorf("get projects(v1) failed: %w", err)
 		}
 	}
+
+	logger.Debug("Found projects", "projects", projects)
 
 	if err := validateProjects(projects); err != nil {
 		return nil, err
@@ -144,14 +148,14 @@ func validateProjects(projects []string) error {
 	return nil
 }
 
-// getProjects requires the `resourcemanager.projects.list` permission
+// getProjects requires the `resourcemanager.projects.list` permission, and at least one folder
 func getProjects(logger hclog.Logger, service *cloudresourcemanager.Service, folders []string) ([]string, error) {
+	if len(folders) == 0 {
+		return nil, fmt.Errorf("no folders specified")
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-
-	if len(folders) == 0 {
-		folders = []string{""}
-	}
 
 	var (
 		projects []string
@@ -159,10 +163,7 @@ func getProjects(logger hclog.Logger, service *cloudresourcemanager.Service, fol
 	)
 
 	for _, folder := range folders {
-		call := service.Projects.List().Context(ctx)
-		if folder != "" {
-			call.Parent(folder)
-		}
+		call := service.Projects.List().Context(ctx).Parent(folder)
 
 		for {
 			output, err := call.Do()
@@ -246,14 +247,11 @@ func listFolders(ctx context.Context, logger hclog.Logger, service *cloudresourc
 	folders := []string{
 		parent,
 	}
-	if maxDepth < 0 {
+	if maxDepth <= 0 {
 		return folders, nil
 	}
 
-	call := service.List().Context(ctx)
-	if parent != "" {
-		call.Parent("folders/" + parent)
-	}
+	call := service.List().Context(ctx).Parent(parent)
 	for {
 		output, err := call.Do()
 		if err != nil {
@@ -261,7 +259,7 @@ func listFolders(ctx context.Context, logger hclog.Logger, service *cloudresourc
 		}
 		for _, folder := range output.Folders {
 			if folder.State != "ACTIVE" {
-				logger.Info("Folder state is not active. Folder will be ignored", "folder_name", folder.Name, "folder_state", folder.State)
+				logger.Info("Folder state is not active. Folder will be ignored", "folder_id", folder.Name, "folder_name", folder.DisplayName, "folder_state", folder.State)
 				continue
 			}
 			fList, err := listFolders(ctx, logger, service, folder.Name, maxDepth-1)
@@ -275,8 +273,6 @@ func listFolders(ctx context.Context, logger hclog.Logger, service *cloudresourc
 		}
 		call.PageToken(output.NextPageToken)
 	}
-
-	logger.Debug("List query found folders", "folders", folders)
 
 	return folders, nil
 }
