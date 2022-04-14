@@ -108,13 +108,13 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 		for _, f := range folderList {
 			folderAndChildren, err := listFolders(ctx, logger, services.ResourceManager.Folders, f, int(providerConfig.FolderMaxDepth))
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("folder listing failed: %w", err)
 			}
 			folderList = append(folderList, folderAndChildren...)
 		}
 		proj, err := getProjects(logger, services.ResourceManager, folderList)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("get projects failed: %w", err)
 		}
 		appendWithoutDupes(&projects, proj)
 	}
@@ -123,7 +123,7 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, erro
 		var err error
 		projects, err = getProjectsV1(logger, providerConfig.ProjectFilter, options...)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("get projects failed: %w", err)
 		}
 	}
 
