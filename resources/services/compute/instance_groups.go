@@ -6,9 +6,10 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/compute/v1"
+	compute "google.golang.org/api/compute/v1"
 )
 
+//go:generate cq-gen --resource instance_groups --config gen.hcl --output .
 func InstanceGroups() *schema.Table {
 	return &schema.Table{
 		Name:        "gcp_compute_instance_groups",
