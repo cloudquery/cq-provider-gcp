@@ -27,7 +27,7 @@ func InstanceGroups() *schema.Table {
 				Name:        "creation_timestamp",
 				Description: "The creation timestamp for this instance group in RFC3339 text format",
 				Type:        schema.TypeTimestamp,
-				Resolver:    client.ISODateResolver("CreationTimestamp"),
+				Resolver:    schema.DateResolver("CreationTimestamp"),
 			},
 			{
 				Name:        "description",
