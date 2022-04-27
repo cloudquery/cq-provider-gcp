@@ -1,3 +1,4 @@
+{{=<% %>=}}
 # DONT EDIT. This file is synced from https://github.com/cloudquery/.github/.github
 name: test_integration
 
@@ -81,15 +82,7 @@ jobs:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
-      - name: Authenticate to Google Cloud
-        uses: 'google-github-actions/auth@v0'
-        with:
-          workload_identity_provider: 'projects/163549298763/locations/global/workloadIdentityPools/cq-provider-gcp-gh-oidc-pool/providers/cq-provider-gcp-gh-oidc-provider'
-          service_account: 'cq-provider-gcp-github-action@cq-provider-gcp.iam.gserviceaccount.com'
-
-      # Install gcloud, `setup-gcloud` automatically picks up authentication from `auth`.
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v0.6.0'
+      <%> auth_step %>
 
       - uses: actions/cache@v3
         with:
@@ -109,6 +102,6 @@ jobs:
         env:
           SLACK_CHANNEL: oss-tests
           SLACK_COLOR: ${{ job.status }}
-          SLACK_MESSAGE: 'gcp - E2E tests failed'
-          SLACK_TITLE: gcp - E2E tests failed
+          SLACK_MESSAGE: '<%> name %> - E2E tests failed'
+          SLACK_TITLE: <%> name %> - E2E tests failed
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
