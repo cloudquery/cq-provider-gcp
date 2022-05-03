@@ -29,7 +29,7 @@ func IgnoreErrorHandler(err error) bool {
 
 type diagValue struct {
 	severity diag.Severity
-	typ      diag.DiagnosticType
+	typ      diag.Type
 	summary  string
 }
 
@@ -50,17 +50,23 @@ var httpCodeToGRPCCode = map[int]codes.Code{
 func ErrorClassifier(meta schema.ClientMeta, resourceName string, err error) diag.Diagnostics {
 	client := meta.(*Client)
 
+	return classifyError(err, diag.RESOLVING, client.projects, diag.WithResourceName(resourceName))
+}
+
+func classifyError(err error, fallbackType diag.Type, projects []string, opts ...diag.BaseErrorOption) diag.Diagnostics {
 	// https://pkg.go.dev/cloud.google.com/go#hdr-Inspecting_errors:
 	// Most of the errors returned by the generated clients can be converted into a `grpc.Status`
 	if s, ok := statusFromError(err); ok {
 		if v, ok := grpcCodeToDiag[s.Code()]; ok {
 			return diag.Diagnostics{
-				RedactError(client.projects,
-					diag.NewBaseError(err, v.typ, diag.WithType(v.typ),
-						diag.WithResourceName(resourceName),
+				RedactError(projects,
+					diag.NewBaseError(err, v.typ, append(opts,
+						diag.WithType(v.typ),
 						diag.WithSummary("%s", v.summary),
 						diag.WithDetails("%s", s.Message()),
-						diag.WithSeverity(v.severity))),
+						diag.WithSeverity(v.severity),
+					)...),
+				),
 			}
 		}
 	}
@@ -70,35 +76,43 @@ func ErrorClassifier(meta schema.ClientMeta, resourceName string, err error) dia
 	if ok := errors.As(err, &gerr); ok {
 		if len(gerr.Errors) > 0 && gerr.Errors[0].Reason == "rateLimitExceeded" {
 			return diag.Diagnostics{
-				RedactError(client.projects, diag.NewBaseError(err, diag.THROTTLE, diag.WithType(diag.THROTTLE), diag.WithSeverity(diag.WARNING), diag.WithResourceName(resourceName), diag.WithError(errors.New(gerr.Message)))),
+				RedactError(projects, diag.NewBaseError(err, diag.THROTTLE, append(opts, diag.WithType(diag.THROTTLE), diag.WithSeverity(diag.WARNING), diag.WithError(errors.New(gerr.Message)))...)),
 			}
 		}
 
 		if grpcCode, ok := httpCodeToGRPCCode[gerr.Code]; ok {
 			if v, ok := grpcCodeToDiag[grpcCode]; ok {
 				return diag.Diagnostics{
-					RedactError(client.projects,
-						diag.NewBaseError(err, v.typ,
+					RedactError(projects,
+						diag.NewBaseError(err, v.typ, append(opts,
 							diag.WithType(v.typ),
-							diag.WithResourceName(resourceName),
 							diag.WithSummary("%s", v.summary),
 							diag.WithError(errors.New(gerr.Message)),
 							diag.WithSeverity(v.severity),
-						)),
+						)...),
+					),
 				}
 			}
+		}
+	}
+
+	if es := err.Error(); strings.HasPrefix(es, "google: error getting credentials") || strings.HasPrefix(es, "google: could not find default credentials") {
+		return diag.Diagnostics{
+			RedactError(projects,
+				diag.NewBaseError(err, diag.ACCESS, append(opts, diag.WithDetails("Please see this document for GCP authentication: https://docs.cloudquery.io/docs/getting-started/getting-started-with-gcp#authenticate-with-gcp"))...),
+			),
 		}
 	}
 
 	// Take over from SDK and always return diagnostics, redacting PII
 	if d, ok := err.(diag.Diagnostic); ok {
 		return diag.Diagnostics{
-			RedactError(client.projects, d),
+			RedactError(projects, d),
 		}
 	}
 
 	return diag.Diagnostics{
-		RedactError(client.projects, diag.NewBaseError(err, diag.RESOLVING, diag.WithResourceName(resourceName))),
+		RedactError(projects, diag.NewBaseError(err, fallbackType, opts...)),
 	}
 }
 
