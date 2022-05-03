@@ -14,6 +14,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -->
 
+### [0.7.1](https://github.com/cloudquery/cq-provider-gcp/compare/v0.7.0...v0.7.1) (2022-05-03)
+
+
+### Bug Fixes
+
+* Configure classification about access ([#215](https://github.com/cloudquery/cq-provider-gcp/issues/215)) ([89100d2](https://github.com/cloudquery/cq-provider-gcp/commit/89100d2ace00e167fc461dc89680c5872470d649))
+
 ## [v0.5.1] - 2022-01-03
 ###### SDK Version: 0.6.1
 ### :spider: Fixed
