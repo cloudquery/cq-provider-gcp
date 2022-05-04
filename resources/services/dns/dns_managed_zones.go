@@ -260,12 +260,12 @@ func fetchDnsManagedZones(ctx context.Context, meta schema.ClientMeta, parent *s
 	for {
 		call := c.Services.Dns.ManagedZones.
 			List(c.ProjectId).
+			Context(ctx).
 			PageToken(nextPageToken)
-		ret, err := c.RetryingDo(ctx, call)
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
-		output := ret.(*dns.ManagedZonesListResponse)
 
 		res <- output.ManagedZones
 		if output.NextPageToken == "" {

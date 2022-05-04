@@ -246,14 +246,13 @@ func fetchKmsKeyrings(ctx context.Context, meta schema.ClientMeta, parent *schem
 	}
 	nextPageToken := ""
 	for _, l := range locations {
-		call := c.Services.Kms.Projects.Locations.KeyRings.List(l.Name)
+		call := c.Services.Kms.Projects.Locations.KeyRings.List(l.Name).Context(ctx)
 		for {
 			call.PageToken(nextPageToken)
-			list, err := c.RetryingDo(ctx, call)
+			resp, err := client.Retryer(ctx, c, call.Do)
 			if err != nil {
 				return err
 			}
-			resp := list.(*cloudkms.ListKeyRingsResponse)
 
 			rings := make([]*KeyRing, len(resp.KeyRings))
 			for i, k := range resp.KeyRings {
@@ -279,14 +278,13 @@ func fetchKmsKeyringCryptoKeys(ctx context.Context, meta schema.ClientMeta, pare
 		return fmt.Errorf("expected *resources.KeyRing but got %T", keyRing)
 	}
 	nextPageToken := ""
-	call := c.Services.Kms.Projects.Locations.KeyRings.CryptoKeys.List(keyRing.Name)
+	call := c.Services.Kms.Projects.Locations.KeyRings.CryptoKeys.List(keyRing.Name).Context(ctx)
 	for {
 		call.PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		resp, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
-		resp := list.(*cloudkms.ListCryptoKeysResponse)
 
 		res <- resp.CryptoKeys
 
@@ -298,17 +296,16 @@ func fetchKmsKeyringCryptoKeys(ctx context.Context, meta schema.ClientMeta, pare
 	return nil
 }
 func resolveKmsKeyringCryptoKeyPolicy(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
-	client_ := meta.(*client.Client)
+	cl := meta.(*client.Client)
 	p, ok := resource.Item.(*cloudkms.CryptoKey)
 	if !ok {
 		return fmt.Errorf("expected *cloudkms.CryptoKey but got %T", p)
 	}
-	call := client_.Services.Kms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(p.Name)
-	item, err := client_.RetryingDo(ctx, call)
+	call := cl.Services.Kms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(p.Name).Context(ctx)
+	resp, err := client.Retryer(ctx, cl, call.Do)
 	if err != nil {
 		return err
 	}
-	resp := item.(*cloudkms.Policy)
 
 	var policy map[string]interface{}
 	data, err := json.Marshal(resp)
@@ -337,15 +334,14 @@ func resolveKmsKeyringCryptKeyLocation(ctx context.Context, meta schema.ClientMe
 
 func getAllKmsLocations(ctx context.Context, c *client.Client) ([]*cloudkms.Location, error) {
 	var locations []*cloudkms.Location
-	call := c.Services.Kms.Projects.Locations.List("projects/" + c.ProjectId)
+	call := c.Services.Kms.Projects.Locations.List("projects/" + c.ProjectId).Context(ctx)
 	nextPageToken := ""
 	for {
 		call.PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		resp, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return nil, err
 		}
-		resp := list.(*cloudkms.ListLocationsResponse)
 
 		locations = append(locations, resp.Locations...)
 

@@ -5,7 +5,6 @@ import (
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	"google.golang.org/api/cloudfunctions/v1"
 )
 
 func CloudfunctionsFunction() *schema.Table {
@@ -192,12 +191,11 @@ func fetchCloudfunctionsFunctions(ctx context.Context, meta schema.ClientMeta, p
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.CloudFunctions.Projects.Locations.Functions.List("projects/" + c.ProjectId + "/locations/-").PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		call := c.Services.CloudFunctions.Projects.Locations.Functions.List("projects/" + c.ProjectId + "/locations/-").Context(ctx).PageToken(nextPageToken)
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
-		output := list.(*cloudfunctions.ListFunctionsResponse)
 
 		res <- output.Functions
 		if output.NextPageToken == "" {

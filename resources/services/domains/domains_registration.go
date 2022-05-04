@@ -415,12 +415,11 @@ func fetchDomainsRegistrations(ctx context.Context, meta schema.ClientMeta, pare
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Domain.Projects.Locations.Registrations.List("projects/" + c.ProjectId + "/locations/-").PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		call := c.Services.Domain.Projects.Locations.Registrations.List("projects/" + c.ProjectId + "/locations/-").Context(ctx).PageToken(nextPageToken)
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
-		output := list.(*domains.ListRegistrationsResponse)
 
 		res <- output.Registrations
 		if output.NextPageToken == "" {

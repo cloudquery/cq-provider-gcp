@@ -90,12 +90,11 @@ func ResourceManagerProjects() *schema.Table {
 func fetchResourceManagerProjects(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 	call := c.Services.ResourceManager.Projects.
-		Get("projects/" + c.ProjectId)
-	list, err := c.RetryingDo(ctx, call)
+		Get("projects/" + c.ProjectId).Context(ctx)
+	output, err := client.Retryer(ctx, c, call.Do)
 	if err != nil {
 		return err
 	}
-	output := list.(*cloudresourcemanager.Project)
 
 	res <- output
 	return nil
@@ -108,12 +107,11 @@ func resolveResourceManagerProjectPolicy(ctx context.Context, meta schema.Client
 	}
 
 	call := cl.Services.ResourceManager.Projects.
-		GetIamPolicy("projects/"+p.ProjectId, &cloudresourcemanager.GetIamPolicyRequest{})
-	list, err := cl.RetryingDo(ctx, call)
+		GetIamPolicy("projects/"+p.ProjectId, &cloudresourcemanager.GetIamPolicyRequest{}).Context(ctx)
+	output, err := client.Retryer(ctx, cl, call.Do)
 	if err != nil {
 		return err
 	}
-	output := list.(*cloudresourcemanager.Policy)
 
 	var policy map[string]interface{}
 	data, err := json.Marshal(output)

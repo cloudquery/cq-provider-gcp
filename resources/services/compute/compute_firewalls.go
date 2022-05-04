@@ -189,12 +189,11 @@ func fetchComputeFirewalls(ctx context.Context, meta schema.ClientMeta, parent *
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Compute.Firewalls.List(c.ProjectId).PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		call := c.Services.Compute.Firewalls.List(c.ProjectId).Context(ctx).PageToken(nextPageToken)
+		output, err := client.Retryer(ctx, c, call.Do)
 		if err != nil {
 			return err
 		}
-		output := list.(*compute.FirewallList)
 
 		res <- output.Items
 		if output.NextPageToken == "" {
