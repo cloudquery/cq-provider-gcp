@@ -62,6 +62,7 @@ func Provider() *provider.Provider {
 			"compute.url_maps":             compute.ComputeURLMaps(),
 			"cloudfunctions.functions":     cloudfunctions.CloudfunctionsFunction(),
 			"cloudbilling.accounts":        cloudbilling.Accounts(),
+			"cloudbilling.services":        cloudbilling.Services(),
 			"dns.managed_zones":            dns.DNSManagedZones(),
 			"dns.policies":                 dns.DNSPolicies(),
 			"iam.project_roles":            iam.IamRoles(),
