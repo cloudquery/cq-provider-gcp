@@ -2,19 +2,21 @@ package cloudbilling
 
 import (
 	"context"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-	cloudbilling "google.golang.org/api/cloudbilling/v1"
+	"google.golang.org/api/cloudbilling/v1"
 )
 
 //go:generate cq-gen --resource accounts --config gen.hcl --output .
 func Accounts() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_billing_accounts",
-		Resolver:     fetchBillingAccounts,
-		Multiplex:    client.ProjectMultiplex,
-		IgnoreError:  client.IgnoreErrorHandler,
-		DeleteFilter: client.DeleteProjectFilter,
+		Name:          "gcp_billing_accounts",
+		Resolver:      fetchBillingAccounts,
+		Multiplex:     client.ProjectMultiplex,
+		IgnoreError:   client.IgnoreErrorHandler,
+		DeleteFilter:  client.DeleteProjectFilter,
+		IgnoreInTests: true,
 		Columns: []schema.Column{
 			{
 				Name:        "display_name",
@@ -78,7 +80,6 @@ func fetchBillingAccounts(ctx context.Context, meta schema.ClientMeta, parent *s
 		output := list.(*cloudbilling.ListBillingAccountsResponse)
 
 		for _, b := range output.BillingAccounts {
-		Exit:
 			for {
 				projectsNextPageToken := ""
 				projectsCall := c.Services.CloudBilling.BillingAccounts.Projects.List(b.Name).PageToken(projectsNextPageToken)
@@ -88,13 +89,12 @@ func fetchBillingAccounts(ctx context.Context, meta schema.ClientMeta, parent *s
 				}
 				projectsOutput := projectsList.(*cloudbilling.ListProjectBillingInfoResponse)
 				for _, p := range projectsOutput.ProjectBillingInfo {
-
 					if p.ProjectId == c.ProjectId {
 						res <- BillingAccountWrapper{
 							b,
 							p,
 						}
-						break Exit
+						return nil
 					}
 				}
 				if output.NextPageToken == "" {

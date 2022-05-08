@@ -2,9 +2,9 @@ package provider
 
 import (
 	"embed"
-	"github.com/cloudquery/cq-provider-gcp/resources/services/cloudbilling"
 
 	"github.com/cloudquery/cq-provider-gcp/resources/services/bigquery"
+	"github.com/cloudquery/cq-provider-gcp/resources/services/cloudbilling"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/cloudfunctions"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/compute"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/dns"

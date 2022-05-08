@@ -12,7 +12,7 @@ description_modifier "remove_field_name" {
 }
 
 
-resource "gcp" "billing" "accounts" {
+resource "gcp" "cloudbilling" "accounts" {
   path = "github.com/cloudquery/cq-provider-gcp/resources/services/cloudbilling.BillingAccountWrapper"
   ignoreError "IgnoreError" {
     path = "github.com/cloudquery/cq-provider-gcp/client.IgnoreErrorHandler"
@@ -44,5 +44,32 @@ resource "gcp" "billing" "accounts" {
 
   column "project_billing_info_project_id" {
     rename = "project_id"
+  }
+}
+
+
+resource "gcp" "cloudbilling" "services" {
+  path = "google.golang.org/api/cloudbilling/v1.Service"
+  ignoreError "IgnoreError" {
+    path = "github.com/cloudquery/cq-provider-gcp/client.IgnoreErrorHandler"
+  }
+
+  user_relation "gcp" "cloudbilling" "skus" {
+    path = "google.golang.org/api/cloudbilling/v1.Sku"
+
+    column "category" {
+      skip_prefix = true
+    }
+
+    relation "gcp" "cloudbilling" "pricing_info" {
+
+      column "aggregation_info" {
+        skip_prefix = true
+      }
+
+      column "pricing_expression" {
+        skip_prefix = true
+      }
+    }
   }
 }
