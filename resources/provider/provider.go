@@ -2,6 +2,7 @@ package provider
 
 import (
 	"embed"
+	"github.com/cloudquery/cq-provider-gcp/resources/services/cloudbilling"
 
 	"github.com/cloudquery/cq-provider-gcp/resources/services/bigquery"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/cloudfunctions"
@@ -60,6 +61,7 @@ func Provider() *provider.Provider {
 			"compute.ssl_policies":         compute.ComputeSslPolicies(),
 			"compute.url_maps":             compute.ComputeURLMaps(),
 			"cloudfunctions.functions":     cloudfunctions.CloudfunctionsFunction(),
+			"cloudbilling.accounts":        cloudbilling.Accounts(),
 			"dns.managed_zones":            dns.DNSManagedZones(),
 			"dns.policies":                 dns.DNSPolicies(),
 			"iam.project_roles":            iam.IamRoles(),

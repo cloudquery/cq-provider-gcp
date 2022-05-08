@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"google.golang.org/api/cloudbilling/v1"
 
 	"google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/cloudfunctions/v1"
@@ -23,6 +24,7 @@ type Services struct {
 	Storage         *storage.Service
 	Sql             *sql.Service
 	Iam             *iam.Service
+	CloudBilling    *cloudbilling.APIService
 	CloudFunctions  *cloudfunctions.Service
 	Domain          *domains.Service
 	Compute         *compute.Service
@@ -82,12 +84,17 @@ func initServices(ctx context.Context, options []option.ClientOption) (*Services
 	if err != nil {
 		return nil, err
 	}
+	cloudbillingSvc, err := cloudbilling.NewService(ctx, options...)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Services{
 		Kms:             kmsSvc,
 		Storage:         storageSvc,
 		Sql:             sqlSvc,
 		Iam:             iamSvc,
+		CloudBilling:    cloudbillingSvc,
 		CloudFunctions:  cfSvc,
 		Domain:          domainSvc,
 		Compute:         computeSvc,
