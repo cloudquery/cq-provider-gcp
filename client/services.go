@@ -2,9 +2,9 @@ package client
 
 import (
 	"context"
-	"google.golang.org/api/cloudbilling/v1"
 
 	"google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/cloudbilling/v1"
 	"google.golang.org/api/cloudfunctions/v1"
 	kms "google.golang.org/api/cloudkms/v1"
 	"google.golang.org/api/cloudresourcemanager/v3"

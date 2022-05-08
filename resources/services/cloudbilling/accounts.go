@@ -3,10 +3,16 @@ package cloudbilling
 import (
 	"context"
 
+	"golang.org/x/sync/errgroup"
+	"golang.org/x/sync/semaphore"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
+	"github.com/cloudquery/cq-provider-sdk/provider/diag"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	"google.golang.org/api/cloudbilling/v1"
 )
+
+const MAX_GOROUTINES = 10
 
 //go:generate cq-gen --resource accounts --config gen.hcl --output .
 func Accounts() *schema.Table {
@@ -71,6 +77,7 @@ func Accounts() *schema.Table {
 func fetchBillingAccounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 	nextPageToken := ""
+	var sem = semaphore.NewWeighted(int64(MAX_GOROUTINES))
 	for {
 		call := c.Services.CloudBilling.BillingAccounts.List().PageToken(nextPageToken)
 		list, err := c.RetryingDo(ctx, call)
@@ -78,33 +85,22 @@ func fetchBillingAccounts(ctx context.Context, meta schema.ClientMeta, parent *s
 			return err
 		}
 		output := list.(*cloudbilling.ListBillingAccountsResponse)
-
+		errs, ctx := errgroup.WithContext(ctx)
 		for _, b := range output.BillingAccounts {
-			for {
-				projectsNextPageToken := ""
-				projectsCall := c.Services.CloudBilling.BillingAccounts.Projects.List(b.Name).PageToken(projectsNextPageToken)
-				projectsList, err := c.RetryingDo(ctx, projectsCall)
-				if err != nil {
-					return err
-				}
-				projectsOutput := projectsList.(*cloudbilling.ListProjectBillingInfoResponse)
-				for _, p := range projectsOutput.ProjectBillingInfo {
-					if p.ProjectId == c.ProjectId {
-						res <- BillingAccountWrapper{
-							b,
-							p,
-						}
-						return nil
-					}
-				}
-				if output.NextPageToken == "" {
-					break
-				}
-				projectsNextPageToken = output.NextPageToken
+			if err := sem.Acquire(ctx, 1); err != nil {
+				return diag.WrapError(err)
 			}
-
+			func(account cloudbilling.BillingAccount) {
+				errs.Go(func() error {
+					defer sem.Release(1)
+					return fetchProjectBillingInfo(ctx, res, c, account)
+				})
+			}(*b)
 		}
-
+		err = errs.Wait()
+		if err != nil {
+			return diag.WrapError(err)
+		}
 		if output.NextPageToken == "" {
 			break
 		}
@@ -120,4 +116,30 @@ func fetchBillingAccounts(ctx context.Context, meta schema.ClientMeta, parent *s
 type BillingAccountWrapper struct {
 	*cloudbilling.BillingAccount
 	*cloudbilling.ProjectBillingInfo
+}
+
+func fetchProjectBillingInfo(ctx context.Context, res chan<- interface{}, c *client.Client, b cloudbilling.BillingAccount) error {
+	projectsNextPageToken := ""
+	for {
+		projectsCall := c.Services.CloudBilling.BillingAccounts.Projects.List(b.Name).PageToken(projectsNextPageToken)
+		projectsList, err := c.RetryingDo(ctx, projectsCall)
+		if err != nil {
+			return err
+		}
+		output := projectsList.(*cloudbilling.ListProjectBillingInfoResponse)
+		for _, p := range output.ProjectBillingInfo {
+			if p.ProjectId == c.ProjectId {
+				res <- BillingAccountWrapper{
+					&b,
+					p,
+				}
+				return nil
+			}
+		}
+		if output.NextPageToken == "" {
+			break
+		}
+		projectsNextPageToken = output.NextPageToken
+	}
+	return nil
 }
