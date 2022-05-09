@@ -94,8 +94,9 @@ func InstanceGroups() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:     "gcp_compute_instance_group_instances",
-				Resolver: fetchComputeInstanceGroupInstances,
+				Name:          "gcp_compute_instance_group_instances",
+				Resolver:      fetchComputeInstanceGroupInstances,
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "instance_group_cq_id",
