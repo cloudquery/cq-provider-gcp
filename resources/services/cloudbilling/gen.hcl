@@ -18,6 +18,13 @@ resource "gcp" "cloudbilling" "accounts" {
     path = "github.com/cloudquery/cq-provider-gcp/client.IgnoreErrorHandler"
   }
 
+  options {
+    primary_keys = [
+      "project_id",
+      "name"
+    ]
+  }
+  
   multiplex "ProjectMultiplex" {
     path = "github.com/cloudquery/cq-provider-gcp/client.ProjectMultiplex"
   }

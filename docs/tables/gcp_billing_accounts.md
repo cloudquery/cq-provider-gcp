@@ -1,5 +1,5 @@
 
-# Table: gcp_billing_accounts
+# Table: gcp_cloudbilling_accounts
 
 ## Columns
 | Name        | Type           | Description  |

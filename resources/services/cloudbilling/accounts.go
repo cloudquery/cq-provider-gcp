@@ -17,11 +17,12 @@ const MAX_GOROUTINES = 10
 //go:generate cq-gen --resource accounts --config gen.hcl --output .
 func Accounts() *schema.Table {
 	return &schema.Table{
-		Name:          "gcp_billing_accounts",
+		Name:          "gcp_cloudbilling_accounts",
 		Resolver:      fetchBillingAccounts,
 		Multiplex:     client.ProjectMultiplex,
 		IgnoreError:   client.IgnoreErrorHandler,
 		DeleteFilter:  client.DeleteProjectFilter,
+		Options:       schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},
 		IgnoreInTests: true,
 		Columns: []schema.Column{
 			{
@@ -119,9 +120,9 @@ type BillingAccountWrapper struct {
 }
 
 func fetchProjectBillingInfo(ctx context.Context, res chan<- interface{}, c *client.Client, b cloudbilling.BillingAccount) error {
-	projectsNextPageToken := ""
+	nextPageToken := ""
 	for {
-		projectsCall := c.Services.CloudBilling.BillingAccounts.Projects.List(b.Name).PageToken(projectsNextPageToken)
+		projectsCall := c.Services.CloudBilling.BillingAccounts.Projects.List(b.Name).PageToken(nextPageToken)
 		projectsList, err := c.RetryingDo(ctx, projectsCall)
 		if err != nil {
 			return err
@@ -139,7 +140,7 @@ func fetchProjectBillingInfo(ctx context.Context, res chan<- interface{}, c *cli
 		if output.NextPageToken == "" {
 			break
 		}
-		projectsNextPageToken = output.NextPageToken
+		nextPageToken = output.NextPageToken
 	}
 	return nil
 }
