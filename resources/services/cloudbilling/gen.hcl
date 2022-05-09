@@ -30,6 +30,14 @@ resource "gcp" "cloudbilling" "accounts" {
     skip_prefix = true
   }
 
+
+  column "name" {
+    description = "The resource name of the billing account."
+  }
+  column "open" {
+    description = "True if the billing account is open"
+  }
+
   column "project_billing_info_billing_account_name" {
     skip = true
   }

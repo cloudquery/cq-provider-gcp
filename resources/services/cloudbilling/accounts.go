@@ -38,13 +38,13 @@ func Accounts() *schema.Table {
 			},
 			{
 				Name:        "name",
-				Description: "Output only",
+				Description: "The resource name of the billing account.",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("BillingAccount.Name"),
 			},
 			{
 				Name:        "open",
-				Description: "Output only",
+				Description: "True if the billing account is open",
 				Type:        schema.TypeBool,
 				Resolver:    schema.PathResolver("BillingAccount.Open"),
 			},
