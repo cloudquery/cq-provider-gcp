@@ -18,6 +18,15 @@ resource "gcp" "compute" "instance_groups" {
     path = "github.com/cloudquery/cq-provider-gcp/client.ProjectMultiplex"
   }
 
+  multiplex "DeleteFilter" {
+    path = "github.com/cloudquery/cq-provider-gcp/client.DeleteFilter"
+  }
+
+  multiplex "IgnoreError" {
+    path = "github.com/cloudquery/cq-provider-gcp/client.IgnoreError"
+  }
+
+
   options {
     primary_keys = [
       "project_id",
@@ -26,9 +35,9 @@ resource "gcp" "compute" "instance_groups" {
   }
 
   column "creation_timestamp" {
-    type              = "timestamp"
+    type = "timestamp"
     resolver "dateResolver" {
-      path   = "github.com/cloudquery/cq-provider-sdk/provider/schema.DateResolver"
+      path          = "github.com/cloudquery/cq-provider-sdk/provider/schema.DateResolver"
       path_resolver = true
     }
   }
