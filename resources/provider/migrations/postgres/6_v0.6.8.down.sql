@@ -3,4 +3,3 @@
 
 -- Resource: storage.buckets
 ALTER TABLE IF EXISTS "gcp_storage_buckets" DROP COLUMN IF EXISTS "encryption_type";
-
