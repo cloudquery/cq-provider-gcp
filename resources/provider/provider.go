@@ -4,6 +4,7 @@ import (
 	"embed"
 
 	"github.com/cloudquery/cq-provider-gcp/resources/services/bigquery"
+	"github.com/cloudquery/cq-provider-gcp/resources/services/cloudbilling"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/cloudfunctions"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/compute"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/dns"
@@ -46,6 +47,7 @@ func Provider() *provider.Provider {
 			"compute.disk_types":           compute.ComputeDiskTypes(),
 			"compute.images":               compute.ComputeImages(),
 			"compute.instances":            compute.ComputeInstances(),
+			"compute.instance_groups":      compute.InstanceGroups(),
 			"compute.interconnects":        compute.ComputeInterconnects(),
 			"compute.networks":             compute.ComputeNetworks(),
 			"compute.disks":                compute.ComputeDisks(),
@@ -61,6 +63,8 @@ func Provider() *provider.Provider {
 			"compute.ssl_policies":         compute.ComputeSslPolicies(),
 			"compute.url_maps":             compute.ComputeURLMaps(),
 			"cloudfunctions.functions":     cloudfunctions.CloudfunctionsFunction(),
+			"cloudbilling.accounts":        cloudbilling.Accounts(),
+			"cloudbilling.services":        cloudbilling.Services(),
 			"dns.managed_zones":            dns.DNSManagedZones(),
 			"dns.policies":                 dns.DNSPolicies(),
 			"iam.project_roles":            iam.IamRoles(),

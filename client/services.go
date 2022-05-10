@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/cloudbilling/v1"
 	"google.golang.org/api/cloudfunctions/v1"
 	kms "google.golang.org/api/cloudkms/v1"
 	"google.golang.org/api/cloudresourcemanager/v3"
@@ -24,6 +25,7 @@ type Services struct {
 	Storage         *storage.Service
 	Sql             *sql.Service
 	Iam             *iam.Service
+	CloudBilling    *cloudbilling.APIService
 	CloudFunctions  *cloudfunctions.Service
 	Domain          *domains.Service
 	Compute         *compute.Service
@@ -84,6 +86,10 @@ func initServices(ctx context.Context, options []option.ClientOption) (*Services
 	if err != nil {
 		return nil, err
 	}
+	cloudbillingSvc, err := cloudbilling.NewService(ctx, options...)
+	if err != nil {
+		return nil, err
+	}
 	serviceusageManagerSvc, err := serviceusage.NewService(ctx, options...)
 	if err != nil {
 		return nil, err
@@ -94,6 +100,7 @@ func initServices(ctx context.Context, options []option.ClientOption) (*Services
 		Storage:         storageSvc,
 		Sql:             sqlSvc,
 		Iam:             iamSvc,
+		CloudBilling:    cloudbillingSvc,
 		CloudFunctions:  cfSvc,
 		Domain:          domainSvc,
 		Compute:         computeSvc,
