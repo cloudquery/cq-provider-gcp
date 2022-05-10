@@ -2,8 +2,12 @@ package serviceusage
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	serviceusage "google.golang.org/api/serviceusage/v1"
 )
 
 //go:generate cq-gen --resource services --config gen.hcl --output .
@@ -15,59 +19,48 @@ func Services() *schema.Table {
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
+		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"name"}},
 		Columns: []schema.Column{
 			{
-				Name:        "config_documentation_documentation_root_url",
-				Description: "The URL to the root of documentation",
+				Name:        "project_id",
+				Description: "GCP Project Id of the resource",
 				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Config.Documentation.DocumentationRootUrl"),
+				Resolver:    client.ResolveProject,
 			},
 			{
-				Name:        "config_documentation_overview",
-				Description: "Declares a single overview page",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Config.Documentation.Overview"),
+				Name:     "name",
+				Type:     schema.TypeString,
+				Resolver: schema.PathResolver("Config.Name"),
 			},
 			{
-				Name:        "config_documentation_service_root_url",
-				Description: "Specifies the service root url if the default one (the service name from the yaml file) is not suitable",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Config.Documentation.ServiceRootUrl"),
+				Name:        "authentication",
+				Description: "Auth configuration",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveServicesAuthentication,
 			},
 			{
-				Name:        "config_documentation_summary",
-				Description: "A short description of what the service does",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Config.Documentation.Summary"),
+				Name:        "documentation",
+				Description: "Additional API documentation",
+				Type:        schema.TypeJSON,
+				Resolver:    resolveServicesDocumentation,
 			},
 			{
-				Name:        "config_name",
-				Description: "The DNS address at which this service is available",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Config.Name"),
-			},
-			{
-				Name:        "config_title",
+				Name:        "title",
 				Description: "The product title for this service",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Config.Title"),
 			},
 			{
-				Name:        "config_usage_producer_notification_channel",
+				Name:        "usage_producer_notification_channel",
 				Description: "The full resource name of a channel used for sending notifications to the service producer",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Config.Usage.ProducerNotificationChannel"),
 			},
 			{
-				Name:        "config_usage_requirements",
+				Name:        "usage_requirements",
 				Description: "Requirements that must be satisfied before a consumer project can use the service",
 				Type:        schema.TypeStringArray,
 				Resolver:    schema.PathResolver("Config.Usage.Requirements"),
-			},
-			{
-				Name:        "name",
-				Description: "The resource name of the consumer and service",
-				Type:        schema.TypeString,
 			},
 			{
 				Name:        "parent",
@@ -82,9 +75,9 @@ func Services() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:        "gcp_serviceusage_service_config_apis",
+				Name:        "gcp_serviceusage_service_apis",
 				Description: "Api is a light-weight descriptor for an API Interface Interfaces are also described as \"protocol buffer services\" in some contexts, such as by the \"service\" keyword in a proto file, but they are different from API Services, which represent a concrete implementation of an interface as opposed to simply a description of methods and bindings",
-				Resolver:    fetchServiceusageServiceConfigApis,
+				Resolver:    fetchServiceusageServiceApis,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -93,9 +86,27 @@ func Services() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
+						Name:        "methods",
+						Description: "The methods of this interface, in unspecified order",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveServiceApisMethods,
+					},
+					{
+						Name:        "mixins",
+						Description: "Included interfaces",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveServiceApisMixins,
+					},
+					{
 						Name:        "name",
 						Description: "The fully qualified name of this interface, including package name followed by the interface's simple name",
 						Type:        schema.TypeString,
+					},
+					{
+						Name:        "options",
+						Description: "Any metadata attached to the interface",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveServiceApisOptions,
 					},
 					{
 						Name:        "source_context_file_name",
@@ -114,305 +125,11 @@ func Services() *schema.Table {
 						Type:        schema.TypeString,
 					},
 				},
-				Relations: []*schema.Table{
-					{
-						Name:        "gcp_serviceusage_service_config_api_methods",
-						Description: "Method represents a method of an API interface",
-						Resolver:    fetchServiceusageServiceConfigApiMethods,
-						Columns: []schema.Column{
-							{
-								Name:        "service_config_api_cq_id",
-								Description: "Unique CloudQuery ID of gcp_serviceusage_service_config_apis table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "The simple name of this method",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "request_streaming",
-								Description: "If true, the request is streamed",
-								Type:        schema.TypeBool,
-							},
-							{
-								Name:        "request_type_url",
-								Description: "A URL of the input message type",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "response_streaming",
-								Description: "If true, the response is streamed",
-								Type:        schema.TypeBool,
-							},
-							{
-								Name:        "response_type_url",
-								Description: "The URL of the output message type",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "syntax",
-								Description: "\"SYNTAX_PROTO2\" - Syntax `proto2`   \"SYNTAX_PROTO3\" - Syntax `proto3`",
-								Type:        schema.TypeString,
-							},
-						},
-						Relations: []*schema.Table{
-							{
-								Name:        "gcp_serviceusage_service_config_api_method_options",
-								Description: "A protocol buffer option, which can be attached to a message, field, enumeration, etc",
-								Resolver:    fetchServiceusageServiceConfigApiMethodOptions,
-								Columns: []schema.Column{
-									{
-										Name:        "service_config_api_method_cq_id",
-										Description: "Unique CloudQuery ID of gcp_serviceusage_service_config_api_methods table (FK)",
-										Type:        schema.TypeUUID,
-										Resolver:    schema.ParentIdResolver,
-									},
-									{
-										Name:        "name",
-										Description: "The option's name",
-										Type:        schema.TypeString,
-									},
-									{
-										Name:        "value",
-										Description: "The option's value packed in an Any message",
-										Type:        schema.TypeByteArray,
-									},
-								},
-							},
-						},
-					},
-					{
-						Name:        "gcp_serviceusage_service_config_api_mixins",
-						Description: "- If after comment and whitespace stripping, the documentation string of the redeclared method is empty, it will be inherited from the original method",
-						Resolver:    fetchServiceusageServiceConfigApiMixins,
-						Columns: []schema.Column{
-							{
-								Name:        "service_config_api_cq_id",
-								Description: "Unique CloudQuery ID of gcp_serviceusage_service_config_apis table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "The fully qualified name of the interface which is included",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "root",
-								Description: "If non-empty specifies a path under which inherited HTTP paths are rooted",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "gcp_serviceusage_service_config_api_options",
-						Description: "A protocol buffer option, which can be attached to a message, field, enumeration, etc",
-						Resolver:    fetchServiceusageServiceConfigApiOptions,
-						Columns: []schema.Column{
-							{
-								Name:        "service_config_api_cq_id",
-								Description: "Unique CloudQuery ID of gcp_serviceusage_service_config_apis table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "The option's name",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "value",
-								Description: "The option's value packed in an Any message",
-								Type:        schema.TypeByteArray,
-							},
-						},
-					},
-				},
 			},
 			{
-				Name:        "gcp_serviceusage_service_config_authentication_providers",
-				Description: "Configuration for an authentication provider, including support for JSON Web Token (JWT) (https://toolsietforg/html/draft-ietf-oauth-json-web-token-32)",
-				Resolver:    fetchServiceusageServiceConfigAuthenticationProviders,
-				Columns: []schema.Column{
-					{
-						Name:        "service_cq_id",
-						Description: "Unique CloudQuery ID of gcp_serviceusage_services table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "audiences",
-						Description: "The list of JWT audiences (https://toolsietforg/html/draft-ietf-oauth-json-web-token-32#section-413) that are allowed to access",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "authorization_url",
-						Description: "Redirect URL if JWT token is required but not present or is expired",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "id",
-						Description: "The unique identifier of the auth provider",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "issuer",
-						Description: "Identifies the principal that issued the JWT",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "jwks_uri",
-						Description: "URL of the provider's public key set to validate signature of the JWT",
-						Type:        schema.TypeString,
-					},
-				},
-				Relations: []*schema.Table{
-					{
-						Name:        "gcp_serviceusage_service_config_authentication_provider_jwt_locations",
-						Description: "Specifies a location to extract JWT from an API request",
-						Resolver:    fetchServiceusageServiceConfigAuthenticationProviderJwtLocations,
-						Columns: []schema.Column{
-							{
-								Name:        "service_config_authentication_provider_cq_id",
-								Description: "Unique CloudQuery ID of gcp_serviceusage_service_config_authentication_providers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "header",
-								Description: "Specifies HTTP header name to extract JWT token",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "query",
-								Description: "Specifies URL query parameter name to extract JWT token",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "value_prefix",
-								Description: "The value prefix",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-				},
-			},
-			{
-				Name:        "gcp_serviceusage_service_config_authentication_rules",
-				Description: "Authentication rules for the service",
-				Resolver:    fetchServiceusageServiceConfigAuthenticationRules,
-				Columns: []schema.Column{
-					{
-						Name:        "service_cq_id",
-						Description: "Unique CloudQuery ID of gcp_serviceusage_services table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "allow_without_credential",
-						Description: "If true, the service accepts API keys without any other credential",
-						Type:        schema.TypeBool,
-					},
-					{
-						Name:        "oauth_canonical_scopes",
-						Description: "The list of publicly documented OAuth scopes that are allowed access",
-						Type:        schema.TypeString,
-						Resolver:    schema.PathResolver("Oauth.CanonicalScopes"),
-					},
-					{
-						Name:        "selector",
-						Description: "Selects the methods to which this rule applies",
-						Type:        schema.TypeString,
-					},
-				},
-				Relations: []*schema.Table{
-					{
-						Name:        "gcp_serviceusage_service_config_authentication_rule_requirements",
-						Description: "User-defined authentication requirements, including support for JSON Web Token (JWT) (https://toolsietforg/html/draft-ietf-oauth-json-web-token-32)",
-						Resolver:    fetchServiceusageServiceConfigAuthenticationRuleRequirements,
-						Columns: []schema.Column{
-							{
-								Name:        "service_config_authentication_rule_cq_id",
-								Description: "Unique CloudQuery ID of gcp_serviceusage_service_config_authentication_rules table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "audiences",
-								Description: "This will be deprecated soon, once AuthProvideraudiences is implemented and accepted in all the runtime components",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "provider_id",
-								Description: "id from authentication provider",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-				},
-			},
-			{
-				Name:        "gcp_serviceusage_service_config_documentation_pages",
-				Description: "Represents a documentation page",
-				Resolver:    fetchServiceusageServiceConfigDocumentationPages,
-				Columns: []schema.Column{
-					{
-						Name:        "service_cq_id",
-						Description: "Unique CloudQuery ID of gcp_serviceusage_services table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "content",
-						Description: "The Markdown content of the page",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "name",
-						Description: "The name of the page",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "subpages",
-						Description: "Subpages of this page",
-						Type:        schema.TypeJSON,
-					},
-				},
-			},
-			{
-				Name:        "gcp_serviceusage_service_config_documentation_rules",
-				Description: "A documentation rule provides information about individual API elements",
-				Resolver:    fetchServiceusageServiceConfigDocumentationRules,
-				Columns: []schema.Column{
-					{
-						Name:        "service_cq_id",
-						Description: "Unique CloudQuery ID of gcp_serviceusage_services table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "deprecation_description",
-						Description: "Deprecation description of the selected element(s)",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "description",
-						Description: "Description of the selected proto element (eg",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "selector",
-						Description: "The selector is a comma-separated list of patterns for any element such as a method, a field, an enum value",
-						Type:        schema.TypeString,
-					},
-				},
-			},
-			{
-				Name:        "gcp_serviceusage_service_config_endpoints",
+				Name:        "gcp_serviceusage_service_endpoints",
 				Description: "`Endpoint` describes a network address of a service that serves a set of APIs",
-				Resolver:    fetchServiceusageServiceConfigEndpoints,
+				Resolver:    fetchServiceusageServiceEndpoints,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -438,9 +155,9 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_serviceusage_service_config_monitored_resources",
+				Name:        "gcp_serviceusage_service_monitored_resources",
 				Description: "An object that describes the schema of a MonitoredResource object using a type name and a set of labels",
-				Resolver:    fetchServiceusageServiceConfigMonitoredResources,
+				Resolver:    fetchServiceusageServiceMonitoredResources,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -459,6 +176,12 @@ func Services() *schema.Table {
 						Type:        schema.TypeString,
 					},
 					{
+						Name:        "labels",
+						Description: "Required",
+						Type:        schema.TypeJSON,
+						Resolver:    resolveServiceMonitoredResourcesLabels,
+					},
+					{
 						Name:        "launch_stage",
 						Description: "Optional",
 						Type:        schema.TypeString,
@@ -474,41 +197,11 @@ func Services() *schema.Table {
 						Type:        schema.TypeString,
 					},
 				},
-				Relations: []*schema.Table{
-					{
-						Name:        "gcp_serviceusage_service_config_monitored_resource_labels",
-						Description: "A description of a label",
-						Resolver:    fetchServiceusageServiceConfigMonitoredResourceLabels,
-						Columns: []schema.Column{
-							{
-								Name:        "service_config_monitored_resource_cq_id",
-								Description: "Unique CloudQuery ID of gcp_serviceusage_service_config_monitored_resources table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "description",
-								Description: "A human-readable description for the label",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "key",
-								Description: "The label key",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "value_type",
-								Description: "\"STRING\" - A variable-length string",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-				},
 			},
 			{
-				Name:        "gcp_serviceusage_service_config_monitoring_consumer_destinations",
+				Name:        "gcp_serviceusage_service_monitoring_consumer_destinations",
 				Description: "Configuration of a specific monitoring destination (the producer project or the consumer project)",
-				Resolver:    fetchServiceusageServiceConfigMonitoringConsumerDestinations,
+				Resolver:    fetchServiceusageServiceMonitoringConsumerDestinations,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -529,9 +222,9 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_serviceusage_service_config_monitoring_producer_destinations",
+				Name:        "gcp_serviceusage_service_monitoring_producer_destinations",
 				Description: "Configuration of a specific monitoring destination (the producer project or the consumer project)",
-				Resolver:    fetchServiceusageServiceConfigMonitoringProducerDestinations,
+				Resolver:    fetchServiceusageServiceMonitoringProducerDestinations,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -552,9 +245,9 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_serviceusage_service_config_quota_limits",
+				Name:        "gcp_serviceusage_service_quota_limits",
 				Description: "`QuotaLimit` defines a specific limit that applies over a specified duration for a limit type",
-				Resolver:    fetchServiceusageServiceConfigQuotaLimits,
+				Resolver:    fetchServiceusageServiceQuotaLimits,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -615,9 +308,9 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_serviceusage_service_config_quota_metric_rules",
+				Name:        "gcp_serviceusage_service_quota_metric_rules",
 				Description: "Bind API methods to metrics",
-				Resolver:    fetchServiceusageServiceConfigQuotaMetricRules,
+				Resolver:    fetchServiceusageServiceQuotaMetricRules,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -638,9 +331,9 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_serviceusage_service_config_usage_rules",
+				Name:        "gcp_serviceusage_service_usage_rules",
 				Description: "Usage configuration rules for the service",
-				Resolver:    fetchServiceusageServiceConfigUsageRules,
+				Resolver:    fetchServiceusageServiceUsageRules,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -674,62 +367,140 @@ func Services() *schema.Table {
 // ====================================================================================================================
 
 func fetchServiceusageServices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+	c := meta.(*client.Client)
+	nextPageToken := ""
+	for {
+		call := c.Services.ServiceUsage.Services.List(fmt.Sprintf("projects/%s", c.ProjectId)).PageToken(nextPageToken)
+		list, err := c.RetryingDo(ctx, call)
+		if err != nil {
+			return err
+		}
+		output := list.(*serviceusage.ListServicesResponse)
+
+		res <- output.Services
+
+		if output.NextPageToken == "" {
+			break
+		}
+		nextPageToken = output.NextPageToken
+	}
+	return nil
 }
-func fetchServiceusageServiceConfigApis(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func resolveServicesAuthentication(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p := resource.Item.(*serviceusage.GoogleApiServiceusageV1Service)
+	if p.Config == nil {
+		return nil
+	}
+	j, err := json.Marshal(p.Config.Authentication)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, j)
 }
-func fetchServiceusageServiceConfigApiMethods(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func resolveServicesDocumentation(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p := resource.Item.(*serviceusage.GoogleApiServiceusageV1Service)
+	if p.Config == nil {
+		return nil
+	}
+	j, err := json.Marshal(p.Config.Documentation)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, j)
 }
-func fetchServiceusageServiceConfigApiMethodOptions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func fetchServiceusageServiceApis(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	p := parent.Item.(*serviceusage.GoogleApiServiceusageV1Service)
+	if p.Config == nil {
+		return nil
+	}
+	res <- p.Config.Apis
+	return nil
 }
-func fetchServiceusageServiceConfigApiMixins(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func resolveServiceApisMethods(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p := resource.Item.(*serviceusage.Api)
+	j, err := json.Marshal(p.Methods)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, j)
 }
-func fetchServiceusageServiceConfigApiOptions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func resolveServiceApisMixins(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p := resource.Item.(*serviceusage.Api)
+	j, err := json.Marshal(p.Mixins)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, j)
 }
-func fetchServiceusageServiceConfigAuthenticationProviders(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func resolveServiceApisOptions(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p := resource.Item.(*serviceusage.Api)
+	j, err := json.Marshal(p.Options)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, j)
 }
-func fetchServiceusageServiceConfigAuthenticationProviderJwtLocations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func fetchServiceusageServiceEndpoints(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	p := parent.Item.(*serviceusage.GoogleApiServiceusageV1Service)
+	if p.Config == nil {
+		return nil
+	}
+	res <- p.Config.Endpoints
+	return nil
 }
-func fetchServiceusageServiceConfigAuthenticationRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func fetchServiceusageServiceMonitoredResources(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	p := parent.Item.(*serviceusage.GoogleApiServiceusageV1Service)
+	if p.Config == nil {
+		return nil
+	}
+	res <- p.Config.MonitoredResources
+	return nil
 }
-func fetchServiceusageServiceConfigAuthenticationRuleRequirements(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func resolveServiceMonitoredResourcesLabels(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p := resource.Item.(*serviceusage.MonitoredResourceDescriptor)
+	j, err := json.Marshal(p.Labels)
+	if err != nil {
+		return err
+	}
+	return resource.Set(c.Name, j)
 }
-func fetchServiceusageServiceConfigDocumentationPages(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func fetchServiceusageServiceMonitoringConsumerDestinations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	p := parent.Item.(*serviceusage.GoogleApiServiceusageV1Service)
+	if p.Config == nil || p.Config.Monitoring == nil {
+		return nil
+	}
+	res <- p.Config.Monitoring.ConsumerDestinations
+	return nil
 }
-func fetchServiceusageServiceConfigDocumentationRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func fetchServiceusageServiceMonitoringProducerDestinations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	p := parent.Item.(*serviceusage.GoogleApiServiceusageV1Service)
+	if p.Config == nil || p.Config.Monitoring == nil {
+		return nil
+	}
+	res <- p.Config.Monitoring.ProducerDestinations
+	return nil
 }
-func fetchServiceusageServiceConfigEndpoints(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func fetchServiceusageServiceQuotaLimits(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	p := parent.Item.(*serviceusage.GoogleApiServiceusageV1Service)
+	if p.Config == nil || p.Config.Quota == nil {
+		return nil
+	}
+	res <- p.Config.Quota.Limits
+	return nil
 }
-func fetchServiceusageServiceConfigMonitoredResources(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func fetchServiceusageServiceQuotaMetricRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	p := parent.Item.(*serviceusage.GoogleApiServiceusageV1Service)
+	if p.Config == nil || p.Config.Quota == nil {
+		return nil
+	}
+	res <- p.Config.Quota.MetricRules
+	return nil
 }
-func fetchServiceusageServiceConfigMonitoredResourceLabels(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
-}
-func fetchServiceusageServiceConfigMonitoringConsumerDestinations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
-}
-func fetchServiceusageServiceConfigMonitoringProducerDestinations(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
-}
-func fetchServiceusageServiceConfigQuotaLimits(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
-}
-func fetchServiceusageServiceConfigQuotaMetricRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
-}
-func fetchServiceusageServiceConfigUsageRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	panic("not implemented")
+func fetchServiceusageServiceUsageRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	p := parent.Item.(*serviceusage.GoogleApiServiceusageV1Service)
+	if p.Config == nil || p.Config.Usage == nil {
+		return nil
+	}
+	res <- p.Config.Usage.Rules
+	return nil
 }

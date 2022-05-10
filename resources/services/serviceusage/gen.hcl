@@ -24,11 +24,61 @@ resource "gcp" "serviceusage" "services" {
     path = "github.com/cloudquery/cq-provider-gcp/client.DeleteProjectFilter"
   }
 
-
-  relation "gcp" "serviceusage" "config_documentation_pages" {
-    column "subpages" {
-      type = "json"
+  userDefinedColumn "project_id" {
+    type        = "string"
+    description = "GCP Project Id of the resource"
+    resolver "resolveResourceProject" {
+      path = "github.com/cloudquery/cq-provider-gcp/client.ResolveProject"
     }
   }
+  options {
+    primary_keys = ["name"]
+  }
+  column "name" {
+    skip = true
+  }
+  userDefinedColumn "name"{
+    type = "string"
+    resolver "pathResolver" {
+      path = "github.com/cloudquery/cq-provider-sdk/provider/schema.PathResolver"
+      params = ["Config.Name"]
+    }
+  }
+  column "config" {
+    skip_prefix = true
+  }
+  column "documentation" {
+    type = "json"
+    generate_resolver = true
+  }
+
+  column "authentication" {
+    type = "json"
+    generate_resolver = true
+  }
+  relation "gcp" "serviceusage" "monitored_resources" {
+    column "labels" {
+      type = "json"
+      generate_resolver = true
+    }
+  }
+
+  relation "gcp" "serviceusage" "apis" {
+    column "methods" {
+      type = "json"
+      generate_resolver = true
+    }
+
+    column "mixins" {
+      type = "json"
+      generate_resolver = true
+    }
+    column "options" {
+      type = "json"
+      generate_resolver = true
+    }
+  }
+
+
 }
 
