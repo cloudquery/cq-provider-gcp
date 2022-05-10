@@ -225,9 +225,10 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_serviceusage_service_monitoring_producer_destinations",
-				Description: "Configuration of a specific monitoring destination (the producer project or the consumer project)",
-				Resolver:    fetchServiceusageServiceMonitoringProducerDestinations,
+				Name:          "gcp_serviceusage_service_monitoring_producer_destinations",
+				Description:   "Configuration of a specific monitoring destination (the producer project or the consumer project)",
+				Resolver:      fetchServiceusageServiceMonitoringProducerDestinations,
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
