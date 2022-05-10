@@ -75,9 +75,10 @@ func Services() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:        "gcp_serviceusage_service_apis",
-				Description: "Api is a light-weight descriptor for an API Interface Interfaces are also described as \"protocol buffer services\" in some contexts, such as by the \"service\" keyword in a proto file, but they are different from API Services, which represent a concrete implementation of an interface as opposed to simply a description of methods and bindings",
-				Resolver:    fetchServiceusageServiceApis,
+				Name:          "gcp_serviceusage_service_apis",
+				Description:   "Api is a light-weight descriptor for an API Interface Interfaces are also described as \"protocol buffer services\" in some contexts, such as by the \"service\" keyword in a proto file, but they are different from API Services, which represent a concrete implementation of an interface as opposed to simply a description of methods and bindings",
+				Resolver:      fetchServiceusageServiceApis,
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -127,9 +128,10 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_serviceusage_service_endpoints",
-				Description: "`Endpoint` describes a network address of a service that serves a set of APIs",
-				Resolver:    fetchServiceusageServiceEndpoints,
+				Name:          "gcp_serviceusage_service_endpoints",
+				Description:   "`Endpoint` describes a network address of a service that serves a set of APIs",
+				Resolver:      fetchServiceusageServiceEndpoints,
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -199,9 +201,10 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_serviceusage_service_monitoring_consumer_destinations",
-				Description: "Configuration of a specific monitoring destination (the producer project or the consumer project)",
-				Resolver:    fetchServiceusageServiceMonitoringConsumerDestinations,
+				Name:          "gcp_serviceusage_service_monitoring_consumer_destinations",
+				Description:   "Configuration of a specific monitoring destination (the producer project or the consumer project)",
+				Resolver:      fetchServiceusageServiceMonitoringConsumerDestinations,
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -245,9 +248,10 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_serviceusage_service_quota_limits",
-				Description: "`QuotaLimit` defines a specific limit that applies over a specified duration for a limit type",
-				Resolver:    fetchServiceusageServiceQuotaLimits,
+				Name:          "gcp_serviceusage_service_quota_limits",
+				Description:   "`QuotaLimit` defines a specific limit that applies over a specified duration for a limit type",
+				Resolver:      fetchServiceusageServiceQuotaLimits,
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -308,9 +312,10 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_serviceusage_service_quota_metric_rules",
-				Description: "Bind API methods to metrics",
-				Resolver:    fetchServiceusageServiceQuotaMetricRules,
+				Name:          "gcp_serviceusage_service_quota_metric_rules",
+				Description:   "Bind API methods to metrics",
+				Resolver:      fetchServiceusageServiceQuotaMetricRules,
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -331,9 +336,10 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_serviceusage_service_usage_rules",
-				Description: "Usage configuration rules for the service",
-				Resolver:    fetchServiceusageServiceUsageRules,
+				Name:          "gcp_serviceusage_service_usage_rules",
+				Description:   "Usage configuration rules for the service",
+				Resolver:      fetchServiceusageServiceUsageRules,
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
