@@ -5,7 +5,7 @@
 | Name        | Type           | Description  |
 | ------------- | ------------- | -----  |
 |service_cq_id|uuid|Unique CloudQuery ID of gcp_serviceusage_services table (FK)|
-|default_limit|bigint|Default number of tokens that can be consumed during the specified duration|
+|default_limit|integer|Default number of tokens that can be consumed during the specified duration|
 |description|text|Optional|
 |display_name|text|User-visible display name for this limit|
 |duration|text|Duration of this limit in textual notation|
