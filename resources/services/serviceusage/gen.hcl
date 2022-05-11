@@ -37,10 +37,10 @@ resource "gcp" "serviceusage" "services" {
   column "name" {
     skip = true
   }
-  userDefinedColumn "name"{
+  userDefinedColumn "name" {
     type = "string"
     resolver "pathResolver" {
-      path = "github.com/cloudquery/cq-provider-sdk/provider/schema.PathResolver"
+      path   = "github.com/cloudquery/cq-provider-sdk/provider/schema.PathResolver"
       params = ["Config.Name"]
     }
   }
@@ -48,37 +48,42 @@ resource "gcp" "serviceusage" "services" {
     skip_prefix = true
   }
   column "documentation" {
-    type = "json"
+    type              = "json"
     generate_resolver = true
   }
 
   column "authentication" {
-    type = "json"
+    type              = "json"
     generate_resolver = true
   }
   relation "gcp" "serviceusage" "monitored_resources" {
     column "labels" {
-      type = "json"
+      type              = "json"
       generate_resolver = true
     }
   }
 
   relation "gcp" "serviceusage" "apis" {
     column "methods" {
-      type = "json"
+      type              = "json"
       generate_resolver = true
     }
 
     column "mixins" {
-      type = "json"
+      type              = "json"
       generate_resolver = true
     }
     column "options" {
-      type = "json"
+      type              = "json"
       generate_resolver = true
     }
   }
 
-
+  relation "gcp" "serviceusage" "quota_limits" {
+    column "default_limit" {
+      type              = "int"
+      generate_resolver = true
+    }
+  }
 }
 

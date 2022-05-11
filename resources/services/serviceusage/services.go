@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
+	"github.com/cloudquery/cq-provider-sdk/provider/diag"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	serviceusage "google.golang.org/api/serviceusage/v1"
 )
@@ -263,7 +264,8 @@ func Services() *schema.Table {
 					{
 						Name:        "default_limit",
 						Description: "Default number of tokens that can be consumed during the specified duration",
-						Type:        schema.TypeBigInt,
+						Type:        schema.TypeInt,
+						Resolver:    resolveServiceQuotaLimitsDefaultLimit,
 					},
 					{
 						Name:        "description",
@@ -380,7 +382,7 @@ func fetchServiceusageServices(ctx context.Context, meta schema.ClientMeta, pare
 		call := c.Services.ServiceUsage.Services.List(fmt.Sprintf("projects/%s", c.ProjectId)).PageToken(nextPageToken)
 		list, err := c.RetryingDo(ctx, call)
 		if err != nil {
-			return err
+			return diag.WrapError(err)
 		}
 		output := list.(*serviceusage.ListServicesResponse)
 
@@ -400,7 +402,7 @@ func resolveServicesAuthentication(ctx context.Context, meta schema.ClientMeta, 
 	}
 	j, err := json.Marshal(p.Config.Authentication)
 	if err != nil {
-		return err
+		return diag.WrapError(err)
 	}
 	return resource.Set(c.Name, j)
 }
@@ -411,7 +413,7 @@ func resolveServicesDocumentation(ctx context.Context, meta schema.ClientMeta, r
 	}
 	j, err := json.Marshal(p.Config.Documentation)
 	if err != nil {
-		return err
+		return diag.WrapError(err)
 	}
 	return resource.Set(c.Name, j)
 }
@@ -427,7 +429,7 @@ func resolveServiceApisMethods(ctx context.Context, meta schema.ClientMeta, reso
 	p := resource.Item.(*serviceusage.Api)
 	j, err := json.Marshal(p.Methods)
 	if err != nil {
-		return err
+		return diag.WrapError(err)
 	}
 	return resource.Set(c.Name, j)
 }
@@ -435,7 +437,7 @@ func resolveServiceApisMixins(ctx context.Context, meta schema.ClientMeta, resou
 	p := resource.Item.(*serviceusage.Api)
 	j, err := json.Marshal(p.Mixins)
 	if err != nil {
-		return err
+		return diag.WrapError(err)
 	}
 	return resource.Set(c.Name, j)
 }
@@ -443,7 +445,7 @@ func resolveServiceApisOptions(ctx context.Context, meta schema.ClientMeta, reso
 	p := resource.Item.(*serviceusage.Api)
 	j, err := json.Marshal(p.Options)
 	if err != nil {
-		return err
+		return diag.WrapError(err)
 	}
 	return resource.Set(c.Name, j)
 }
@@ -467,7 +469,7 @@ func resolveServiceMonitoredResourcesLabels(ctx context.Context, meta schema.Cli
 	p := resource.Item.(*serviceusage.MonitoredResourceDescriptor)
 	j, err := json.Marshal(p.Labels)
 	if err != nil {
-		return err
+		return diag.WrapError(err)
 	}
 	return resource.Set(c.Name, j)
 }
@@ -494,6 +496,10 @@ func fetchServiceusageServiceQuotaLimits(ctx context.Context, meta schema.Client
 	}
 	res <- p.Config.Quota.Limits
 	return nil
+}
+func resolveServiceQuotaLimitsDefaultLimit(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
+	p := resource.Item.(*serviceusage.QuotaLimit)
+	return resource.Set(c.Name, int32(p.DefaultLimit))
 }
 func fetchServiceusageServiceQuotaMetricRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p := parent.Item.(*serviceusage.GoogleApiServiceusageV1Service)

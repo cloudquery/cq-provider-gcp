@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS "gcp_serviceusage_service_quota_limits" (
 	"cq_id" uuid NOT NULL,
 	"cq_meta" jsonb,
 	"service_cq_id" uuid,
-	"default_limit" bigint,
+	"default_limit" int,
 	"description" text,
 	"display_name" text,
 	"duration" text,
