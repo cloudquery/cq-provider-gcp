@@ -14,6 +14,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 -->
 
+### [0.7.3](https://github.com/cloudquery/cq-provider-gcp/compare/v0.7.2...v0.7.3) (2022-05-15)
+
+
+### Features
+
+* Added InstanceGroups ([#186](https://github.com/cloudquery/cq-provider-gcp/issues/186)) ([7c049cd](https://github.com/cloudquery/cq-provider-gcp/commit/7c049cda3cae79f3b1f04a6a733d7e23f254c24c))
+* Added serviceusage_services ([#249](https://github.com/cloudquery/cq-provider-gcp/issues/249)) ([df90b8f](https://github.com/cloudquery/cq-provider-gcp/commit/df90b8f759dc64117788a3265904afbb44331a63))
+
 ### [0.7.2](https://github.com/cloudquery/cq-provider-gcp/compare/v0.7.1...v0.7.2) (2022-05-10)
 
 
