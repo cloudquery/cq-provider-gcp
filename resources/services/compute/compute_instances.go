@@ -12,7 +12,7 @@ func ComputeInstances() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_instances",
 		Description:  "Represents an Instance resource  An instance is a virtual machine that is hosted on Google Cloud Platform For more information, read Virtual Machine Instances",
-		Resolver:     fetchComputeInstances,
+		Resolver:     client.RequireEnabledServices(fetchComputeInstances, client.ComputeService),
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,

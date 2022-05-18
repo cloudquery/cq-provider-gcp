@@ -12,7 +12,7 @@ func ComputeNetworks() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_networks",
 		Description:  "Represents a VPC Network resource  Networks connect resources to each other and to the internet",
-		Resolver:     fetchComputeNetworks,
+		Resolver:     client.RequireEnabledServices(fetchComputeNetworks, client.ComputeService),
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,

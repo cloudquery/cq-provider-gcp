@@ -12,7 +12,7 @@ func SQLInstances() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_sql_instances",
 		Description:  "A Cloud SQL instance resource",
-		Resolver:     fetchSqlInstances,
+		Resolver:     client.RequireEnabledServices(fetchSqlInstances, client.SqlAdminService),
 		Multiplex:    client.ProjectMultiplex,
 		DeleteFilter: client.DeleteProjectFilter,
 		IgnoreError:  client.IgnoreErrorHandler,

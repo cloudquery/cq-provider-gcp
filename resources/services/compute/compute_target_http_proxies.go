@@ -12,7 +12,7 @@ func ComputeTargetHTTPProxies() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_target_http_proxies",
 		Description:  "Represents a Target HTTP Proxy resource",
-		Resolver:     fetchComputeTargetHttpProxies,
+		Resolver:     client.RequireEnabledServices(fetchComputeTargetHttpProxies, client.ComputeService),
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,

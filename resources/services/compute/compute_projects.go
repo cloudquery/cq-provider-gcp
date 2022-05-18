@@ -13,7 +13,7 @@ func ComputeProjects() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_projects",
 		Description:  "Represents a Project resource which is used to organize resources in a Google Cloud Platform environment",
-		Resolver:     fetchComputeProjects,
+		Resolver:     client.RequireEnabledServices(fetchComputeProjects, client.ComputeService),
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,

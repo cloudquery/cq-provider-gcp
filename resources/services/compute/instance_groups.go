@@ -14,7 +14,7 @@ func InstanceGroups() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_instance_groups",
 		Description:  "Represents an Instance Group resource",
-		Resolver:     fetchComputeInstanceGroups,
+		Resolver:     client.RequireEnabledServices(fetchComputeInstanceGroups, client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		Multiplex:    client.ProjectMultiplex,
 		DeleteFilter: client.DeleteProjectFilter,

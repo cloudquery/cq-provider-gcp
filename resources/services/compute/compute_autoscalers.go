@@ -12,7 +12,7 @@ func ComputeAutoscalers() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_autoscalers",
 		Description:  "Represents an Autoscaler resource.",
-		Resolver:     fetchComputeAutoscalers,
+		Resolver:     client.RequireEnabledServices(fetchComputeAutoscalers, client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		Multiplex:    client.ProjectMultiplex,
 		DeleteFilter: client.DeleteProjectFilter,
