@@ -12,7 +12,7 @@ func ComputeAddresses() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_addresses",
 		Description:  "Addresses for GFE-based external HTTP(S) load balancers.",
-		Resolver:     fetchComputeAddresses,
+		Resolver:     client.RequireEnabledServices(fetchComputeAddresses, client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		Multiplex:    client.ProjectMultiplex,
 		DeleteFilter: client.DeleteProjectFilter,

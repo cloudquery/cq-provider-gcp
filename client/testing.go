@@ -32,6 +32,23 @@ func GcpMockTestHelper(t *testing.T, table *schema.Table, createService func() (
 				c := NewGcpClient(logging.New(&hclog.LoggerOptions{
 					Level: hclog.Warn,
 				}), BackoffSettings{}, []string{"testProject"}, svc)
+				c.EnabledServices = map[string]map[GcpService]struct{}{
+					"testProject": {
+						BigQueryService:             struct{}{},
+						CloudBillingService:         struct{}{},
+						CloudFunctionsService:       struct{}{},
+						CloudKmsService:             struct{}{},
+						CloudResourceManagerService: struct{}{},
+						ComputeService:              struct{}{},
+						DnsService:                  struct{}{},
+						DomainsService:              struct{}{},
+						IamService:                  struct{}{},
+						LoggingService:              struct{}{},
+						MonitoringService:           struct{}{},
+						SqlAdminService:             struct{}{},
+						StorageService:              struct{}{},
+					},
+				}
 				return c, nil
 			},
 			ResourceMap: map[string]*schema.Table{

@@ -12,7 +12,7 @@ func ComputeForwardingRules() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_forwarding_rules",
 		Description:  "Represents a Forwarding Rule resource  Forwarding rule resources in GCP can be either regional or global.",
-		Resolver:     fetchComputeForwardingRules,
+		Resolver:     client.RequireEnabledServices(fetchComputeForwardingRules, client.ComputeService),
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,

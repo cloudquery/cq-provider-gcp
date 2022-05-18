@@ -22,7 +22,7 @@ const MAX_GOROUTINES = 10
 func Accounts() *schema.Table {
 	return &schema.Table{
 		Name:          "gcp_cloudbilling_accounts",
-		Resolver:      fetchBillingAccounts,
+		Resolver:      client.RequireEnabledServices(fetchBillingAccounts, client.CloudBillingService),
 		Multiplex:     client.ProjectMultiplex,
 		IgnoreError:   client.IgnoreErrorHandler,
 		DeleteFilter:  client.DeleteProjectFilter,

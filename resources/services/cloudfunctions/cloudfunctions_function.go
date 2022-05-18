@@ -12,7 +12,7 @@ func CloudfunctionsFunction() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_cloudfunctions_functions",
 		Description:  "Describes a Cloud Function that contains user computation executed in response to an event It encapsulate function and triggers configurations",
-		Resolver:     fetchCloudfunctionsFunctions,
+		Resolver:     client.RequireEnabledServices(fetchCloudfunctionsFunctions, client.CloudFunctionsService),
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,

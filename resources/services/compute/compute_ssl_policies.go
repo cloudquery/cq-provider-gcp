@@ -13,7 +13,7 @@ func ComputeSslPolicies() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_ssl_policies",
 		Description:  "Represents an SSL Policy resource",
-		Resolver:     fetchComputeSslPolicies,
+		Resolver:     client.RequireEnabledServices(fetchComputeSslPolicies, client.ComputeService),
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,

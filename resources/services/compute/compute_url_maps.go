@@ -14,7 +14,7 @@ func ComputeURLMaps() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_url_maps",
 		Description:  "Represents a URL Map resource",
-		Resolver:     fetchComputeUrlMaps,
+		Resolver:     client.RequireEnabledServices(fetchComputeUrlMaps, client.ComputeService),
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,

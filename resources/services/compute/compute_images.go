@@ -12,7 +12,7 @@ func ComputeImages() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_images",
 		Description:  "Represents an Image resource  You can use images to create boot disks for your VM instances",
-		Resolver:     fetchComputeImages,
+		Resolver:     client.RequireEnabledServices(fetchComputeImages, client.ComputeService),
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,

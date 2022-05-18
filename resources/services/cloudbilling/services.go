@@ -13,7 +13,7 @@ func Services() *schema.Table {
 	return &schema.Table{
 		Name:          "gcp_cloudbilling_services",
 		Description:   "Encapsulates a single service in Google Cloud Platform",
-		Resolver:      fetchCloudbillingServices,
+		Resolver:      client.RequireEnabledServices(fetchCloudbillingServices, client.CloudBillingService),
 		IgnoreError:   client.IgnoreErrorHandler,
 		IgnoreInTests: true,
 		Global:        true,

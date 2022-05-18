@@ -12,7 +12,7 @@ func ComputeFirewalls() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_firewalls",
 		Description:  "Represents a Firewall Rule resource  Firewall rules allow or deny ingress traffic to, and egress traffic from your instances For more information, read Firewall rules",
-		Resolver:     fetchComputeFirewalls,
+		Resolver:     client.RequireEnabledServices(fetchComputeFirewalls, client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		Multiplex:    client.ProjectMultiplex,
 		DeleteFilter: client.DeleteProjectFilter,
