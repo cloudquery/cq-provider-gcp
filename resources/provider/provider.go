@@ -3,6 +3,7 @@ package provider
 import (
 	"embed"
 
+	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/bigquery"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/cloudbilling"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/cloudfunctions"
@@ -17,8 +18,6 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/resources/services/serviceusage"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/sql"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/storage"
-
-	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 )

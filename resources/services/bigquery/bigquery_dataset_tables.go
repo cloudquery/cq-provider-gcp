@@ -441,7 +441,6 @@ func listBigqueryDatasetTables(ctx context.Context, meta schema.ClientMeta, pare
 					return fetchBigqueryDatasetTables(ctx, c, p, t, res)
 				})
 			}(t)
-
 		}
 		err = errs.Wait()
 		if err != nil {
@@ -464,7 +463,6 @@ func fetchBigqueryDatasetTables(ctx context.Context, c *client.Client, p *bigque
 	}
 	res <- item.(*bigquery.Table)
 	return nil
-
 }
 
 func resolveBigqueryDatasetTableExternalDataConfigurationSchema(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
