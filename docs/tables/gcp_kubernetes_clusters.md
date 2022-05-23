@@ -1,5 +1,5 @@
 
-# Table: gcp_container_clusters
+# Table: gcp_kubernetes_clusters
 A Google Kubernetes Engine cluster
 ## Columns
 | Name        | Type           | Description  |

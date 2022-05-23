@@ -1,10 +1,10 @@
 
-# Table: gcp_container_cluster_node_pools
+# Table: gcp_kubernetes_cluster_node_pools
 NodePool contains the name and configuration for a cluster's node pool
 ## Columns
 | Name        | Type           | Description  |
 | ------------- | ------------- | -----  |
-|cluster_cq_id|uuid|Unique CloudQuery ID of gcp_container_clusters table (FK)|
+|cluster_cq_id|uuid|Unique CloudQuery ID of gcp_kubernetes_clusters table (FK)|
 |autoscaling_autoprovisioned|boolean|Can this node pool be deleted automatically|
 |autoscaling_enabled|boolean|Is autoscaling enabled for this node pool|
 |autoscaling_max_node_count|bigint|Maximum number of nodes in the NodePool|
