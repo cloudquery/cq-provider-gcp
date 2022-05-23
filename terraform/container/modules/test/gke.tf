@@ -20,7 +20,7 @@ locals {
 module "gke" {
   source                     = "terraform-google-modules/kubernetes-engine/google"
   project_id                 = var.project_id
-  name                       = "${local.cluster_type}"
+  name                       = local.cluster_type
   region                     = var.region
   zones                      = var.zones
   network                    = module.gcp-network.network_name
@@ -37,16 +37,21 @@ module "gke" {
   node_pools = [
     {
       name               = "${lower(var.prefix)}-example-gke-pool-1"
-      machine_type       = "e2-medium"
+      machine_type       = "e2-micro"
       min_count          = 1
       max_count          = 1
+      local_ssd_count    = 0
+      disk_size_gb       = 10
+      disk_type          = "pd-standard"
+      image_type         = "COS_CONTAINERD"
       service_account    = "${lower(var.prefix)}-example-gke-service-account@${var.project_id}.iam.gserviceaccount.com"
       auto_upgrade       = true
       initial_node_count = 1
+      preemptible        = true
     },
     {
       name               = "default-node-pool"
-      machine_type       = "e2-medium"
+      machine_type       = "e2-micro"
       node_locations     = "us-east1-b,us-east1-c"
       min_count          = 1
       max_count          = 2
@@ -58,7 +63,7 @@ module "gke" {
       auto_repair        = true
       auto_upgrade       = true
       service_account    = "${lower(var.prefix)}-example-gke-service-account@${var.project_id}.iam.gserviceaccount.com"
-      preemptible        = false
+      preemptible        = true
       initial_node_count = 1
     },
   ]
