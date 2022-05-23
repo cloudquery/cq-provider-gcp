@@ -700,7 +700,7 @@ func Clusters() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_container_cluster_master_authorized_networks_config_cidr_blocks",
+				Name:        "gcp_container_cluster_master_authorized_networks_cidr_blocks",
 				Description: "CidrBlock contains an optional name and one CIDR block",
 				Resolver:    fetchContainerClusterMasterAuthorizedNetworksConfigCidrBlocks,
 				Columns: []schema.Column{

@@ -1,5 +1,5 @@
 
-# Table: gcp_container_cluster_master_authorized_networks_config_cidr_blocks
+# Table: gcp_container_cluster_master_authorized_networks_cidr_blocks
 CidrBlock contains an optional name and one CIDR block
 ## Columns
 | Name        | Type           | Description  |
