@@ -1,4 +1,4 @@
-package container
+package kubernetes
 
 import (
 	"context"
@@ -12,9 +12,9 @@ import (
 //go:generate cq-gen --resource clusters --config gen.hcl --output .
 func Clusters() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_container_clusters",
+		Name:         "gcp_kubernetes_clusters",
 		Description:  "A Google Kubernetes Engine cluster",
-		Resolver:     fetchContainerClusters,
+		Resolver:     fetchKubernetesClusters,
 		Multiplex:    client.ProjectMultiplex,
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
@@ -644,13 +644,13 @@ func Clusters() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:        "gcp_container_cluster_autoscaling_resource_limits",
+				Name:        "gcp_kubernetes_cluster_autoscaling_resource_limits",
 				Description: "Contains information about amount of some resource in the cluster",
-				Resolver:    fetchContainerClusterAutoscalingResourceLimits,
+				Resolver:    fetchKubernetesClusterAutoscalingResourceLimits,
 				Columns: []schema.Column{
 					{
 						Name:        "cluster_cq_id",
-						Description: "Unique CloudQuery ID of gcp_container_clusters table (FK)",
+						Description: "Unique CloudQuery ID of gcp_kubernetes_clusters table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
 					},
@@ -672,13 +672,13 @@ func Clusters() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_container_cluster_conditions",
+				Name:        "gcp_kubernetes_cluster_conditions",
 				Description: "StatusCondition describes why a cluster or a node pool has a certain status (eg, ERROR or DEGRADED)",
-				Resolver:    fetchContainerClusterConditions,
+				Resolver:    fetchKubernetesClusterConditions,
 				Columns: []schema.Column{
 					{
 						Name:        "cluster_cq_id",
-						Description: "Unique CloudQuery ID of gcp_container_clusters table (FK)",
+						Description: "Unique CloudQuery ID of gcp_kubernetes_clusters table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
 					},
@@ -700,13 +700,13 @@ func Clusters() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_container_cluster_master_authorized_networks_cidr_blocks",
+				Name:        "gcp_kubernetes_cluster_master_authorized_networks_cidr_blocks",
 				Description: "CidrBlock contains an optional name and one CIDR block",
-				Resolver:    fetchContainerClusterMasterAuthorizedNetworksConfigCidrBlocks,
+				Resolver:    fetchKubernetesClusterMasterAuthorizedNetworksConfigCidrBlocks,
 				Columns: []schema.Column{
 					{
 						Name:        "cluster_cq_id",
-						Description: "Unique CloudQuery ID of gcp_container_clusters table (FK)",
+						Description: "Unique CloudQuery ID of gcp_kubernetes_clusters table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
 					},
@@ -725,13 +725,13 @@ func Clusters() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_container_cluster_node_pools",
+				Name:        "gcp_kubernetes_cluster_node_pools",
 				Description: "NodePool contains the name and configuration for a cluster's node pool",
-				Resolver:    fetchContainerClusterNodePools,
+				Resolver:    fetchKubernetesClusterNodePools,
 				Columns: []schema.Column{
 					{
 						Name:        "cluster_cq_id",
-						Description: "Unique CloudQuery ID of gcp_container_clusters table (FK)",
+						Description: "Unique CloudQuery ID of gcp_kubernetes_clusters table (FK)",
 						Type:        schema.TypeUUID,
 						Resolver:    schema.ParentIdResolver,
 					},
@@ -1030,13 +1030,13 @@ func Clusters() *schema.Table {
 				},
 				Relations: []*schema.Table{
 					{
-						Name:        "gcp_container_cluster_node_pool_conditions",
+						Name:        "gcp_kubernetes_cluster_node_pool_conditions",
 						Description: "StatusCondition describes why a cluster or a node pool has a certain status (eg, ERROR or DEGRADED)",
-						Resolver:    fetchContainerClusterNodePoolConditions,
+						Resolver:    fetchKubernetesClusterNodePoolConditions,
 						Columns: []schema.Column{
 							{
 								Name:        "cluster_node_pool_cq_id",
-								Description: "Unique CloudQuery ID of gcp_container_cluster_node_pools table (FK)",
+								Description: "Unique CloudQuery ID of gcp_kubernetes_cluster_node_pools table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1058,13 +1058,13 @@ func Clusters() *schema.Table {
 						},
 					},
 					{
-						Name:        "gcp_container_cluster_node_pool_config_taints",
+						Name:        "gcp_kubernetes_cluster_node_pool_config_taints",
 						Description: "key, value, and effect",
-						Resolver:    fetchContainerClusterNodePoolConfigTaints,
+						Resolver:    fetchKubernetesClusterNodePoolConfigTaints,
 						Columns: []schema.Column{
 							{
 								Name:        "cluster_node_pool_cq_id",
-								Description: "Unique CloudQuery ID of gcp_container_cluster_node_pools table (FK)",
+								Description: "Unique CloudQuery ID of gcp_kubernetes_cluster_node_pools table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -1095,7 +1095,7 @@ func Clusters() *schema.Table {
 //                                               Table Resolver Functions
 // ====================================================================================================================
 
-func fetchContainerClusters(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+func fetchKubernetesClusters(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
 	call := c.Services.Container.Projects.Locations.Clusters.List("projects/" + c.ProjectId + "/locations/-")
 	list, err := c.RetryingDo(ctx, call)
@@ -1116,7 +1116,7 @@ func castParentToCluster(parent *schema.Resource) (*container.Cluster, error) {
 	return p, nil
 }
 
-func fetchContainerClusterAutoscalingResourceLimits(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+func fetchKubernetesClusterAutoscalingResourceLimits(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, err := castParentToCluster(parent)
 
 	if err == nil {
@@ -1126,7 +1126,7 @@ func fetchContainerClusterAutoscalingResourceLimits(ctx context.Context, meta sc
 	return err
 }
 
-func fetchContainerClusterConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+func fetchKubernetesClusterConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, err := castParentToCluster(parent)
 
 	if err == nil {
@@ -1136,7 +1136,7 @@ func fetchContainerClusterConditions(ctx context.Context, meta schema.ClientMeta
 	return err
 }
 
-func fetchContainerClusterMasterAuthorizedNetworksConfigCidrBlocks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+func fetchKubernetesClusterMasterAuthorizedNetworksConfigCidrBlocks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, err := castParentToCluster(parent)
 
 	if err == nil {
@@ -1146,7 +1146,7 @@ func fetchContainerClusterMasterAuthorizedNetworksConfigCidrBlocks(ctx context.C
 	return err
 }
 
-func fetchContainerClusterNodePools(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+func fetchKubernetesClusterNodePools(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, err := castParentToCluster(parent)
 
 	if err == nil {
@@ -1164,7 +1164,7 @@ func castParentToNodePool(parent *schema.Resource) (*container.NodePool, error) 
 	return p, nil
 }
 
-func fetchContainerClusterNodePoolConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+func fetchKubernetesClusterNodePoolConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, err := castParentToNodePool(parent)
 
 	if err == nil {
@@ -1174,7 +1174,7 @@ func fetchContainerClusterNodePoolConditions(ctx context.Context, meta schema.Cl
 	return err
 }
 
-func fetchContainerClusterNodePoolConfigTaints(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+func fetchKubernetesClusterNodePoolConfigTaints(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	p, err := castParentToNodePool(parent)
 
 	if err == nil {

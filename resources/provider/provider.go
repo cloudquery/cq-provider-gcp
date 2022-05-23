@@ -6,11 +6,11 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/resources/services/cloudbilling"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/cloudfunctions"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/compute"
-	"github.com/cloudquery/cq-provider-gcp/resources/services/container"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/dns"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/domains"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/iam"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/kms"
+	"github.com/cloudquery/cq-provider-gcp/resources/services/kubernetes"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/logging"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/monitoring"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/resource_manager"
@@ -71,7 +71,7 @@ func Provider() *provider.Provider {
 			"sql.instances":         sql.SQLInstances(),
 			"domains.registrations": domains.DomainsRegistration(),
 			"bigquery.datasets":     bigquery.BigqueryDatasets(),
-			"container.clusters":    container.Clusters(),
+			"kubernetes.clusters":   kubernetes.Clusters(),
 		},
 		Config: func() provider.Config {
 			return &client.Config{}

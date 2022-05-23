@@ -12,7 +12,7 @@ description_modifier "remove_field_name" {
 }
 
 
-resource "gcp" "container" "clusters" {
+resource "gcp" "kubernetes" "clusters" {
   path = "google.golang.org/api/container/v1.Cluster"
   ignoreError "IgnoreError" {
     path = "github.com/cloudquery/cq-provider-gcp/client.IgnoreErrorHandler"
