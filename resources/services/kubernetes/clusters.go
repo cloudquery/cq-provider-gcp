@@ -2,7 +2,6 @@ package kubernetes
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
@@ -1108,78 +1107,59 @@ func fetchKubernetesClusters(ctx context.Context, meta schema.ClientMeta, parent
 	return nil
 }
 
-func castParentToCluster(parent *schema.Resource) (*container.Cluster, error) {
-	p, ok := parent.Item.(*container.Cluster)
-	if !ok {
-		return nil, fmt.Errorf("expected *container.Cluster but got %T", p)
-	}
-	return p, nil
+func castParentToCluster(parent *schema.Resource) *container.Cluster {
+	p := parent.Item.(*container.Cluster)
+	return p
 }
 
 func fetchKubernetesClusterAutoscalingResourceLimits(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p, err := castParentToCluster(parent)
+	p := castParentToCluster(parent)
 
-	if err == nil {
-		res <- p.Autoscaling.ResourceLimits
-	}
+	res <- p.Autoscaling.ResourceLimits
 
-	return err
+	return nil
 }
 
 func fetchKubernetesClusterConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p, err := castParentToCluster(parent)
+	p := castParentToCluster(parent)
 
-	if err == nil {
-		res <- p.Conditions
-	}
+	res <- p.Conditions
 
-	return err
+	return nil
 }
 
 func fetchKubernetesClusterMasterAuthorizedNetworksConfigCidrBlocks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p, err := castParentToCluster(parent)
+	p := castParentToCluster(parent)
 
-	if err == nil {
-		res <- p.MasterAuthorizedNetworksConfig.CidrBlocks
-	}
+	res <- p.MasterAuthorizedNetworksConfig.CidrBlocks
 
-	return err
+	return nil
 }
 
 func fetchKubernetesClusterNodePools(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p, err := castParentToCluster(parent)
+	p := castParentToCluster(parent)
 
-	if err == nil {
-		res <- p.NodePools
-	}
+	res <- p.NodePools
 
-	return err
+	return nil
 }
 
-func castParentToNodePool(parent *schema.Resource) (*container.NodePool, error) {
-	p, ok := parent.Item.(*container.NodePool)
-	if !ok {
-		return nil, fmt.Errorf("expected *container.NodePool but got %T", p)
-	}
-	return p, nil
+func castParentToNodePool(parent *schema.Resource) *container.NodePool {
+	return parent.Item.(*container.NodePool)
 }
 
 func fetchKubernetesClusterNodePoolConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p, err := castParentToNodePool(parent)
+	p := castParentToNodePool(parent)
 
-	if err == nil {
-		res <- p.Conditions
-	}
+	res <- p.Conditions
 
-	return err
+	return nil
 }
 
 func fetchKubernetesClusterNodePoolConfigTaints(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p, err := castParentToNodePool(parent)
+	p := castParentToNodePool(parent)
 
-	if err == nil {
-		res <- p.Config.Taints
-	}
+	res <- p.Config.Taints
 
-	return err
+	return nil
 }
