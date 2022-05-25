@@ -11,9 +11,8 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/client"
 	faker "github.com/cloudquery/faker/v3"
 	"github.com/julienschmidt/httprouter"
-	"google.golang.org/api/option"
-
 	"google.golang.org/api/container/v1"
+	"google.golang.org/api/option"
 )
 
 func createClusters() (*client.Services, error) {
