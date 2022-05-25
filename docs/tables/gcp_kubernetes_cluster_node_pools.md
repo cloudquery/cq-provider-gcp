@@ -9,7 +9,8 @@ NodePool contains the name and configuration for a cluster's node pool
 |autoscaling_enabled|boolean|Is autoscaling enabled for this node pool|
 |autoscaling_max_node_count|bigint|Maximum number of nodes in the NodePool|
 |autoscaling_min_node_count|bigint|Minimum number of nodes in the NodePool|
-|config_accelerators|jsonb|AcceleratorConfig represents a Hardware Accelerator request|
+|conditions|jsonb|Which conditions caused the current node pool state|
+|config_accelerators|jsonb|A list of hardware accelerators to be attached to each node|
 |config_boot_disk_kms_key|text|The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool|
 |config_disk_size_gb|bigint|Size of the disk attached to each node, specified in GB The smallest allowed disk size is 10GB|
 |config_disk_type|text|Type of the disk attached to each node (eg|
@@ -35,6 +36,7 @@ NodePool contains the name and configuration for a cluster's node pool
 |config_shielded_instance_config_enable_integrity_monitoring|boolean|Defines whether the instance has integrity monitoring enabled|
 |config_shielded_instance_config_enable_secure_boot|boolean|Defines whether the instance has Secure Boot enabled|
 |config_tags|text[]|The list of instance tags applied to all nodes|
+|config_taints|jsonb|List of kubernetes taints to be applied to each node|
 |config_workload_metadata_config_mode|text|"MODE_UNSPECIFIED" - Not set   "GCE_METADATA" - Expose all Compute Engine metadata to pods   "GKE_METADATA" - Run the GKE Metadata Server on this node|
 |initial_node_count|bigint|The initial node count for the pool|
 |instance_group_urls|text[]|The resource URLs of the managed instance groups (https://cloudgooglecom/compute/docs/instance-groups/creating-groups-of-managed-instances) associated with this node pool|

@@ -21,8 +21,10 @@ A Google Kubernetes Engine cluster
 |autoscaling_autoprovisioning_node_pool_defaults|jsonb|AutoprovisioningNodePoolDefaults contains defaults for a node pool created by NAP|
 |autoscaling_profile|text|"PROFILE_UNSPECIFIED" - No change to autoscaling configuration   "OPTIMIZE_UTILIZATION" - Prioritize optimizing utilization of resources   "BALANCED" - Use default (balanced) autoscaling configuration|
 |autoscaling_enable_node_autoprovisioning|boolean|Enables automatic node pool creation and deletion|
+|autoscaling_resource_limits|jsonb|Contains global constraints regarding minimum and maximum amount of resources in the cluster|
 |binary_authorization_enabled|boolean|Enable Binary Authorization for this cluster|
 |cluster_ipv4_cidr|cidr|The IP address range of the container pods in this cluster, in CIDR (http://enwikipediaorg/wiki/Classless_Inter-Domain_Routing) notation (eg|
+|conditions|jsonb|Which conditions caused the current cluster state|
 |confidential_nodes_enabled|boolean|Whether Confidential Nodes feature is enabled for all nodes in this cluster|
 |create_time|timestamp without time zone|The time the cluster was created, in RFC3339 (https://wwwietforg/rfc/rfc3339txt) text format|
 |current_master_version|text|The current software version of the master endpoint|
@@ -72,6 +74,7 @@ A Google Kubernetes Engine cluster
 |master_auth_cluster_ca_certificate|text|Base64-encoded public certificate that is the root of trust for the cluster|
 |master_auth_password|text|The password to use for HTTP basic authentication to the master endpoint|
 |master_auth_username|text|The username to use for HTTP basic authentication to the master endpoint|
+|master_authorized_networks_config_cidr_blocks|jsonb|cidr_blocks define up to 50 external networks that could access Kubernetes master through HTTPS|
 |master_authorized_networks_config_enabled|boolean|Whether or not master authorized networks is enabled|
 |monitoring_config_component_config_enable_components|text[]|Select components to collect metrics|
 |monitoring_service|text|The monitoring service the cluster should use to write metrics|
