@@ -29,6 +29,7 @@ func createClusters() (*client.Services, error) {
 
 	cluster.MaintenancePolicy.Window.RecurringWindow.Window.StartTime = time.Now().Format(time.RFC3339)
 	cluster.MaintenancePolicy.Window.RecurringWindow.Window.EndTime = time.Now().Format(time.RFC3339)
+	cluster.MaintenancePolicy.Window.DailyMaintenanceWindow.StartTime = "00:00"
 
 	cluster.NodePools[0].Management.UpgradeOptions.AutoUpgradeStartTime = time.Now().Format(time.RFC3339)
 
