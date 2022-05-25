@@ -98,16 +98,18 @@ func Clusters() *schema.Table {
 				Resolver:    schema.PathResolver("Autopilot.Enabled"),
 			},
 			{
-				Name:        "autoscaling_autoprovisioning_locations",
-				Description: "The list of Google Compute Engine zones (https://cloudgooglecom/compute/docs/zones#available) in which the NodePool's nodes can be created by NAP",
-				Type:        schema.TypeStringArray,
-				Resolver:    schema.PathResolver("Autoscaling.AutoprovisioningLocations"),
+				Name:          "autoscaling_autoprovisioning_locations",
+				Description:   "The list of Google Compute Engine zones (https://cloudgooglecom/compute/docs/zones#available) in which the NodePool's nodes can be created by NAP",
+				Type:          schema.TypeStringArray,
+				Resolver:      schema.PathResolver("Autoscaling.AutoprovisioningLocations"),
+				IgnoreInTests: true,
 			},
 			{
-				Name:        "autoscaling_autoprovisioning_node_pool_defaults",
-				Description: "AutoprovisioningNodePoolDefaults contains defaults for a node pool created by NAP",
-				Type:        schema.TypeJSON,
-				Resolver:    schema.PathResolver("Autoscaling.AutoprovisioningNodePoolDefaults"),
+				Name:          "autoscaling_autoprovisioning_node_pool_defaults",
+				Description:   "AutoprovisioningNodePoolDefaults contains defaults for a node pool created by NAP",
+				Type:          schema.TypeJSON,
+				Resolver:      schema.PathResolver("Autoscaling.AutoprovisioningNodePoolDefaults"),
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "autoscaling_profile",
@@ -122,6 +124,13 @@ func Clusters() *schema.Table {
 				Resolver:    schema.PathResolver("Autoscaling.EnableNodeAutoprovisioning"),
 			},
 			{
+				Name:          "autoscaling_resource_limits",
+				Description:   "Contains global constraints regarding minimum and maximum amount of resources in the cluster",
+				Type:          schema.TypeJSON,
+				IgnoreInTests: true,
+				Resolver:      schema.PathResolver("Autoscaling.ResourceLimits"),
+			},
+			{
 				Name:        "binary_authorization_enabled",
 				Description: "Enable Binary Authorization for this cluster",
 				Type:        schema.TypeBool,
@@ -133,6 +142,12 @@ func Clusters() *schema.Table {
 				Type:          schema.TypeCIDR,
 				Resolver:      schema.IPNetResolver("ClusterIpv4Cidr"),
 				IgnoreError:   client.IgnoreErrorColumnHandler,
+				IgnoreInTests: true,
+			},
+			{
+				Name:          "conditions",
+				Description:   "Which conditions caused the current cluster state",
+				Type:          schema.TypeJSON,
 				IgnoreInTests: true,
 			},
 			{
@@ -202,10 +217,11 @@ func Clusters() *schema.Table {
 				Resolver:    schema.IPAddressResolver("Endpoint"),
 			},
 			{
-				Name:        "expire_time",
-				Description: "The time the cluster will be automatically deleted in RFC3339 (https://wwwietforg/rfc/rfc3339txt) text format",
-				Type:        schema.TypeTimestamp,
-				Resolver:    schema.DateResolver("ExpireTime"),
+				Name:          "expire_time",
+				Description:   "The time the cluster will be automatically deleted in RFC3339 (https://wwwietforg/rfc/rfc3339txt) text format",
+				Type:          schema.TypeTimestamp,
+				Resolver:      schema.DateResolver("ExpireTime"),
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "id",
@@ -371,10 +387,11 @@ func Clusters() *schema.Table {
 				Resolver: schema.DateResolver("MaintenancePolicy.Window.DailyMaintenanceWindow.StartTime", "15:04"),
 			},
 			{
-				Name:        "maintenance_policy_window_maintenance_exclusions",
-				Description: "Exceptions to maintenance window Non-emergency maintenance should not occur in these windows",
-				Type:        schema.TypeJSON,
-				Resolver:    schema.PathResolver("MaintenancePolicy.Window.MaintenanceExclusions"),
+				Name:          "maintenance_policy_window_maintenance_exclusions",
+				Description:   "Exceptions to maintenance window Non-emergency maintenance should not occur in these windows",
+				Type:          schema.TypeJSON,
+				Resolver:      schema.PathResolver("MaintenancePolicy.Window.MaintenanceExclusions"),
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "maintenance_policy_window_recurring_window_recurrence",
@@ -383,16 +400,18 @@ func Clusters() *schema.Table {
 				Resolver:    schema.PathResolver("MaintenancePolicy.Window.RecurringWindow.Recurrence"),
 			},
 			{
-				Name:        "maintenance_policy_window_recurring_window_window_end_time",
-				Description: "The time that the window ends",
-				Type:        schema.TypeTimestamp,
-				Resolver:    schema.DateResolver("MaintenancePolicy.Window.RecurringWindow.Window.EndTime"),
+				Name:          "maintenance_policy_window_recurring_window_window_end_time",
+				Description:   "The time that the window ends",
+				Type:          schema.TypeTimestamp,
+				Resolver:      schema.DateResolver("MaintenancePolicy.Window.RecurringWindow.Window.EndTime"),
+				IgnoreInTests: true,
 			},
 			{
-				Name:        "maintenance_policy_window_recurring_window_window_start_time",
-				Description: "The time that the window first starts",
-				Type:        schema.TypeTimestamp,
-				Resolver:    schema.DateResolver("MaintenancePolicy.Window.RecurringWindow.Window.StartTime"),
+				Name:          "maintenance_policy_window_recurring_window_window_start_time",
+				Description:   "The time that the window first starts",
+				Type:          schema.TypeTimestamp,
+				Resolver:      schema.DateResolver("MaintenancePolicy.Window.RecurringWindow.Window.StartTime"),
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "master_auth_client_certificate",
@@ -429,6 +448,13 @@ func Clusters() *schema.Table {
 				Description: "The username to use for HTTP basic authentication to the master endpoint",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("MasterAuth.Username"),
+			},
+			{
+				Name:          "master_authorized_networks_config_cidr_blocks",
+				Description:   "cidr_blocks define up to 50 external networks that could access Kubernetes master through HTTPS",
+				Type:          schema.TypeJSON,
+				Resolver:      schema.PathResolver("MasterAuthorizedNetworksConfig.CidrBlocks"),
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "master_authorized_networks_config_enabled",
@@ -584,14 +610,16 @@ func Clusters() *schema.Table {
 				Resolver:    schema.PathResolver("ReleaseChannel.Channel"),
 			},
 			{
-				Name:        "resource_labels",
-				Description: "The resource labels for the cluster to use to annotate any related Google Compute Engine resources",
-				Type:        schema.TypeJSON,
+				Name:          "resource_labels",
+				Description:   "The resource labels for the cluster to use to annotate any related Google Compute Engine resources",
+				Type:          schema.TypeJSON,
+				IgnoreInTests: true,
 			},
 			{
-				Name:        "resource_usage_export_config",
-				Description: "Configuration for exporting resource usages",
-				Type:        schema.TypeJSON,
+				Name:          "resource_usage_export_config",
+				Description:   "Configuration for exporting resource usages",
+				Type:          schema.TypeJSON,
+				IgnoreInTests: true,
 			},
 			{
 				Name:        "self_link",
@@ -655,88 +683,6 @@ func Clusters() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:        "gcp_kubernetes_cluster_autoscaling_resource_limits",
-				Description: "Contains information about amount of some resource in the cluster",
-				Resolver:    fetchKubernetesClusterAutoscalingResourceLimits,
-				Columns: []schema.Column{
-					{
-						Name:        "cluster_cq_id",
-						Description: "Unique CloudQuery ID of gcp_kubernetes_clusters table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "maximum",
-						Description: "Maximum amount of the resource in the cluster",
-						Type:        schema.TypeBigInt,
-					},
-					{
-						Name:        "minimum",
-						Description: "Minimum amount of the resource in the cluster",
-						Type:        schema.TypeBigInt,
-					},
-					{
-						Name:        "resource_type",
-						Description: "Resource name \"cpu\", \"memory\" or gpu-specific string",
-						Type:        schema.TypeString,
-					},
-				},
-			},
-			{
-				Name:        "gcp_kubernetes_cluster_conditions",
-				Description: "StatusCondition describes why a cluster or a node pool has a certain status (eg, ERROR or DEGRADED)",
-				Resolver:    fetchKubernetesClusterConditions,
-				Columns: []schema.Column{
-					{
-						Name:        "cluster_cq_id",
-						Description: "Unique CloudQuery ID of gcp_kubernetes_clusters table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:        "canonical_code",
-						Description: "499 Client Closed Request   \"UNKNOWN\" - Unknown error",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "code",
-						Description: "\"UNKNOWN\" - UNKNOWN indicates a generic condition   \"GCE_STOCKOUT\" - GCE_STOCKOUT indicates that Google Compute Engine resources are temporarily unavailable   \"GKE_SERVICE_ACCOUNT_DELETED\" - GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot service account   \"GCE_QUOTA_EXCEEDED\" - Google Compute Engine quota was exceeded   \"SET_BY_OPERATOR\" - Cluster state was manually changed by an SRE due to a system logic error   \"CLOUD_KMS_KEY_ERROR\" - Unable to perform an encrypt operation against the CloudKMS key used for etcd level encryption   \"CA_EXPIRING\" - Cluster CA is expiring soon",
-						Type:        schema.TypeString,
-					},
-					{
-						Name:        "message",
-						Description: "Human-friendly representation of the condition",
-						Type:        schema.TypeString,
-					},
-				},
-			},
-			{
-				Name:        "gcp_kubernetes_cluster_master_authorized_networks_cidr_blocks",
-				Description: "CidrBlock contains an optional name and one CIDR block",
-				Resolver:    fetchKubernetesClusterMasterAuthorizedNetworksConfigCidrBlocks,
-				Columns: []schema.Column{
-					{
-						Name:        "cluster_cq_id",
-						Description: "Unique CloudQuery ID of gcp_kubernetes_clusters table (FK)",
-						Type:        schema.TypeUUID,
-						Resolver:    schema.ParentIdResolver,
-					},
-					{
-						Name:          "cidr_block",
-						Description:   "cidr_block must be specified in CIDR notation",
-						Type:          schema.TypeCIDR,
-						Resolver:      schema.IPNetResolver("CidrBlock"),
-						IgnoreError:   client.IgnoreErrorColumnHandler,
-						IgnoreInTests: true,
-					},
-					{
-						Name:        "display_name",
-						Description: "display_name is an optional field for users to identify CIDR blocks",
-						Type:        schema.TypeString,
-					},
-				},
-			},
-			{
 				Name:        "gcp_kubernetes_cluster_node_pools",
 				Description: "NodePool contains the name and configuration for a cluster's node pool",
 				Resolver:    fetchKubernetesClusterNodePools,
@@ -772,10 +718,17 @@ func Clusters() *schema.Table {
 						Resolver:    schema.PathResolver("Autoscaling.MinNodeCount"),
 					},
 					{
-						Name:        "config_accelerators",
-						Description: "AcceleratorConfig represents a Hardware Accelerator request",
-						Type:        schema.TypeJSON,
-						Resolver:    schema.PathResolver("Config.Accelerators"),
+						Name:          "conditions",
+						Description:   "Which conditions caused the current node pool state",
+						Type:          schema.TypeJSON,
+						IgnoreInTests: true,
+					},
+					{
+						Name:          "config_accelerators",
+						Description:   "A list of hardware accelerators to be attached to each node",
+						Type:          schema.TypeJSON,
+						Resolver:      schema.PathResolver("Config.Accelerators"),
+						IgnoreInTests: true,
 					},
 					{
 						Name:        "config_boot_disk_kms_key",
@@ -832,10 +785,11 @@ func Clusters() *schema.Table {
 						Resolver:    schema.PathResolver("Config.Labels"),
 					},
 					{
-						Name:        "config_linux_node_config_sysctls",
-						Description: "The Linux kernel parameters to be applied to the nodes and all pods running on the nodes",
-						Type:        schema.TypeJSON,
-						Resolver:    schema.PathResolver("Config.LinuxNodeConfig.Sysctls"),
+						Name:          "config_linux_node_config_sysctls",
+						Description:   "The Linux kernel parameters to be applied to the nodes and all pods running on the nodes",
+						Type:          schema.TypeJSON,
+						Resolver:      schema.PathResolver("Config.LinuxNodeConfig.Sysctls"),
+						IgnoreInTests: true,
 					},
 					{
 						Name:        "config_local_ssd_count",
@@ -892,10 +846,11 @@ func Clusters() *schema.Table {
 						Resolver:    schema.PathResolver("Config.ReservationAffinity.Key"),
 					},
 					{
-						Name:        "config_reservation_affinity_values",
-						Description: "Corresponds to the label value(s) of reservation resource(s)",
-						Type:        schema.TypeStringArray,
-						Resolver:    schema.PathResolver("Config.ReservationAffinity.Values"),
+						Name:          "config_reservation_affinity_values",
+						Description:   "Corresponds to the label value(s) of reservation resource(s)",
+						Type:          schema.TypeStringArray,
+						Resolver:      schema.PathResolver("Config.ReservationAffinity.Values"),
+						IgnoreInTests: true,
 					},
 					{
 						Name:        "config_sandbox_config_type",
@@ -926,6 +881,13 @@ func Clusters() *schema.Table {
 						Description: "The list of instance tags applied to all nodes",
 						Type:        schema.TypeStringArray,
 						Resolver:    schema.PathResolver("Config.Tags"),
+					},
+					{
+						Name:          "config_taints",
+						Description:   "List of kubernetes taints to be applied to each node",
+						Type:          schema.TypeJSON,
+						Resolver:      schema.PathResolver("Config.Taints"),
+						IgnoreInTests: true,
 					},
 					{
 						Name:        "config_workload_metadata_config_mode",
@@ -961,10 +923,11 @@ func Clusters() *schema.Table {
 						Resolver:    schema.PathResolver("Management.AutoUpgrade"),
 					},
 					{
-						Name:        "management_upgrade_options_auto_upgrade_start_time",
-						Description: "This field is set when upgrades are about to commence with the approximate start time for the upgrades, in RFC3339 (https://wwwietforg/rfc/rfc3339txt) text format",
-						Type:        schema.TypeTimestamp,
-						Resolver:    schema.DateResolver("Management.UpgradeOptions.AutoUpgradeStartTime"),
+						Name:          "management_upgrade_options_auto_upgrade_start_time",
+						Description:   "This field is set when upgrades are about to commence with the approximate start time for the upgrades, in RFC3339 (https://wwwietforg/rfc/rfc3339txt) text format",
+						Type:          schema.TypeTimestamp,
+						Resolver:      schema.DateResolver("Management.UpgradeOptions.AutoUpgradeStartTime"),
+						IgnoreInTests: true,
 					},
 					{
 						Name:        "management_upgrade_options_description",
@@ -1041,64 +1004,6 @@ func Clusters() *schema.Table {
 						Type:        schema.TypeString,
 					},
 				},
-				Relations: []*schema.Table{
-					{
-						Name:        "gcp_kubernetes_cluster_node_pool_conditions",
-						Description: "StatusCondition describes why a cluster or a node pool has a certain status (eg, ERROR or DEGRADED)",
-						Resolver:    fetchKubernetesClusterNodePoolConditions,
-						Columns: []schema.Column{
-							{
-								Name:        "cluster_node_pool_cq_id",
-								Description: "Unique CloudQuery ID of gcp_kubernetes_cluster_node_pools table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "canonical_code",
-								Description: "499 Client Closed Request   \"UNKNOWN\" - Unknown error",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "code",
-								Description: "\"UNKNOWN\" - UNKNOWN indicates a generic condition   \"GCE_STOCKOUT\" - GCE_STOCKOUT indicates that Google Compute Engine resources are temporarily unavailable   \"GKE_SERVICE_ACCOUNT_DELETED\" - GKE_SERVICE_ACCOUNT_DELETED indicates that the user deleted their robot service account   \"GCE_QUOTA_EXCEEDED\" - Google Compute Engine quota was exceeded   \"SET_BY_OPERATOR\" - Cluster state was manually changed by an SRE due to a system logic error   \"CLOUD_KMS_KEY_ERROR\" - Unable to perform an encrypt operation against the CloudKMS key used for etcd level encryption   \"CA_EXPIRING\" - Cluster CA is expiring soon",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "message",
-								Description: "Human-friendly representation of the condition",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "gcp_kubernetes_cluster_node_pool_config_taints",
-						Description: "key, value, and effect",
-						Resolver:    fetchKubernetesClusterNodePoolConfigTaints,
-						Columns: []schema.Column{
-							{
-								Name:        "cluster_node_pool_cq_id",
-								Description: "Unique CloudQuery ID of gcp_kubernetes_cluster_node_pools table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "effect",
-								Description: "\"EFFECT_UNSPECIFIED\" - Not set   \"NO_SCHEDULE\" - NoSchedule   \"PREFER_NO_SCHEDULE\" - PreferNoSchedule   \"NO_EXECUTE\" - NoExecute",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "key",
-								Description: "Key for taint",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "value",
-								Description: "Value for taint",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-				},
 			},
 		},
 	}
@@ -1121,59 +1026,10 @@ func fetchKubernetesClusters(ctx context.Context, meta schema.ClientMeta, parent
 	return nil
 }
 
-func castParentToCluster(parent *schema.Resource) *container.Cluster {
-	p := parent.Item.(*container.Cluster)
-	return p
-}
-
-func fetchKubernetesClusterAutoscalingResourceLimits(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p := castParentToCluster(parent)
-
-	res <- p.Autoscaling.ResourceLimits
-
-	return nil
-}
-
-func fetchKubernetesClusterConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p := castParentToCluster(parent)
-
-	res <- p.Conditions
-
-	return nil
-}
-
-func fetchKubernetesClusterMasterAuthorizedNetworksConfigCidrBlocks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p := castParentToCluster(parent)
-
-	res <- p.MasterAuthorizedNetworksConfig.CidrBlocks
-
-	return nil
-}
-
 func fetchKubernetesClusterNodePools(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p := castParentToCluster(parent)
+	p := parent.Item.(*container.Cluster)
 
 	res <- p.NodePools
-
-	return nil
-}
-
-func castParentToNodePool(parent *schema.Resource) *container.NodePool {
-	return parent.Item.(*container.NodePool)
-}
-
-func fetchKubernetesClusterNodePoolConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p := castParentToNodePool(parent)
-
-	res <- p.Conditions
-
-	return nil
-}
-
-func fetchKubernetesClusterNodePoolConfigTaints(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	p := castParentToNodePool(parent)
-
-	res <- p.Config.Taints
 
 	return nil
 }
