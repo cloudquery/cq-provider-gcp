@@ -3,7 +3,6 @@ package serviceusage
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/diag"
@@ -379,21 +378,25 @@ func Services() *schema.Table {
 
 func fetchServiceusageServices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	c := meta.(*client.Client)
-	nextPageToken := ""
-	for {
-		call := c.Services.ServiceUsage.Services.List(fmt.Sprintf("projects/%s", c.ProjectId)).PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
-		if err != nil {
-			return diag.WrapError(err)
+	seen := make(map[string]struct{})
+	err := client.FetchServiceusageServices(ctx, c, false, func(result []*serviceusage.GoogleApiServiceusageV1Service) {
+		for _, item := range result {
+			if _, ok := seen[item.Config.Name]; ok {
+				continue
+			}
+			seen[item.Config.Name] = struct{}{}
+			res <- item
 		}
-		output := list.(*serviceusage.ListServicesResponse)
-
-		res <- output.Services
-
-		if output.NextPageToken == "" {
-			break
+	})
+	if err != nil {
+		return diag.WrapError(err)
+	}
+	for _, item := range c.RawEnabledResponse[c.ProjectId] {
+		if _, ok := seen[item.Config.Name]; ok {
+			continue
 		}
-		nextPageToken = output.NextPageToken
+		seen[item.Config.Name] = struct{}{}
+		res <- item
 	}
 	return nil
 }

@@ -133,27 +133,26 @@ func mockCRMFolders() (*cloudresourcemanager.FoldersService, error) {
 
 func mockServiceusageService(t *testing.T, name, state string) *serviceusage.GoogleApiServiceusageV1Service {
 	var service serviceusage.GoogleApiServiceusageV1Service
-	if err := faker.FakeDataSkipFields(&service, []string{"Config"}); err != nil {
+	if err := faker.FakeDataSkipFields(&service, []string{"Config", "ServerResponse", "ForceSendFields", "NullFields"}); err != nil {
 		t.Fatal(err)
 	}
 	service.State = state
 	service.Config = &serviceusage.GoogleApiServiceusageV1ServiceConfig{}
-	if err := faker.FakeDataSkipFields(service.Config, []string{"Documentation"}); err != nil {
+	if err := faker.FakeDataSkipFields(service.Config, []string{"Documentation", "ForceSendFields", "NullFields"}); err != nil {
 		t.Fatal(err)
 	}
 	service.Config.Name = name
 	service.Config.Documentation = &serviceusage.Documentation{}
 	service.Config.Apis[0].Methods[0].Options[0].Value = []byte("{}")
 	service.Config.Apis[0].Options[0].Value = []byte("{}")
-	if err := faker.FakeDataSkipFields(service.Config.Documentation, []string{"Pages"}); err != nil {
+	if err := faker.FakeDataSkipFields(service.Config.Documentation, []string{"Pages", "ForceSendFields", "NullFields"}); err != nil {
 		t.Fatal(err)
 	}
 	return &service
 }
 
-func createServices(t *testing.T) *Services {
+func createServices(t *testing.T, service *serviceusage.GoogleApiServiceusageV1Service) *Services {
 	ctx := context.Background()
-	service := mockServiceusageService(t, "service1", "ENABLED")
 	mux := httprouter.New()
 	mux.GET("/v1/projects/project1/services", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		resp := &serviceusage.ListServicesResponse{
@@ -182,16 +181,26 @@ func createServices(t *testing.T) *Services {
 }
 
 func TestClient_configureEnabledServices(t *testing.T) {
+	s := mockServiceusageService(t, "service1", "ENABLED")
 	cl := NewGcpClient(
 		logging.New(&hclog.LoggerOptions{
 			Level: hclog.Warn,
 		}),
 		BackoffSettings{},
 		[]string{"project1"},
-		createServices(t),
+		createServices(t, s),
 	)
 	assert.NoError(t, cl.configureEnabledServices())
-	assert.Equal(t, map[string]map[GcpService]struct{}{
-		"project1": {"service1": {}},
-	}, cl.EnabledServices)
+	assert.Equal(t,
+		map[string]map[GcpService]struct{}{
+			"project1": {"service1": {}},
+		},
+		cl.EnabledServices,
+	)
+	assert.Equal(t,
+		map[string][]*serviceusage.GoogleApiServiceusageV1Service{
+			"project1": {s},
+		},
+		cl.RawEnabledResponse,
+	)
 }
