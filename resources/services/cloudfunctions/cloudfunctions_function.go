@@ -8,12 +8,14 @@ import (
 	"google.golang.org/api/cloudfunctions/v1"
 )
 
+const functionsTableName = "gcp_cloudfunctions_functions"
+
 func CloudfunctionsFunction() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_cloudfunctions_functions",
+		Name:         functionsTableName,
 		Description:  "Describes a Cloud Function that contains user computation executed in response to an event It encapsulate function and triggers configurations",
-		Resolver:     client.RequireEnabledServices(fetchCloudfunctionsFunctions, client.CloudFunctionsService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchCloudfunctionsFunctions,
+		Multiplex:    client.ProjectMultiplex(functionsTableName, client.CloudFunctionsService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},

@@ -33,6 +33,7 @@ const (
 	DnsService                  GcpService = "dns.googleapis.com"
 	DomainsService              GcpService = "domains.googleapis.com"
 	IamService                  GcpService = "iam.googleapis.com"
+	KubernetesService           GcpService = "container.googleapis.com"
 	LoggingService              GcpService = "logging.googleapis.com"
 	MonitoringService           GcpService = "monitoring.googleapis.com"
 	SqlAdminService             GcpService = "sqladmin.googleapis.com"

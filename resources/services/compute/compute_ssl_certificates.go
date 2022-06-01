@@ -8,12 +8,14 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
+const sslCertificatesTableName = "gcp_compute_ssl_certificates"
+
 func ComputeSslCertificates() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_ssl_certificates",
+		Name:         sslCertificatesTableName,
 		Description:  "Represents an SSL Certificate resource.",
-		Resolver:     client.RequireEnabledServices(fetchComputeSslCertificates, client.ComputeService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchComputeSslCertificates,
+		Multiplex:    client.ProjectMultiplex(sslCertificatesTableName, client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},

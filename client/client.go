@@ -9,10 +9,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cloudquery/cq-provider-sdk/helpers/limit"
 	"github.com/cloudquery/cq-provider-sdk/provider/diag"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	"github.com/hashicorp/go-hclog"
 	"golang.org/x/sync/errgroup"
+	"golang.org/x/sync/semaphore"
 	crmv1 "google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/cloudresourcemanager/v3"
 	"google.golang.org/api/option"
@@ -68,9 +70,16 @@ func (c Client) withProject(project string) *Client {
 func (c *Client) configureEnabledServices() error {
 	var esLock sync.Mutex
 	g, ctx := errgroup.WithContext(context.Background())
+	sem := semaphore.NewWeighted(int64(limit.GetMaxGoRoutines()))
 	for _, p := range c.projects {
 		project := p
+		if err := sem.Acquire(ctx, 1); err != nil {
+			// it must be that ctx is canceled. just exit the loop as g.Wait() will
+			// return the correct error from failed goroutine.
+			break
+		}
 		g.Go(func() error {
+			defer sem.Release(1)
 			cl := c.withProject(project)
 			svc, err := cl.fetchEnabledServices(ctx)
 			esLock.Lock()

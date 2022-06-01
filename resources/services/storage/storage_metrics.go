@@ -44,12 +44,14 @@ const (
 		| every 1d`
 )
 
+const metricsTableName = "gcp_storage_metrics"
+
 func Metrics() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_storage_metrics",
+		Name:         metricsTableName,
 		Description:  "storage metrics collecting by cloud monitoring service",
-		Resolver:     client.RequireEnabledServices(fetchStorageMetrics, client.StorageService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchStorageMetrics,
+		Multiplex:    client.ProjectMultiplex(metricsTableName, client.StorageService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "bucket_name"}},

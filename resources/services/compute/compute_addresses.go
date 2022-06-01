@@ -8,13 +8,15 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
+const addressesTableName = "gcp_compute_addresses"
+
 func ComputeAddresses() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_addresses",
+		Name:         addressesTableName,
 		Description:  "Addresses for GFE-based external HTTP(S) load balancers.",
-		Resolver:     client.RequireEnabledServices(fetchComputeAddresses, client.ComputeService),
+		Resolver:     fetchComputeAddresses,
 		IgnoreError:  client.IgnoreErrorHandler,
-		Multiplex:    client.ProjectMultiplex,
+		Multiplex:    client.ProjectMultiplex(addressesTableName, client.ComputeService),
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{

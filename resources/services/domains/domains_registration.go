@@ -10,12 +10,14 @@ import (
 	domains "google.golang.org/api/domains/v1beta1"
 )
 
+const registrationsTableName = "gcp_domains_registrations"
+
 func DomainsRegistration() *schema.Table {
 	return &schema.Table{
-		Name:          "gcp_domains_registrations",
+		Name:          registrationsTableName,
 		Description:   "The `Registration` resource facilitates managing and configuring domain name registrations To create a new `Registration` resource, find a suitable domain name by calling the `SearchDomains` method with a query to see available domain name options After choosing a name, call `RetrieveRegisterParameters` to ensure availability and obtain information like pricing, which is needed to build a call to `RegisterDomain`",
-		Resolver:      client.RequireEnabledServices(fetchDomainsRegistrations, client.DomainsService),
-		Multiplex:     client.ProjectMultiplex,
+		Resolver:      fetchDomainsRegistrations,
+		Multiplex:     client.ProjectMultiplex(registrationsTableName, client.DomainsService),
 		IgnoreError:   client.IgnoreErrorHandler,
 		DeleteFilter:  client.DeleteProjectFilter,
 		Options:       schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},

@@ -8,12 +8,14 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
+const instancesTableName = "gcp_compute_instances"
+
 func ComputeInstances() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_instances",
+		Name:         instancesTableName,
 		Description:  "Represents an Instance resource  An instance is a virtual machine that is hosted on Google Cloud Platform For more information, read Virtual Machine Instances",
-		Resolver:     client.RequireEnabledServices(fetchComputeInstances, client.ComputeService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchComputeInstances,
+		Multiplex:    client.ProjectMultiplex(instancesTableName, client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
