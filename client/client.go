@@ -9,10 +9,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/cloudquery/cq-provider-sdk/helpers"
+	"github.com/cloudquery/cq-provider-sdk/helpers/limit"
 	"github.com/cloudquery/cq-provider-sdk/provider/diag"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	"github.com/hashicorp/go-hclog"
 	"golang.org/x/sync/errgroup"
+	"golang.org/x/sync/semaphore"
 	crmv1 "google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/cloudresourcemanager/v3"
 	"google.golang.org/api/option"
@@ -68,9 +71,15 @@ func (c Client) withProject(project string) *Client {
 func (c *Client) configureEnabledServices() error {
 	var esLock sync.Mutex
 	g, ctx := errgroup.WithContext(context.Background())
+	maxGoroutines := limit.GetMaxGoRoutines()
+	goroutinesSem := semaphore.NewWeighted(helpers.Uint64ToInt64(maxGoroutines))
 	for _, p := range c.projects {
 		project := p
+		if err := goroutinesSem.Acquire(ctx, 1); err != nil {
+			return diag.WrapError(err)
+		}
 		g.Go(func() error {
+			defer goroutinesSem.Release(1)
 			cl := c.withProject(project)
 			svc, err := cl.fetchEnabledServices(ctx)
 			esLock.Lock()
