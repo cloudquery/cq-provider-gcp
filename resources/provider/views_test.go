@@ -9,7 +9,7 @@ import (
 )
 
 func TestIntegration(t *testing.T) {
-	providertest.TestView(t, providertest.ViewTestCase{
+	providertest.HelperTestView(t, providertest.ViewTestCase{
 		Provider: Provider(),
 		SQLView:  views.ResourceView,
 	})
