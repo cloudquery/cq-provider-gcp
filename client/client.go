@@ -33,7 +33,7 @@ type Client struct {
 	// this is set by table client multiplexer
 	ProjectId string
 	// List of enabled services per project
-	EnabledServices map[string]map[GcpService]struct{}
+	EnabledServices map[string]map[GcpService]bool
 }
 
 func NewGcpClient(log hclog.Logger, bo BackoffSettings, projects []string, services *Services) *Client {
@@ -42,7 +42,7 @@ func NewGcpClient(log hclog.Logger, bo BackoffSettings, projects []string, servi
 		logger:          log,
 		backoff:         bo,
 		Services:        services,
-		EnabledServices: make(map[string]map[GcpService]struct{}),
+		EnabledServices: make(map[string]map[GcpService]bool),
 	}
 	if len(projects) == 1 {
 		c.ProjectId = projects[0]
@@ -82,19 +82,19 @@ func (c *Client) configureEnabledServices() error {
 	return g.Wait()
 }
 
-func (c *Client) fetchEnabledServices(ctx context.Context) (map[GcpService]struct{}, error) {
-	enabled := make(map[GcpService]struct{})
+func (c *Client) fetchEnabledServices(ctx context.Context) (map[GcpService]bool, error) {
+	enabled := make(map[GcpService]bool)
 	nextPageToken := ""
 	for {
 		call := c.Services.ServiceUsage.Services.List(fmt.Sprintf("projects/%s", c.ProjectId))
 		call = call.Filter("state:ENABLED").PageSize(200).PageToken(nextPageToken)
 		list, err := c.RetryingDo(ctx, call)
 		if err != nil {
-			return nil, err
+			return nil, diag.WrapError(err)
 		}
 		output := list.(*serviceusage.ListServicesResponse)
 		for _, item := range output.Services {
-			enabled[GcpService(item.Config.Name)] = struct{}{}
+			enabled[GcpService(item.Config.Name)] = true
 		}
 		if output.NextPageToken == "" {
 			break

@@ -48,8 +48,8 @@ func Metrics() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_storage_metrics",
 		Description:  "storage metrics collecting by cloud monitoring service",
-		Resolver:     client.RequireEnabledServices(fetchStorageMetrics, client.StorageService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchStorageMetrics,
+		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.StorageService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "bucket_name"}},

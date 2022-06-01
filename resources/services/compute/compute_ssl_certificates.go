@@ -12,8 +12,8 @@ func ComputeSslCertificates() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_ssl_certificates",
 		Description:  "Represents an SSL Certificate resource.",
-		Resolver:     client.RequireEnabledServices(fetchComputeSslCertificates, client.ComputeService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchComputeSslCertificates,
+		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},

@@ -12,8 +12,8 @@ func ComputeNetworks() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_networks",
 		Description:  "Represents a VPC Network resource  Networks connect resources to each other and to the internet",
-		Resolver:     client.RequireEnabledServices(fetchComputeNetworks, client.ComputeService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchComputeNetworks,
+		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},

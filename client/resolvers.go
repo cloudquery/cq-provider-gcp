@@ -47,18 +47,3 @@ func ResolveResourceId(_ context.Context, _ schema.ClientMeta, r *schema.Resourc
 	}
 	return r.Set(c.Name, data)
 }
-
-// RequireEnabledServices is a resolver that calls a real resolver passed as an argument
-// only if all required services are enabled in the current client.
-func RequireEnabledServices(resolver schema.TableResolver, services ...GcpService) schema.TableResolver {
-	return func(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-		cl := meta.(*Client)
-		for _, s := range services {
-			if _, ok := cl.EnabledServices[cl.ProjectId][s]; !ok {
-				cl.Logger().Info("fetch skipped due to disabled API", "service", s)
-				return nil
-			}
-		}
-		return resolver(ctx, meta, parent, res)
-	}
-}

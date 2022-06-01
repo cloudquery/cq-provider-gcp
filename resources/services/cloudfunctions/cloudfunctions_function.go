@@ -12,8 +12,8 @@ func CloudfunctionsFunction() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_cloudfunctions_functions",
 		Description:  "Describes a Cloud Function that contains user computation executed in response to an event It encapsulate function and triggers configurations",
-		Resolver:     client.RequireEnabledServices(fetchCloudfunctionsFunctions, client.CloudFunctionsService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchCloudfunctionsFunctions,
+		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.CloudFunctionsService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},

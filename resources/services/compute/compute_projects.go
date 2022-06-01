@@ -13,8 +13,8 @@ func ComputeProjects() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_projects",
 		Description:  "Represents a Project resource which is used to organize resources in a Google Cloud Platform environment",
-		Resolver:     client.RequireEnabledServices(fetchComputeProjects, client.ComputeService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchComputeProjects,
+		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id"}},

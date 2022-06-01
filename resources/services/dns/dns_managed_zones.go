@@ -13,8 +13,8 @@ func DNSManagedZones() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_dns_managed_zones",
 		Description:  "A zone is a subtree of the DNS namespace under one administrative responsibility A ManagedZone is a resource that represents a DNS zone hosted by the Cloud DNS service",
-		Resolver:     client.RequireEnabledServices(fetchDnsManagedZones, client.DnsService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchDnsManagedZones,
+		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.DnsService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		DeleteFilter: client.DeleteProjectFilter,

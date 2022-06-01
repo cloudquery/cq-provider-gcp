@@ -12,9 +12,9 @@ func ComputeDisks() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_compute_disks",
 		Description:  "Represents a Persistent Disk resource.",
-		Resolver:     client.RequireEnabledServices(fetchComputeDisks, client.ComputeService),
+		Resolver:     fetchComputeDisks,
 		IgnoreError:  client.IgnoreErrorHandler,
-		Multiplex:    client.ProjectMultiplex,
+		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.ComputeService),
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{

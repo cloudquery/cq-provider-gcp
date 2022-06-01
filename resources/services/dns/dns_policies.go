@@ -13,8 +13,8 @@ func DNSPolicies() *schema.Table {
 	return &schema.Table{
 		Name:         "gcp_dns_policies",
 		Description:  "A policy is a collection of DNS rules applied to one or more Virtual Private Cloud resources",
-		Resolver:     client.RequireEnabledServices(fetchDnsPolicies, client.DnsService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchDnsPolicies,
+		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.DnsService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		DeleteFilter: client.DeleteProjectFilter,
