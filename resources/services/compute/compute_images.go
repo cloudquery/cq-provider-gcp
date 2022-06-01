@@ -8,12 +8,14 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
+const imagesTableName = "gcp_compute_images"
+
 func ComputeImages() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_images",
+		Name:         imagesTableName,
 		Description:  "Represents an Image resource  You can use images to create boot disks for your VM instances",
-		Resolver:     client.RequireEnabledServices(fetchComputeImages, client.ComputeService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchComputeImages,
+		Multiplex:    client.ProjectMultiplex(imagesTableName, client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},

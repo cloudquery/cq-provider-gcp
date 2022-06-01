@@ -9,12 +9,14 @@ import (
 	"google.golang.org/api/dns/v1"
 )
 
+const policiesTableName = "gcp_dns_policies"
+
 func DNSPolicies() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_dns_policies",
+		Name:         policiesTableName,
 		Description:  "A policy is a collection of DNS rules applied to one or more Virtual Private Cloud resources",
-		Resolver:     client.RequireEnabledServices(fetchDnsPolicies, client.DnsService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchDnsPolicies,
+		Multiplex:    client.ProjectMultiplex(policiesTableName, client.DnsService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		DeleteFilter: client.DeleteProjectFilter,

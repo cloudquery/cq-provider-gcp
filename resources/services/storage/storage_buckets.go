@@ -10,12 +10,14 @@ import (
 	storage "google.golang.org/api/storage/v1"
 )
 
+const bucketsTableName = "gcp_storage_buckets"
+
 func StorageBuckets() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_storage_buckets",
+		Name:         bucketsTableName,
 		Description:  "The Buckets resource represents a bucket in Cloud Storage",
-		Resolver:     client.RequireEnabledServices(fetchStorageBuckets, client.StorageService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchStorageBuckets,
+		Multiplex:    client.ProjectMultiplex(bucketsTableName, client.StorageService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},

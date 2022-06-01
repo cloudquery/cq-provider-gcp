@@ -9,12 +9,14 @@ import (
 	"google.golang.org/api/logging/v2"
 )
 
+const sinksTableName = "gcp_logging_sinks"
+
 func LoggingSinks() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_logging_sinks",
+		Name:         sinksTableName,
 		Description:  "Describes a sink used to export log entries to one of the following destinations in any project: a Cloud Storage bucket, a BigQuery dataset, a Cloud Pub/Sub topic or a Cloud Logging Bucket A logs filter controls which log entries are exported The sink must be created within a project, organization, billing account, or folder",
-		Resolver:     client.RequireEnabledServices(fetchLoggingSinks, client.LoggingService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchLoggingSinks,
+		Multiplex:    client.ProjectMultiplex(sinksTableName, client.LoggingService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},

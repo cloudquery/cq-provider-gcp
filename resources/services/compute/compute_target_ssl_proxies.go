@@ -8,12 +8,14 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
+const targetSslProxiesTableName = "gcp_compute_target_ssl_proxies"
+
 func ComputeTargetSslProxies() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_target_ssl_proxies",
+		Name:         targetSslProxiesTableName,
 		Description:  "Represents a Target SSL Proxy resource",
-		Resolver:     client.RequireEnabledServices(fetchComputeTargetSslProxies, client.ComputeService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchComputeTargetSslProxies,
+		Multiplex:    client.ProjectMultiplex(targetSslProxiesTableName, client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},

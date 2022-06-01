@@ -8,12 +8,14 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
+const forwardingRulesTableName = "gcp_compute_forwarding_rules"
+
 func ComputeForwardingRules() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_forwarding_rules",
+		Name:         forwardingRulesTableName,
 		Description:  "Represents a Forwarding Rule resource  Forwarding rule resources in GCP can be either regional or global.",
-		Resolver:     client.RequireEnabledServices(fetchComputeForwardingRules, client.ComputeService),
-		Multiplex:    client.ProjectMultiplex,
+		Resolver:     fetchComputeForwardingRules,
+		Multiplex:    client.ProjectMultiplex(forwardingRulesTableName, client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},

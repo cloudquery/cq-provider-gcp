@@ -11,13 +11,15 @@ import (
 	serviceusage "google.golang.org/api/serviceusage/v1"
 )
 
+const servicesTableName = "gcp_serviceusage_services"
+
 //go:generate cq-gen --resource services --config gen.hcl --output .
 func Services() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_serviceusage_services",
+		Name:         servicesTableName,
 		Description:  "A service that is available for use by the consumer",
 		Resolver:     fetchServiceusageServices,
-		Multiplex:    client.ProjectMultiplex,
+		Multiplex:    client.ProjectMultiplex(servicesTableName),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"name"}},

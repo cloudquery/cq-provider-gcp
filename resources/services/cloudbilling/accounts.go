@@ -17,13 +17,14 @@ type BillingAccountWrapper struct {
 }
 
 const MAX_GOROUTINES = 10
+const accountsTableName = "gcp_cloudbilling_accounts"
 
 //go:generate cq-gen --resource accounts --config gen.hcl --output .
 func Accounts() *schema.Table {
 	return &schema.Table{
-		Name:          "gcp_cloudbilling_accounts",
-		Resolver:      client.RequireEnabledServices(fetchBillingAccounts, client.CloudBillingService),
-		Multiplex:     client.ProjectMultiplex,
+		Name:          accountsTableName,
+		Resolver:      fetchBillingAccounts,
+		Multiplex:     client.ProjectMultiplex(accountsTableName, client.CloudBillingService),
 		IgnoreError:   client.IgnoreErrorHandler,
 		DeleteFilter:  client.DeleteProjectFilter,
 		Options:       schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},
