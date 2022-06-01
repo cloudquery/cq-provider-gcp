@@ -8,7 +8,7 @@ import (
 	providertest "github.com/cloudquery/cq-provider-sdk/provider/testing"
 )
 
-func TestIntegration(t *testing.T) {
+func TestViews(t *testing.T) {
 	providertest.HelperTestView(t, providertest.ViewTestCase{
 		Provider: Provider(),
 		SQLView:  views.ResourceView,
