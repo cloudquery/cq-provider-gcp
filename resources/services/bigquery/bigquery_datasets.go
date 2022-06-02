@@ -123,8 +123,8 @@ func fetchBigqueryDatasets(ctx context.Context, meta schema.ClientMeta, parent *
 		list, err := c.RetryingDo(ctx, call)
 		if err != nil {
 			if isProjectIdError(err, c.ProjectId) {
-				return diag.FromError(err, diag.USER,
-					diag.WithDetails("Please verify the project id was configured correctly. Project names can't be used when fetching BigQuery resources"))
+				return diag.FromError(err, diag.USER, diag.WithSeverity(diag.ACCESS),
+					diag.WithDetails("Please verify the project id was configured correctly or BigQuery API is enabled in current project. Project names can't be used when fetching BigQuery resources"))
 			}
 			return err
 		}
