@@ -19,10 +19,11 @@ func ProjectMultiplexEnabledAPIs(enabledService GcpService) func(schema.ClientMe
 	return func(meta schema.ClientMeta) []schema.ClientMeta {
 		cl := meta.(*Client)
 
-		l := make([]schema.ClientMeta, len(cl.projects))
-		for i, projectId := range cl.projects {
-			if cl.EnabledServices[cl.ProjectId] != nil && cl.EnabledServices[cl.ProjectId][enabledService] {
-				l[i] = cl.withProject(projectId)
+		// preallocate all clients just in case
+		l := make([]schema.ClientMeta, 0, len(cl.projects))
+		for _, projectId := range cl.projects {
+			if cl.EnabledServices[projectId] != nil && cl.EnabledServices[projectId][enabledService] {
+				l = append(l, cl.withProject(projectId))
 			}
 		}
 		return l
