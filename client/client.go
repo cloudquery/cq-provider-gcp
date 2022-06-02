@@ -76,7 +76,8 @@ func (c *Client) configureEnabledServices() error {
 	for _, p := range c.projects {
 		project := p
 		if err := goroutinesSem.Acquire(ctx, 1); err != nil {
-			return diag.WrapError(err)
+			// context is done so let g.Wait() return the actual error.
+			break
 		}
 		g.Go(func() error {
 			defer goroutinesSem.Release(1)
@@ -88,7 +89,7 @@ func (c *Client) configureEnabledServices() error {
 			return err
 		})
 	}
-	return g.Wait()
+	return diag.WrapError(g.Wait())
 }
 
 func (c *Client) fetchEnabledServices(ctx context.Context) (map[GcpService]bool, error) {
