@@ -122,7 +122,7 @@ func fetchBigqueryDatasets(ctx context.Context, meta schema.ClientMeta, parent *
 			PageToken(nextPageToken)
 		list, err := c.RetryingDo(ctx, call)
 		if err != nil {
-			if isProjectIdError(err, c.ProjectId) {
+			if isAccessErrorToIgnore(err, c.ProjectId) {
 				return diag.FromError(err, diag.USER, diag.WithSeverity(diag.ACCESS),
 					diag.WithDetails("Please verify the project id was configured correctly or BigQuery API is enabled in current project. Project names can't be used when fetching BigQuery resources"))
 			}
@@ -148,7 +148,7 @@ func fetchBigqueryDatasets(ctx context.Context, meta schema.ClientMeta, parent *
 	return nil
 }
 
-func isProjectIdError(err error, projectId string) bool {
+func isAccessErrorToIgnore(err error, projectId string) bool {
 	var gerr *googleapi.Error
 	if ok := errors.As(err, &gerr); ok {
 		if gerr.Code == http.StatusBadRequest &&
