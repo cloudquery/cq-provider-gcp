@@ -8,12 +8,14 @@ import (
 	sql "google.golang.org/api/sqladmin/v1beta4"
 )
 
+const instancesTableName = "gcp_sql_instances"
+
 func SQLInstances() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_sql_instances",
+		Name:         instancesTableName,
 		Description:  "A Cloud SQL instance resource",
 		Resolver:     fetchSqlInstances,
-		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.SqlAdminService),
+		Multiplex:    client.ProjectMultiplex(instancesTableName, client.SqlAdminService),
 		DeleteFilter: client.DeleteProjectFilter,
 		IgnoreError:  client.IgnoreErrorHandler,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},

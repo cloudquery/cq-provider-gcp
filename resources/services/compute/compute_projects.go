@@ -9,12 +9,14 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
+const projectsTableName = "gcp_compute_projects"
+
 func ComputeProjects() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_projects",
+		Name:         projectsTableName,
 		Description:  "Represents a Project resource which is used to organize resources in a Google Cloud Platform environment",
 		Resolver:     fetchComputeProjects,
-		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.ComputeService),
+		Multiplex:    client.ProjectMultiplex(projectsTableName, client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id"}},

@@ -10,12 +10,14 @@ import (
 	"google.golang.org/api/cloudresourcemanager/v3"
 )
 
+const projectsTableName = "gcp_resource_manager_projects"
+
 func ResourceManagerProjects() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_resource_manager_projects",
+		Name:         projectsTableName,
 		Description:  "A project is a high-level Google Cloud entity It is a container for ACLs, APIs, App Engine Apps, VMs, and other Google Cloud Platform resources",
 		Resolver:     fetchResourceManagerProjects,
-		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.CloudResourceManagerService),
+		Multiplex:    client.ProjectMultiplex(projectsTableName, client.CloudResourceManagerService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},
 		DeleteFilter: client.DeleteProjectFilter,

@@ -15,12 +15,14 @@ type KeyRing struct {
 	Location string
 }
 
+const keyringsTableName = "gcp_kms_keyrings"
+
 func KmsKeyrings() *schema.Table {
 	return &schema.Table{
-		Name:                 "gcp_kms_keyrings",
+		Name:                 keyringsTableName,
 		Description:          "A KeyRing is a toplevel logical grouping of CryptoKeys.",
 		Resolver:             fetchKmsKeyrings,
-		Multiplex:            client.ProjectMultiplexEnabledAPIs(client.CloudKmsService),
+		Multiplex:            client.ProjectMultiplex(keyringsTableName, client.CloudKmsService),
 		IgnoreError:          client.IgnoreErrorHandler,
 		DeleteFilter:         client.DeleteProjectFilter,
 		PostResourceResolver: client.AddGcpMetadata,

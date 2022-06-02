@@ -9,14 +9,16 @@ import (
 	compute "google.golang.org/api/compute/v1"
 )
 
+const instanceGroupsTableName = "gcp_compute_instance_groups"
+
 //go:generate cq-gen --resource instance_groups --config gen.hcl --output .
 func InstanceGroups() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_instance_groups",
+		Name:         instanceGroupsTableName,
 		Description:  "Represents an Instance Group resource",
 		Resolver:     fetchComputeInstanceGroups,
 		IgnoreError:  client.IgnoreErrorHandler,
-		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.ComputeService),
+		Multiplex:    client.ProjectMultiplex(instanceGroupsTableName, client.ComputeService),
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{

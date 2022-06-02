@@ -8,13 +8,15 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
+const firewallsTableName = "gcp_compute_firewalls"
+
 func ComputeFirewalls() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_firewalls",
+		Name:         firewallsTableName,
 		Description:  "Represents a Firewall Rule resource  Firewall rules allow or deny ingress traffic to, and egress traffic from your instances For more information, read Firewall rules",
 		Resolver:     fetchComputeFirewalls,
 		IgnoreError:  client.IgnoreErrorHandler,
-		Multiplex:    client.ProjectMultiplex,
+		Multiplex:    client.ProjectMultiplex(firewallsTableName, client.ComputeService),
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{

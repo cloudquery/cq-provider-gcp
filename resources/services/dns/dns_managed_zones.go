@@ -9,12 +9,14 @@ import (
 	"google.golang.org/api/dns/v1"
 )
 
+const managedZonesTableName = "gcp_dns_managed_zones"
+
 func DNSManagedZones() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_dns_managed_zones",
+		Name:         managedZonesTableName,
 		Description:  "A zone is a subtree of the DNS namespace under one administrative responsibility A ManagedZone is a resource that represents a DNS zone hosted by the Cloud DNS service",
 		Resolver:     fetchDnsManagedZones,
-		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.DnsService),
+		Multiplex:    client.ProjectMultiplex(managedZonesTableName, client.DnsService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		DeleteFilter: client.DeleteProjectFilter,

@@ -8,13 +8,15 @@ import (
 	"google.golang.org/api/container/v1"
 )
 
+const clustersTableName = "gcp_kubernetes_clusters"
+
 //go:generate cq-gen --resource clusters --config gen.hcl --output .
 func Clusters() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_kubernetes_clusters",
+		Name:         clustersTableName,
 		Description:  "A Google Kubernetes Engine cluster",
 		Resolver:     fetchKubernetesClusters,
-		Multiplex:    client.ProjectMultiplex,
+		Multiplex:    client.ProjectMultiplex(clustersTableName, client.KubernetesService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"id"}},

@@ -8,13 +8,15 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
+const autoscalersTableName = "gcp_compute_autoscalers"
+
 func ComputeAutoscalers() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_autoscalers",
+		Name:         autoscalersTableName,
 		Description:  "Represents an Autoscaler resource.",
 		Resolver:     fetchComputeAutoscalers,
 		IgnoreError:  client.IgnoreErrorHandler,
-		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.ComputeService),
+		Multiplex:    client.ProjectMultiplex(autoscalersTableName, client.ComputeService),
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{

@@ -11,13 +11,15 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
+const diskTypesTableName = "gcp_compute_disk_types"
+
 func ComputeDiskTypes() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_disk_types",
+		Name:         diskTypesTableName,
 		Description:  "Represents a Disk Type resource.",
 		Resolver:     fetchComputeDiskTypes,
 		IgnoreError:  client.IgnoreErrorHandler,
-		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.ComputeService),
+		Multiplex:    client.ProjectMultiplex(diskTypesTableName, client.ComputeService),
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{

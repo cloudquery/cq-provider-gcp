@@ -9,12 +9,14 @@ import (
 	"google.golang.org/api/iam/v1"
 )
 
+const serviceAccountsTableName = "gcp_iam_service_accounts"
+
 func IamServiceAccounts() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_iam_service_accounts",
+		Name:         serviceAccountsTableName,
 		Description:  "An IAM service account A service account is an account for an application or a virtual machine (VM) instance, not a person You can use a service account to call Google APIs To learn more, read the overview of service accounts (https://cloudgooglecom/iam/help/service-accounts/overview) When you create a service account, you specify the project ID that owns the service account, as well as a name that must be unique within the project IAM uses these values to create an email address that identifies the service account",
 		Resolver:     fetchIamServiceAccounts,
-		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.IamService),
+		Multiplex:    client.ProjectMultiplex(serviceAccountsTableName, client.IamService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},

@@ -10,12 +10,14 @@ import (
 	"google.golang.org/api/cloudresourcemanager/v3"
 )
 
+const foldersTableName = "gcp_resource_manager_folders"
+
 func ResourceManagerFolders() *schema.Table {
 	return &schema.Table{
-		Name:          "gcp_resource_manager_folders",
+		Name:          foldersTableName,
 		Description:   "A folder in an organization's resource hierarchy, used to organize that organization's resources",
 		Resolver:      fetchResourceManagerFolders,
-		Multiplex:     client.ProjectMultiplexEnabledAPIs(client.CloudResourceManagerService),
+		Multiplex:     client.ProjectMultiplex(foldersTableName, client.CloudResourceManagerService),
 		IgnoreError:   client.IgnoreErrorHandler,
 		Options:       schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "name"}},
 		DeleteFilter:  client.DeleteProjectFilter,

@@ -8,13 +8,15 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
+const disksTableName = "gcp_compute_disks"
+
 func ComputeDisks() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_disks",
+		Name:         disksTableName,
 		Description:  "Represents a Persistent Disk resource.",
 		Resolver:     fetchComputeDisks,
 		IgnoreError:  client.IgnoreErrorHandler,
-		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.ComputeService),
+		Multiplex:    client.ProjectMultiplex(disksTableName, client.ComputeService),
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{

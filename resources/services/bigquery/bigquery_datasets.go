@@ -8,13 +8,15 @@ import (
 	"google.golang.org/api/bigquery/v2"
 )
 
+const datasetsTableName = "gcp_bigquery_datasets"
+
 func BigqueryDatasets() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_bigquery_datasets",
+		Name:         datasetsTableName,
 		Description:  "dataset resources in the project",
 		Resolver:     fetchBigqueryDatasets,
 		IgnoreError:  client.IgnoreErrorHandler,
-		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.BigQueryService),
+		Multiplex:    client.ProjectMultiplex(datasetsTableName, client.BigQueryService),
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{

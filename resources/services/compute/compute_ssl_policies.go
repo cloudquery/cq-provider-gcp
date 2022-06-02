@@ -9,12 +9,14 @@ import (
 	"google.golang.org/api/compute/v1"
 )
 
+const sslPoliciesTableName = "gcp_compute_ssl_policies"
+
 func ComputeSslPolicies() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_ssl_policies",
+		Name:         sslPoliciesTableName,
 		Description:  "Represents an SSL Policy resource",
 		Resolver:     fetchComputeSslPolicies,
-		Multiplex:    client.ProjectMultiplexEnabledAPIs(client.ComputeService),
+		Multiplex:    client.ProjectMultiplex(sslPoliciesTableName, client.ComputeService),
 		IgnoreError:  client.IgnoreErrorHandler,
 		DeleteFilter: client.DeleteProjectFilter,
 		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
