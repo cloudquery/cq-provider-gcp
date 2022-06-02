@@ -2,10 +2,15 @@ package bigquery
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"net/http"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
+	"github.com/cloudquery/cq-provider-sdk/provider/diag"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	"google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
 )
 
 func BigqueryDatasets() *schema.Table {
@@ -117,6 +122,10 @@ func fetchBigqueryDatasets(ctx context.Context, meta schema.ClientMeta, parent *
 			PageToken(nextPageToken)
 		list, err := c.RetryingDo(ctx, call)
 		if err != nil {
+			if isProjectIdError(err, c.ProjectId) {
+				return diag.FromError(err, diag.USER,
+					diag.WithDetails("Project name might used instead of project id"))
+			}
 			return err
 		}
 		output := list.(*bigquery.DatasetList)
@@ -137,4 +146,17 @@ func fetchBigqueryDatasets(ctx context.Context, meta schema.ClientMeta, parent *
 		nextPageToken = output.NextPageToken
 	}
 	return nil
+}
+
+func isProjectIdError(err error, projectId string) bool {
+	var gerr *googleapi.Error
+	if ok := errors.As(err, &gerr); ok {
+		if gerr.Code == http.StatusBadRequest &&
+			len(gerr.Errors) > 0 &&
+			gerr.Errors[0].Reason == "invalid" &&
+			gerr.Errors[0].Message == fmt.Sprintf("The project %s has not enabled BigQuery.", projectId) {
+			return true
+		}
+	}
+	return false
 }
