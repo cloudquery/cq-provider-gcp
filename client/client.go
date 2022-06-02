@@ -66,7 +66,6 @@ func (c Client) withProject(project string) *Client {
 	return &c
 }
 
-//revive:enable:modifies-value-receiver
 
 func (c *Client) configureEnabledServices() error {
 	var esLock sync.Mutex
