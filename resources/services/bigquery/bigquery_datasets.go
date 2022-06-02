@@ -124,7 +124,7 @@ func fetchBigqueryDatasets(ctx context.Context, meta schema.ClientMeta, parent *
 		if err != nil {
 			if isProjectIdError(err, c.ProjectId) {
 				return diag.FromError(err, diag.USER,
-					diag.WithDetails("Project name might used instead of project id"))
+					diag.WithDetails("Please verify the project id was configured correctly. Project names can't be used when fetching BigQuery resources"))
 			}
 			return err
 		}
