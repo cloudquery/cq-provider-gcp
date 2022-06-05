@@ -66,15 +66,16 @@ func (c Client) withProject(project string) *Client {
 	return &c
 }
 
-func (c *Client) configureEnabledServices() error {
+func (c *Client) configureEnabledServices() diag.Diagnostics {
 	var esLock sync.Mutex
+	var diags diag.Diagnostics
 	g, ctx := errgroup.WithContext(context.Background())
 	maxGoroutines := limit.GetMaxGoRoutines()
 	goroutinesSem := semaphore.NewWeighted(helpers.Uint64ToInt64(maxGoroutines))
 	for _, p := range c.projects {
 		project := p
 		if err := goroutinesSem.Acquire(ctx, 1); err != nil {
-			return diag.WrapError(err)
+			return diags.Add(diag.WrapError(err))
 		}
 		g.Go(func() error {
 			defer goroutinesSem.Release(1)
@@ -83,6 +84,7 @@ func (c *Client) configureEnabledServices() error {
 			esLock.Lock()
 			if err != nil {
 				c.logger.Warn("failed to fetch enabled services", "project_id", project, "error", err)
+				diags = diags.Add(diag.NewBaseError(fmt.Errorf("failed to fetch enabled services, project_id=%s, error=%w", project, err), diag.USER, diag.WithSeverity(diag.WARNING)))
 			} else {
 				c.EnabledServices[project] = svc
 			}
@@ -90,7 +92,7 @@ func (c *Client) configureEnabledServices() error {
 			return err
 		})
 	}
-	return g.Wait()
+	return diags.Add(g.Wait())
 }
 
 func (c *Client) fetchEnabledServices(ctx context.Context) (map[GcpService]bool, error) {
@@ -198,9 +200,8 @@ func Configure(logger hclog.Logger, config interface{}) (schema.ClientMeta, diag
 	}
 
 	client := NewGcpClient(logger, providerConfig.Backoff(), projects, services)
-	if err := client.configureEnabledServices(); err != nil {
-		return nil, diags.Add(err)
-	}
+	// we just add diags in case configureEnabledServices failed
+	diags = diags.Add(client.configureEnabledServices())
 	return client, diags
 }
 
