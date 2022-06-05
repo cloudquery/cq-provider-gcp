@@ -81,7 +81,11 @@ func (c *Client) configureEnabledServices() error {
 			cl := c.withProject(project)
 			svc, err := cl.fetchEnabledServices(ctx)
 			esLock.Lock()
-			c.EnabledServices[project] = svc
+			if err != nil {
+				c.logger.Warn("failed to fetch enabled services", "project_id", project, "error", err)
+			} else {
+				c.EnabledServices[project] = svc
+			}
 			esLock.Unlock()
 			return err
 		})
@@ -229,7 +233,7 @@ func getProjects(logger hclog.Logger, service *cloudresourcemanager.Service, fol
 		for {
 			output, err := call.Do()
 			if err != nil {
-				return nil, err
+				return nil, diag.WrapError(err)
 			}
 			for _, project := range output.Projects {
 				if project.State == "ACTIVE" {
@@ -316,7 +320,7 @@ func listFolders(ctx context.Context, logger hclog.Logger, service *cloudresourc
 	for {
 		output, err := call.Do()
 		if err != nil {
-			return nil, err
+			return nil, diag.WrapError(err)
 		}
 		for _, folder := range output.Folders {
 			if folder.State != "ACTIVE" {
@@ -325,7 +329,7 @@ func listFolders(ctx context.Context, logger hclog.Logger, service *cloudresourc
 			}
 			fList, err := listFolders(ctx, logger, service, folder.Name, maxDepth-1)
 			if err != nil {
-				return nil, err
+				return nil, diag.WrapError(err)
 			}
 			folders = append(folders, fList...)
 		}
