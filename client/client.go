@@ -84,7 +84,7 @@ func (c *Client) configureEnabledServices() diag.Diagnostics {
 			esLock.Lock()
 			if err != nil {
 				c.logger.Warn("failed to fetch enabled services", "project_id", project, "error", err)
-				diags = diags.Add(diag.NewBaseError(fmt.Errorf("failed to fetch enabled services, project_id=%s, error=%w", project, err), diag.USER, diag.WithSeverity(diag.WARNING)))
+				diags = diags.Add(classifyError(err, diag.INTERNAL, c.projects, diag.WithSeverity(diag.Severity(diag.INTERNAL)), diag.WithSummary("failed to fetch enabled services for project=%s", project)))
 			} else {
 				c.EnabledServices[project] = svc
 			}
