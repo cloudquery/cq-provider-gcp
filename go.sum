@@ -72,6 +72,8 @@ github.com/cloudquery/cq-provider-sdk v0.11.4 h1:/y/AB+/mKRGFoc0rLin3KRtfqc5eAoo
 github.com/cloudquery/cq-provider-sdk v0.11.4/go.mod h1:q6hYy9S+XtKG8cyOiLG5gqSIkXEJ72MHQ316zW6DMiA=
 github.com/cloudquery/cq-provider-sdk v0.11.5-0.20220620123658-0dcdd27f34c9 h1:BpJjOGMMMw/qSUj7uKqKMpAKt/KlSJLMuQV5MjU+8Og=
 github.com/cloudquery/cq-provider-sdk v0.11.5-0.20220620123658-0dcdd27f34c9/go.mod h1:o5czsmX3MeP8cY/KtabkqavkS7asF8HwFAO1n5+CvoQ=
+github.com/cloudquery/cq-provider-sdk v0.11.5-0.20220620140341-c19204efe90c h1:S36Piy7EtW2I0gL5kJKta+ClyHNaE2089krLHhWzrOM=
+github.com/cloudquery/cq-provider-sdk v0.11.5-0.20220620140341-c19204efe90c/go.mod h1:o5czsmX3MeP8cY/KtabkqavkS7asF8HwFAO1n5+CvoQ=
 github.com/cloudquery/faker/v3 v3.7.5 h1:G7ANdEEcm8TvAAjIwNWSLrYK36CFCiSlrCqOTGCccL0=
 github.com/cloudquery/faker/v3 v3.7.5/go.mod h1:1b8WVG9Gh0T2hVo1a8dWeXfu0AhqSB6J/mmJaesqOeo=
 github.com/cncf/udpa/go v0.0.0-20191209042840-269d4d468f6f/go.mod h1:M8M6+tZqaGXZJjfX53e64911xZQV5JYwmTeXPW+k8Sc=

@@ -68,7 +68,7 @@ func (c Config) Example() string {
     # - "organizations/<ORG_ID>"
     # - "folders/<FOLDER_ID>"
   # Optional. Maximum level of folders to recurse into
-  # folders_max_depth = 5
+  # folders_max_depth: 5
   # Optional. If not specified either using all projects accessible.
   # project_ids:
     # - "<CHANGE_THIS_TO_YOUR_PROJECT_ID>"
