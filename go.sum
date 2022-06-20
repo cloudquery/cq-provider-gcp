@@ -68,12 +68,6 @@ github.com/chzyer/logex v1.1.10/go.mod h1:+Ywpsq7O8HXn0nuIou7OrIPyXbp3wmkHB+jjWR
 github.com/chzyer/readline v0.0.0-20180603132655-2972be24d48e/go.mod h1:nSuG5e5PlCu98SY8svDHJxuZscDgtXS6KTTbou5AhLI=
 github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1/go.mod h1:Q3SI9o4m/ZMnBNeIyt5eFwwo7qiLfzFZmjNmxjkiQlU=
 github.com/client9/misspell v0.3.4/go.mod h1:qj6jICC3Q7zFZvVWo7KLAzC3yx5G7kyvSDkc90ppPyw=
-github.com/cloudquery/cq-provider-sdk v0.11.4 h1:/y/AB+/mKRGFoc0rLin3KRtfqc5eAooYjqdltrsGi8I=
-github.com/cloudquery/cq-provider-sdk v0.11.4/go.mod h1:q6hYy9S+XtKG8cyOiLG5gqSIkXEJ72MHQ316zW6DMiA=
-github.com/cloudquery/cq-provider-sdk v0.11.5-0.20220620123658-0dcdd27f34c9 h1:BpJjOGMMMw/qSUj7uKqKMpAKt/KlSJLMuQV5MjU+8Og=
-github.com/cloudquery/cq-provider-sdk v0.11.5-0.20220620123658-0dcdd27f34c9/go.mod h1:o5czsmX3MeP8cY/KtabkqavkS7asF8HwFAO1n5+CvoQ=
-github.com/cloudquery/cq-provider-sdk v0.11.5-0.20220620140341-c19204efe90c h1:S36Piy7EtW2I0gL5kJKta+ClyHNaE2089krLHhWzrOM=
-github.com/cloudquery/cq-provider-sdk v0.11.5-0.20220620140341-c19204efe90c/go.mod h1:o5czsmX3MeP8cY/KtabkqavkS7asF8HwFAO1n5+CvoQ=
 github.com/cloudquery/cq-provider-sdk v0.11.5-0.20220620152032-10cf9e9d7075 h1:8MPdDD9nnXrlDMmXOk9cuRYpf0plPJmHisH4pLM1YsU=
 github.com/cloudquery/cq-provider-sdk v0.11.5-0.20220620152032-10cf9e9d7075/go.mod h1:o5czsmX3MeP8cY/KtabkqavkS7asF8HwFAO1n5+CvoQ=
 github.com/cloudquery/faker/v3 v3.7.5 h1:G7ANdEEcm8TvAAjIwNWSLrYK36CFCiSlrCqOTGCccL0=
