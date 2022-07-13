@@ -120,9 +120,106 @@ func Services() *schema.Table {
 				Resolver:    schema.PathResolver("Metadata.Uid"),
 			},
 			{
-				Name:        "spec",
-				Description: "Spec holds the desired state of the Service (from the client)",
+				Name:        "spec_template_metadata_annotations",
+				Description: "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata",
 				Type:        schema.TypeJSON,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.Annotations"),
+			},
+			{
+				Name:        "spec_template_metadata_cluster_name",
+				Description: "Not supported by Cloud Run The name of the cluster which the object belongs to",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.ClusterName"),
+			},
+			{
+				Name:        "spec_template_metadata_creation_timestamp",
+				Description: "CreationTimestamp is a timestamp representing the server time when this object was created",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.CreationTimestamp"),
+			},
+			{
+				Name:        "spec_template_metadata_deletion_grace_period_seconds",
+				Description: "Not supported by Cloud Run Number of seconds allowed for this object to gracefully terminate before it will be removed from the system",
+				Type:        schema.TypeBigInt,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.DeletionGracePeriodSeconds"),
+			},
+			{
+				Name:        "spec_template_metadata_deletion_timestamp",
+				Description: "Not supported by Cloud Run DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.DeletionTimestamp"),
+			},
+			{
+				Name:        "spec_template_metadata_finalizers",
+				Description: "Not supported by Cloud Run Must be empty before the object is deleted from the registry",
+				Type:        schema.TypeStringArray,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.Finalizers"),
+			},
+			{
+				Name:        "spec_template_metadata_generate_name",
+				Description: "Not supported by Cloud Run GenerateName is an optional prefix, used by the server, to generate a unique name ONLY IF the Name field has not been provided",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.GenerateName"),
+			},
+			{
+				Name:        "spec_template_metadata_generation",
+				Description: "A sequence number representing a specific generation of the desired state",
+				Type:        schema.TypeBigInt,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.Generation"),
+			},
+			{
+				Name:        "spec_template_metadata_labels",
+				Description: "Map of string keys and values that can be used to organize and categorize (scope and select) objects",
+				Type:        schema.TypeJSON,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.Labels"),
+			},
+			{
+				Name:        "spec_template_metadata_name",
+				Description: "Name must be unique within a namespace, within a Cloud Run region",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.Name"),
+			},
+			{
+				Name:        "spec_template_metadata_namespace",
+				Description: "Namespace defines the space within each name must be unique, within a Cloud Run region",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.Namespace"),
+			},
+			{
+				Name:        "spec_template_metadata_resource_version",
+				Description: "Optional",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.ResourceVersion"),
+			},
+			{
+				Name:        "spec_template_metadata_self_link",
+				Description: "SelfLink is a URL representing this object Populated by the system",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.SelfLink"),
+			},
+			{
+				Name:        "spec_template_metadata_uid",
+				Description: "UID is the unique in time and space value for this object",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Metadata.Uid"),
+			},
+			{
+				Name:        "spec_template_spec_container_concurrency",
+				Description: "Optional",
+				Type:        schema.TypeBigInt,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.ContainerConcurrency"),
+			},
+			{
+				Name:        "spec_template_spec_service_account_name",
+				Description: "Email address of the IAM service account associated with the revision of the service",
+				Type:        schema.TypeString,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.ServiceAccountName"),
+			},
+			{
+				Name:        "spec_template_spec_timeout_seconds",
+				Description: "TimeoutSeconds holds the max duration the instance is allowed for responding to a request",
+				Type:        schema.TypeBigInt,
+				Resolver:    schema.PathResolver("Spec.Template.Spec.TimeoutSeconds"),
 			},
 			{
 				Name:     "status_address_url",
@@ -194,6 +291,689 @@ func Services() *schema.Table {
 					{
 						Name:        "uid",
 						Description: "UID of the referent",
+						Type:        schema.TypeString,
+					},
+				},
+			},
+			{
+				Name:        "gcp_cloudrun_service_spec_template_metadata_owner_references",
+				Description: "OwnerReference contains enough information to let you identify an owning object",
+				Resolver:    fetchCloudrunServiceSpecTemplateMetadataOwnerReferences,
+				Columns: []schema.Column{
+					{
+						Name:        "service_cq_id",
+						Description: "Unique CloudQuery ID of gcp_cloudrun_services table (FK)",
+						Type:        schema.TypeUUID,
+						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:        "api_version",
+						Description: "API version of the referent",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "block_owner_deletion",
+						Description: "If true, AND if the owner has the \"foregroundDeletion\" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed",
+						Type:        schema.TypeBool,
+					},
+					{
+						Name:        "controller",
+						Description: "If true, this reference points to the managing controller",
+						Type:        schema.TypeBool,
+					},
+					{
+						Name:        "kind",
+						Description: "Kind of the referent",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "name",
+						Description: "Name of the referent",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "uid",
+						Description: "UID of the referent",
+						Type:        schema.TypeString,
+					},
+				},
+			},
+			{
+				Name:        "gcp_cloudrun_service_spec_template_spec_containers",
+				Description: "A single application container",
+				Resolver:    fetchCloudrunServiceSpecTemplateSpecContainers,
+				Columns: []schema.Column{
+					{
+						Name:        "service_cq_id",
+						Description: "Unique CloudQuery ID of gcp_cloudrun_services table (FK)",
+						Type:        schema.TypeUUID,
+						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:        "args",
+						Description: "Arguments to the entrypoint",
+						Type:        schema.TypeStringArray,
+					},
+					{
+						Name: "command",
+						Type: schema.TypeStringArray,
+					},
+					{
+						Name:        "image",
+						Description: "Only supports containers from Google Container Registry or Artifact Registry URL of the Container image",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "image_pull_policy",
+						Description: "Image pull policy",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "liveness_probe_exec_command",
+						Description: "Command is the command line to execute inside the container, the working directory for the command is root ('/') in the container's filesystem",
+						Type:        schema.TypeStringArray,
+						Resolver:    schema.PathResolver("LivenessProbe.Exec.Command"),
+					},
+					{
+						Name:        "liveness_probe_failure_threshold",
+						Description: "Minimum consecutive failures for the probe to be considered failed after having succeeded",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("LivenessProbe.FailureThreshold"),
+					},
+					{
+						Name:        "liveness_probe_http_get_host",
+						Description: "Host name to connect to, defaults to the pod IP",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("LivenessProbe.HttpGet.Host"),
+					},
+					{
+						Name:        "liveness_probe_http_get_path",
+						Description: "Path to access on the HTTP server",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("LivenessProbe.HttpGet.Path"),
+					},
+					{
+						Name:        "liveness_probe_http_get_scheme",
+						Description: "Scheme to use for connecting to the host",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("LivenessProbe.HttpGet.Scheme"),
+					},
+					{
+						Name:        "liveness_probe_initial_delay_seconds",
+						Description: "Number of seconds after the container has started before liveness probes are initiated",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("LivenessProbe.InitialDelaySeconds"),
+					},
+					{
+						Name:        "liveness_probe_period_seconds",
+						Description: "How often (in seconds) to perform the probe",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("LivenessProbe.PeriodSeconds"),
+					},
+					{
+						Name:        "liveness_probe_success_threshold",
+						Description: "Minimum consecutive successes for the probe to be considered successful after having failed",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("LivenessProbe.SuccessThreshold"),
+					},
+					{
+						Name:        "liveness_probe_tcp_socket_host",
+						Description: "Host name to connect to, defaults to the pod IP",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("LivenessProbe.TcpSocket.Host"),
+					},
+					{
+						Name:        "liveness_probe_tcp_socket_port",
+						Description: "Number or name of the port to access on the container",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("LivenessProbe.TcpSocket.Port"),
+					},
+					{
+						Name:        "liveness_probe_timeout_seconds",
+						Description: "Number of seconds after which the probe times out",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("LivenessProbe.TimeoutSeconds"),
+					},
+					{
+						Name:        "name",
+						Description: "Name of the container specified as a DNS_LABEL Currently unused in Cloud Run",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "ports",
+						Description: "List of ports to expose from the container",
+						Type:        schema.TypeJSON,
+					},
+					{
+						Name:        "readiness_probe_exec_command",
+						Description: "Command is the command line to execute inside the container, the working directory for the command is root ('/') in the container's filesystem",
+						Type:        schema.TypeStringArray,
+						Resolver:    schema.PathResolver("ReadinessProbe.Exec.Command"),
+					},
+					{
+						Name:        "readiness_probe_failure_threshold",
+						Description: "Minimum consecutive failures for the probe to be considered failed after having succeeded",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("ReadinessProbe.FailureThreshold"),
+					},
+					{
+						Name:        "readiness_probe_http_get_host",
+						Description: "Host name to connect to, defaults to the pod IP",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("ReadinessProbe.HttpGet.Host"),
+					},
+					{
+						Name:        "readiness_probe_http_get_http_headers",
+						Description: "Custom headers to set in the request",
+						Type:        schema.TypeJSON,
+						Resolver:    schema.PathResolver("ReadinessProbe.HttpGet.HttpHeaders"),
+					},
+					{
+						Name:        "readiness_probe_http_get_path",
+						Description: "Path to access on the HTTP server",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("ReadinessProbe.HttpGet.Path"),
+					},
+					{
+						Name:        "readiness_probe_http_get_scheme",
+						Description: "Scheme to use for connecting to the host",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("ReadinessProbe.HttpGet.Scheme"),
+					},
+					{
+						Name:        "readiness_probe_initial_delay_seconds",
+						Description: "Number of seconds after the container has started before liveness probes are initiated",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("ReadinessProbe.InitialDelaySeconds"),
+					},
+					{
+						Name:        "readiness_probe_period_seconds",
+						Description: "How often (in seconds) to perform the probe",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("ReadinessProbe.PeriodSeconds"),
+					},
+					{
+						Name:        "readiness_probe_success_threshold",
+						Description: "Minimum consecutive successes for the probe to be considered successful after having failed",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("ReadinessProbe.SuccessThreshold"),
+					},
+					{
+						Name:        "readiness_probe_tcp_socket_host",
+						Description: "Host name to connect to, defaults to the pod IP",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("ReadinessProbe.TcpSocket.Host"),
+					},
+					{
+						Name:        "readiness_probe_tcp_socket_port",
+						Description: "Number or name of the port to access on the container",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("ReadinessProbe.TcpSocket.Port"),
+					},
+					{
+						Name:        "readiness_probe_timeout_seconds",
+						Description: "Number of seconds after which the probe times out",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("ReadinessProbe.TimeoutSeconds"),
+					},
+					{
+						Name:        "resources_limits",
+						Description: "Only memory and CPU are supported",
+						Type:        schema.TypeJSON,
+						Resolver:    schema.PathResolver("Resources.Limits"),
+					},
+					{
+						Name:        "resources_requests",
+						Description: "Only memory and CPU are supported",
+						Type:        schema.TypeJSON,
+						Resolver:    schema.PathResolver("Resources.Requests"),
+					},
+					{
+						Name:        "security_context_run_as_user",
+						Description: "The UID to run the entrypoint of the container process",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("SecurityContext.RunAsUser"),
+					},
+					{
+						Name:        "startup_probe_exec_command",
+						Description: "Command is the command line to execute inside the container, the working directory for the command is root ('/') in the container's filesystem",
+						Type:        schema.TypeStringArray,
+						Resolver:    schema.PathResolver("StartupProbe.Exec.Command"),
+					},
+					{
+						Name:        "startup_probe_failure_threshold",
+						Description: "Minimum consecutive failures for the probe to be considered failed after having succeeded",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("StartupProbe.FailureThreshold"),
+					},
+					{
+						Name:        "startup_probe_http_get_host",
+						Description: "Host name to connect to, defaults to the pod IP",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("StartupProbe.HttpGet.Host"),
+					},
+					{
+						Name:        "startup_probe_http_get_path",
+						Description: "Path to access on the HTTP server",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("StartupProbe.HttpGet.Path"),
+					},
+					{
+						Name:        "startup_probe_http_get_scheme",
+						Description: "Scheme to use for connecting to the host",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("StartupProbe.HttpGet.Scheme"),
+					},
+					{
+						Name:        "startup_probe_initial_delay_seconds",
+						Description: "Number of seconds after the container has started before liveness probes are initiated",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("StartupProbe.InitialDelaySeconds"),
+					},
+					{
+						Name:        "startup_probe_period_seconds",
+						Description: "How often (in seconds) to perform the probe",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("StartupProbe.PeriodSeconds"),
+					},
+					{
+						Name:        "startup_probe_success_threshold",
+						Description: "Minimum consecutive successes for the probe to be considered successful after having failed",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("StartupProbe.SuccessThreshold"),
+					},
+					{
+						Name:        "startup_probe_tcp_socket_host",
+						Description: "Host name to connect to, defaults to the pod IP",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("StartupProbe.TcpSocket.Host"),
+					},
+					{
+						Name:        "startup_probe_tcp_socket_port",
+						Description: "Number or name of the port to access on the container",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("StartupProbe.TcpSocket.Port"),
+					},
+					{
+						Name:        "startup_probe_timeout_seconds",
+						Description: "Number of seconds after which the probe times out",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("StartupProbe.TimeoutSeconds"),
+					},
+					{
+						Name:        "termination_message_path",
+						Description: "Path at which the file to which the container's termination message will be written is mounted into the container's filesystem",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "termination_message_policy",
+						Description: "Indicate how the termination message should be populated",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "working_dir",
+						Description: "Container's working directory",
+						Type:        schema.TypeString,
+					},
+				},
+				Relations: []*schema.Table{
+					{
+						Name:        "gcp_cloudrun_service_spec_template_spec_container_env",
+						Description: "EnvVar represents an environment variable present in a Container",
+						Resolver:    fetchCloudrunServiceSpecTemplateSpecContainerEnvs,
+						Columns: []schema.Column{
+							{
+								Name:        "service_spec_template_spec_container_cq_id",
+								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_containers table (FK)",
+								Type:        schema.TypeUUID,
+								Resolver:    schema.ParentIdResolver,
+							},
+							{
+								Name:        "name",
+								Description: "Name of the environment variable",
+								Type:        schema.TypeString,
+							},
+							{
+								Name:        "value",
+								Description: "Variable references $(VAR_NAME) are expanded using the previous defined environment variables in the container and any route environment variables",
+								Type:        schema.TypeString,
+							},
+							{
+								Name:        "value_from_config_map_key_ref_key",
+								Description: "The key to select",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.ConfigMapKeyRef.Key"),
+							},
+							{
+								Name:        "value_from_config_map_key_ref_local_object_reference_name",
+								Description: "Name of the referent",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.ConfigMapKeyRef.LocalObjectReference.Name"),
+							},
+							{
+								Name:        "value_from_config_map_key_ref_name",
+								Description: "The ConfigMap to select from",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.ConfigMapKeyRef.Name"),
+							},
+							{
+								Name:        "value_from_config_map_key_ref_optional",
+								Description: "Specify whether the ConfigMap or its key must be defined",
+								Type:        schema.TypeBool,
+								Resolver:    schema.PathResolver("ValueFrom.ConfigMapKeyRef.Optional"),
+							},
+							{
+								Name:        "value_from_secret_key_ref_key",
+								Description: "A Cloud Secret Manager secret version",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.Key"),
+							},
+							{
+								Name:        "value_from_secret_key_ref_local_object_reference_name",
+								Description: "Name of the referent",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.LocalObjectReference.Name"),
+							},
+							{
+								Name:        "value_from_secret_key_ref_name",
+								Description: "The name of the secret in Cloud Secret Manager",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.Name"),
+							},
+							{
+								Name:        "value_from_secret_key_ref_optional",
+								Description: "Specify whether the Secret or its key must be defined",
+								Type:        schema.TypeBool,
+								Resolver:    schema.PathResolver("ValueFrom.SecretKeyRef.Optional"),
+							},
+						},
+					},
+					{
+						Name:        "gcp_cloudrun_service_spec_template_spec_container_env_from",
+						Description: "Not supported by Cloud Run EnvFromSource represents the source of a set of ConfigMaps",
+						Resolver:    fetchCloudrunServiceSpecTemplateSpecContainerEnvFroms,
+						Columns: []schema.Column{
+							{
+								Name:        "service_spec_template_spec_container_cq_id",
+								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_containers table (FK)",
+								Type:        schema.TypeUUID,
+								Resolver:    schema.ParentIdResolver,
+							},
+							{
+								Name:        "config_map_ref_local_object_reference_name",
+								Description: "Name of the referent",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ConfigMapRef.LocalObjectReference.Name"),
+							},
+							{
+								Name:        "config_map_ref_name",
+								Description: "The ConfigMap to select from",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("ConfigMapRef.Name"),
+							},
+							{
+								Name:        "config_map_ref_optional",
+								Description: "Specify whether the ConfigMap must be defined",
+								Type:        schema.TypeBool,
+								Resolver:    schema.PathResolver("ConfigMapRef.Optional"),
+							},
+							{
+								Name:        "prefix",
+								Description: "An optional identifier to prepend to each key in the ConfigMap",
+								Type:        schema.TypeString,
+							},
+							{
+								Name:        "secret_ref_local_object_reference_name",
+								Description: "Name of the referent",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("SecretRef.LocalObjectReference.Name"),
+							},
+							{
+								Name:        "secret_ref_name",
+								Description: "The Secret to select from",
+								Type:        schema.TypeString,
+								Resolver:    schema.PathResolver("SecretRef.Name"),
+							},
+							{
+								Name:        "secret_ref_optional",
+								Description: "Specify whether the Secret must be defined",
+								Type:        schema.TypeBool,
+								Resolver:    schema.PathResolver("SecretRef.Optional"),
+							},
+						},
+					},
+					{
+						Name:        "gcp_cloudrun_service_spec_template_spec_container_liveness_probe_http_get_http_headers",
+						Description: "Not supported by Cloud Run HTTPHeader describes a custom header to be used in HTTP probes",
+						Resolver:    fetchCloudrunServiceSpecTemplateSpecContainerLivenessProbeHttpGetHttpHeaders,
+						Columns: []schema.Column{
+							{
+								Name:        "service_spec_template_spec_container_cq_id",
+								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_containers table (FK)",
+								Type:        schema.TypeUUID,
+								Resolver:    schema.ParentIdResolver,
+							},
+							{
+								Name:        "name",
+								Description: "The header field name",
+								Type:        schema.TypeString,
+							},
+							{
+								Name:        "value",
+								Description: "The header field value",
+								Type:        schema.TypeString,
+							},
+						},
+					},
+					{
+						Name:        "gcp_cloudrun_service_spec_template_spec_container_startup_probe_http_get_http_headers",
+						Description: "Not supported by Cloud Run HTTPHeader describes a custom header to be used in HTTP probes",
+						Resolver:    fetchCloudrunServiceSpecTemplateSpecContainerStartupProbeHttpGetHttpHeaders,
+						Columns: []schema.Column{
+							{
+								Name:        "service_spec_template_spec_container_cq_id",
+								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_containers table (FK)",
+								Type:        schema.TypeUUID,
+								Resolver:    schema.ParentIdResolver,
+							},
+							{
+								Name:        "name",
+								Description: "The header field name",
+								Type:        schema.TypeString,
+							},
+							{
+								Name:        "value",
+								Description: "The header field value",
+								Type:        schema.TypeString,
+							},
+						},
+					},
+					{
+						Name:        "gcp_cloudrun_service_spec_template_spec_container_volume_mounts",
+						Description: "VolumeMount describes a mounting of a Volume within a container",
+						Resolver:    fetchCloudrunServiceSpecTemplateSpecContainerVolumeMounts,
+						Columns: []schema.Column{
+							{
+								Name:        "service_spec_template_spec_container_cq_id",
+								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_containers table (FK)",
+								Type:        schema.TypeUUID,
+								Resolver:    schema.ParentIdResolver,
+							},
+							{
+								Name:        "mount_path",
+								Description: "Path within the container at which the volume should be mounted",
+								Type:        schema.TypeString,
+							},
+							{
+								Name:        "name",
+								Description: "The name of the volume",
+								Type:        schema.TypeString,
+							},
+							{
+								Name:        "read_only",
+								Description: "Only true is accepted",
+								Type:        schema.TypeBool,
+							},
+							{
+								Name:        "sub_path",
+								Description: "Path within the volume from which the container's volume should be mounted",
+								Type:        schema.TypeString,
+							},
+						},
+					},
+				},
+			},
+			{
+				Name:        "gcp_cloudrun_service_spec_template_spec_volumes",
+				Description: "Volume represents a named volume in a container",
+				Resolver:    fetchCloudrunServiceSpecTemplateSpecVolumes,
+				Columns: []schema.Column{
+					{
+						Name:        "service_cq_id",
+						Description: "Unique CloudQuery ID of gcp_cloudrun_services table (FK)",
+						Type:        schema.TypeUUID,
+						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:        "config_map_default_mode",
+						Description: "Mode bits to use on created files by default Must be a value between 0 and 0777",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("ConfigMap.DefaultMode"),
+					},
+					{
+						Name:        "config_map_name",
+						Description: "Name of the config",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("ConfigMap.Name"),
+					},
+					{
+						Name:        "config_map_optional",
+						Description: "Specify whether the Secret or its keys must be defined",
+						Type:        schema.TypeBool,
+						Resolver:    schema.PathResolver("ConfigMap.Optional"),
+					},
+					{
+						Name:        "name",
+						Description: "Volume's name",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "secret_default_mode",
+						Description: "Mode bits to use on created files by default Must be a value between 0000 and 0777",
+						Type:        schema.TypeBigInt,
+						Resolver:    schema.PathResolver("Secret.DefaultMode"),
+					},
+					{
+						Name:        "secret_optional",
+						Description: "Specify whether the Secret or its keys must be defined",
+						Type:        schema.TypeBool,
+						Resolver:    schema.PathResolver("Secret.Optional"),
+					},
+					{
+						Name:        "secret_name",
+						Description: "The name of the secret in Cloud Secret Manager",
+						Type:        schema.TypeString,
+						Resolver:    schema.PathResolver("Secret.SecretName"),
+					},
+				},
+				Relations: []*schema.Table{
+					{
+						Name:        "gcp_cloudrun_service_spec_template_spec_volume_config_map_items",
+						Description: "Maps a string key to a path within a volume",
+						Resolver:    fetchCloudrunServiceSpecTemplateSpecVolumeConfigMapItems,
+						Columns: []schema.Column{
+							{
+								Name:        "service_spec_template_spec_volume_cq_id",
+								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_volumes table (FK)",
+								Type:        schema.TypeUUID,
+								Resolver:    schema.ParentIdResolver,
+							},
+							{
+								Name:        "key",
+								Description: "The Cloud Secret Manager secret version",
+								Type:        schema.TypeString,
+							},
+							{
+								Name:        "mode",
+								Description: "Mode bits to use on this file, must be a value between 0000 and 0777",
+								Type:        schema.TypeBigInt,
+							},
+							{
+								Name:        "path",
+								Description: "The relative path of the file to map the key to",
+								Type:        schema.TypeString,
+							},
+						},
+					},
+					{
+						Name:        "gcp_cloudrun_service_spec_template_spec_volume_secret_items",
+						Description: "Maps a string key to a path within a volume",
+						Resolver:    fetchCloudrunServiceSpecTemplateSpecVolumeSecretItems,
+						Columns: []schema.Column{
+							{
+								Name:        "service_spec_template_spec_volume_cq_id",
+								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_volumes table (FK)",
+								Type:        schema.TypeUUID,
+								Resolver:    schema.ParentIdResolver,
+							},
+							{
+								Name:        "key",
+								Description: "The Cloud Secret Manager secret version",
+								Type:        schema.TypeString,
+							},
+							{
+								Name:        "mode",
+								Description: "Mode bits to use on this file, must be a value between 0000 and 0777",
+								Type:        schema.TypeBigInt,
+							},
+							{
+								Name:        "path",
+								Description: "The relative path of the file to map the key to",
+								Type:        schema.TypeString,
+							},
+						},
+					},
+				},
+			},
+			{
+				Name:        "gcp_cloudrun_service_spec_traffic",
+				Description: "TrafficTarget holds a single entry of the routing table for a Route",
+				Resolver:    fetchCloudrunServiceSpecTraffics,
+				Columns: []schema.Column{
+					{
+						Name:        "service_cq_id",
+						Description: "Unique CloudQuery ID of gcp_cloudrun_services table (FK)",
+						Type:        schema.TypeUUID,
+						Resolver:    schema.ParentIdResolver,
+					},
+					{
+						Name:        "configuration_name",
+						Description: "ConfigurationName of a configuration to whose latest revision we will send this portion of traffic",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "latest_revision",
+						Description: "Optional",
+						Type:        schema.TypeBool,
+					},
+					{
+						Name:        "percent",
+						Description: "Percent specifies percent of the traffic to this Revision or Configuration",
+						Type:        schema.TypeBigInt,
+					},
+					{
+						Name:        "revision_name",
+						Description: "RevisionName of a specific revision to which to send this portion of traffic",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "tag",
+						Description: "Optional",
+						Type:        schema.TypeString,
+					},
+					{
+						Name:        "url",
+						Description: "Output only",
 						Type:        schema.TypeString,
 					},
 				},
@@ -320,15 +1100,94 @@ func fetchCloudrunServices(ctx context.Context, meta schema.ClientMeta, parent *
 }
 func fetchCloudrunServiceMetadataOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*run.Service)
-	if r.Metadata == nil {
+	if r == nil || r.Metadata == nil {
 		return nil
 	}
 	res <- r.Metadata.OwnerReferences
 	return nil
 }
+func fetchCloudrunServiceSpecTemplateMetadataOwnerReferences(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	r := parent.Item.(*run.Service)
+	if r == nil || r.Spec == nil || r.Spec.Template == nil || r.Spec.Template.Metadata == nil {
+		return nil
+	}
+	res <- r.Spec.Template.Metadata.OwnerReferences
+	return nil
+}
+func fetchCloudrunServiceSpecTemplateSpecContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	r := parent.Item.(*run.Service)
+	if r == nil || r.Spec == nil || r.Spec.Template == nil || r.Spec.Template.Spec == nil {
+		return nil
+	}
+	res <- r.Spec.Template.Spec.Containers
+	return nil
+}
+func fetchCloudrunServiceSpecTemplateSpecContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	r := parent.Item.(*run.Container)
+	res <- r.Env
+	return nil
+}
+func fetchCloudrunServiceSpecTemplateSpecContainerEnvFroms(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	r := parent.Item.(*run.Container)
+	res <- r.EnvFrom
+	return nil
+}
+func fetchCloudrunServiceSpecTemplateSpecContainerLivenessProbeHttpGetHttpHeaders(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	r := parent.Item.(*run.Container)
+	if r == nil || r.LivenessProbe == nil || r.LivenessProbe.HttpGet == nil {
+		return nil
+	}
+	res <- r.LivenessProbe.HttpGet.HttpHeaders
+	return nil
+}
+func fetchCloudrunServiceSpecTemplateSpecContainerStartupProbeHttpGetHttpHeaders(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	r := parent.Item.(*run.Container)
+	if r == nil || r.StartupProbe == nil || r.StartupProbe.HttpGet == nil {
+		return nil
+	}
+	res <- r.StartupProbe.HttpGet.HttpHeaders
+	return nil
+}
+func fetchCloudrunServiceSpecTemplateSpecContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	r := parent.Item.(*run.Container)
+	res <- r.VolumeMounts
+	return nil
+}
+func fetchCloudrunServiceSpecTemplateSpecVolumes(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	r := parent.Item.(*run.Service)
+	if r == nil || r.Spec == nil || r.Spec.Template == nil || r.Spec.Template.Spec == nil {
+		return nil
+	}
+	res <- r.Spec.Template.Spec.Volumes
+	return nil
+}
+func fetchCloudrunServiceSpecTemplateSpecVolumeConfigMapItems(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	r := parent.Item.(*run.Volume)
+	if r == nil || r.ConfigMap == nil {
+		return nil
+	}
+	res <- r.ConfigMap.Items
+	return nil
+}
+func fetchCloudrunServiceSpecTemplateSpecVolumeSecretItems(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	r := parent.Item.(*run.Volume)
+	if r == nil || r.Secret == nil {
+		return nil
+	}
+	res <- r.Secret.Items
+	return nil
+}
+func fetchCloudrunServiceSpecTraffics(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+	r := parent.Item.(*run.Service)
+	if r == nil || r.Spec == nil {
+		return nil
+	}
+	res <- r.Spec.Traffic
+	return nil
+}
 func fetchCloudrunServiceStatusConditions(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*run.Service)
-	if r.Status == nil {
+	if r == nil || r.Status == nil {
 		return nil
 	}
 	res <- r.Status.Conditions
@@ -336,7 +1195,7 @@ func fetchCloudrunServiceStatusConditions(ctx context.Context, meta schema.Clien
 }
 func fetchCloudrunServiceStatusTraffics(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*run.Service)
-	if r.Status == nil {
+	if r == nil || r.Status == nil {
 		return nil
 	}
 	res <- r.Status.Traffic

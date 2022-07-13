@@ -59,11 +59,6 @@ resource "gcp" "cloudrun" "services" {
     }
   }
 
-  column "spec" {
-    type = "json"
-    generate_resolver = false
-  }
-
   relation "gcp" "cloudrun" "spec_template_spec_containers" {
     path = "google.golang.org/api/run/v1.Container"
     description = "A single application container"

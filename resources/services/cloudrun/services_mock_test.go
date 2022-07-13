@@ -3,7 +3,6 @@ package cloudrun
 import (
 	"context"
 	"encoding/json"
-	"github.com/cloudquery/faker/v3"
 	"github.com/julienschmidt/httprouter"
 	"google.golang.org/api/option"
 	"google.golang.org/api/run/v1"
@@ -11,21 +10,26 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/cloudquery/faker/v3"
+
 	"github.com/cloudquery/cq-provider-gcp/client"
 )
 
 func createServicesServer() (*client.Services, error) {
 	ctx := context.Background()
-	var service run.Service
-	if err := faker.FakeData(&service); err != nil {
+	services := make([]*run.Service, 11)
+	if err := faker.FakeData(&services[0]); err != nil {
 		return nil, err
+	}
+	for depth := 0; depth < len(services)-1; depth++ {
+		if err := faker.FakeDataWithNilPointers(&services[depth+1], depth); err != nil {
+			return nil, err
+		}
 	}
 	mux := httprouter.New()
 	mux.GET("/v1/projects/testProject/locations/-/services", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		resp := &run.ListServicesResponse{
-			Items: []*run.Service{
-				&service,
-			},
+			Items:    services,
 			Metadata: nil,
 		}
 		b, err := json.Marshal(resp)
