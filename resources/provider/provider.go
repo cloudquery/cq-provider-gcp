@@ -1,10 +1,6 @@
 package provider
 
 import (
-	"github.com/cloudquery/cq-provider-sdk/cqproto"
-	"github.com/cloudquery/cq-provider-sdk/provider"
-	"github.com/cloudquery/cq-provider-sdk/provider/schema"
-
 	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/bigquery"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/cloudbilling"
@@ -21,6 +17,9 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/resources/services/resource_manager"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/sql"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/storage"
+	"github.com/cloudquery/cq-provider-sdk/cqproto"
+	"github.com/cloudquery/cq-provider-sdk/provider"
+	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 )
 
 var (

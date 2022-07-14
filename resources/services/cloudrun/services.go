@@ -3,11 +3,10 @@ package cloudrun
 import (
 	"context"
 
+	"github.com/cloudquery/cq-provider-gcp/client"
 	"github.com/cloudquery/cq-provider-sdk/provider/diag"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	run "google.golang.org/api/run/v1"
-
-	"github.com/cloudquery/cq-provider-gcp/client"
 )
 
 //go:generate cq-gen --resource services --config gen.hcl --output .
@@ -1124,11 +1123,17 @@ func fetchCloudrunServiceSpecTemplateSpecContainers(ctx context.Context, meta sc
 }
 func fetchCloudrunServiceSpecTemplateSpecContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*run.Container)
+	if r == nil {
+		return nil
+	}
 	res <- r.Env
 	return nil
 }
 func fetchCloudrunServiceSpecTemplateSpecContainerEnvFroms(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*run.Container)
+	if r == nil {
+		return nil
+	}
 	res <- r.EnvFrom
 	return nil
 }
@@ -1150,6 +1155,9 @@ func fetchCloudrunServiceSpecTemplateSpecContainerStartupProbeHttpGetHttpHeaders
 }
 func fetchCloudrunServiceSpecTemplateSpecContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*run.Container)
+	if r == nil {
+		return nil
+	}
 	res <- r.VolumeMounts
 	return nil
 }
