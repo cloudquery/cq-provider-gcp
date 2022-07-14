@@ -59,9 +59,53 @@ resource "gcp" "cloudrun" "services" {
     }
   }
 
+  ##################################################################
+  # Skip columns not currently supported by Cloud Run
+  ##################################################################
+  column "metadata_cluster_name" {
+    skip = true
+  }
+  column "metadata_deletion_grace_period_seconds" {
+    skip = true
+  }
+  column "metadata_deletion_timestamp" {
+    skip = true
+  }
+  column "metadata_finalizers" {
+    skip = true
+  }
+  column "metadata_generate_name" {
+    skip = true
+  }
+  column "spec_template_metadata_cluster_name" {
+    skip = true
+  }
+  column "spec_template_metadata_deletion_grace_period_seconds" {
+    skip = true
+  }
+  column "spec_template_metadata_deletion_timestamp" {
+    skip = true
+  }
+  column "spec_template_metadata_finalizers" {
+    skip = true
+  }
+  column "spec_template_metadata_generate_name" {
+    skip = true
+  }
+
+  ##################################################################
+  # Relations
+  ##################################################################
+  relation "gcp" "cloudrun" "spec_template_spec_volumes" {
+    path = "google.golang.org/api/run/v1.Volume"
+    description = "Volume represents a named volume in a container"
+    rename = "spec_template_volumes"
+  }
+
   relation "gcp" "cloudrun" "spec_template_spec_containers" {
     path = "google.golang.org/api/run/v1.Container"
     description = "A single application container"
+    rename = "spec_template_containers"
 
     column "ports" {
       type = "json"
@@ -72,6 +116,21 @@ resource "gcp" "cloudrun" "services" {
       type = "json"
       generate_resolver = false
     }
+
+    ##################################################################
+    # Skip columns not currently supported by Cloud Run
+    ##################################################################
+    column "env_from" {
+      skip = true
+    }
+    column "liveness_probe_http_get_http_headers" {
+      skip = true
+    }
+    column "startup_probe_http_get_http_headers" {
+      skip = true
+    }
+    column "readiness_probe_http_get_http_headers" {
+      skip = true
+    }
   }
 }
-

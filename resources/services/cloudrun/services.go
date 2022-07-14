@@ -41,40 +41,10 @@ func Services() *schema.Table {
 				Resolver:    schema.PathResolver("Metadata.Annotations"),
 			},
 			{
-				Name:        "metadata_cluster_name",
-				Description: "Not supported by Cloud Run The name of the cluster which the object belongs to",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Metadata.ClusterName"),
-			},
-			{
 				Name:        "metadata_creation_timestamp",
 				Description: "CreationTimestamp is a timestamp representing the server time when this object was created",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Metadata.CreationTimestamp"),
-			},
-			{
-				Name:        "metadata_deletion_grace_period_seconds",
-				Description: "Not supported by Cloud Run Number of seconds allowed for this object to gracefully terminate before it will be removed from the system",
-				Type:        schema.TypeBigInt,
-				Resolver:    schema.PathResolver("Metadata.DeletionGracePeriodSeconds"),
-			},
-			{
-				Name:        "metadata_deletion_timestamp",
-				Description: "Not supported by Cloud Run DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Metadata.DeletionTimestamp"),
-			},
-			{
-				Name:        "metadata_finalizers",
-				Description: "Not supported by Cloud Run Must be empty before the object is deleted from the registry",
-				Type:        schema.TypeStringArray,
-				Resolver:    schema.PathResolver("Metadata.Finalizers"),
-			},
-			{
-				Name:        "metadata_generate_name",
-				Description: "Not supported by Cloud Run GenerateName is an optional prefix, used by the server, to generate a unique name ONLY IF the Name field has not been provided",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Metadata.GenerateName"),
 			},
 			{
 				Name:        "metadata_generation",
@@ -125,40 +95,10 @@ func Services() *schema.Table {
 				Resolver:    schema.PathResolver("Spec.Template.Metadata.Annotations"),
 			},
 			{
-				Name:        "spec_template_metadata_cluster_name",
-				Description: "Not supported by Cloud Run The name of the cluster which the object belongs to",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Spec.Template.Metadata.ClusterName"),
-			},
-			{
 				Name:        "spec_template_metadata_creation_timestamp",
 				Description: "CreationTimestamp is a timestamp representing the server time when this object was created",
 				Type:        schema.TypeString,
 				Resolver:    schema.PathResolver("Spec.Template.Metadata.CreationTimestamp"),
-			},
-			{
-				Name:        "spec_template_metadata_deletion_grace_period_seconds",
-				Description: "Not supported by Cloud Run Number of seconds allowed for this object to gracefully terminate before it will be removed from the system",
-				Type:        schema.TypeBigInt,
-				Resolver:    schema.PathResolver("Spec.Template.Metadata.DeletionGracePeriodSeconds"),
-			},
-			{
-				Name:        "spec_template_metadata_deletion_timestamp",
-				Description: "Not supported by Cloud Run DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Spec.Template.Metadata.DeletionTimestamp"),
-			},
-			{
-				Name:        "spec_template_metadata_finalizers",
-				Description: "Not supported by Cloud Run Must be empty before the object is deleted from the registry",
-				Type:        schema.TypeStringArray,
-				Resolver:    schema.PathResolver("Spec.Template.Metadata.Finalizers"),
-			},
-			{
-				Name:        "spec_template_metadata_generate_name",
-				Description: "Not supported by Cloud Run GenerateName is an optional prefix, used by the server, to generate a unique name ONLY IF the Name field has not been provided",
-				Type:        schema.TypeString,
-				Resolver:    schema.PathResolver("Spec.Template.Metadata.GenerateName"),
 			},
 			{
 				Name:        "spec_template_metadata_generation",
@@ -338,9 +278,9 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_cloudrun_service_spec_template_spec_containers",
+				Name:        "gcp_cloudrun_service_spec_template_containers",
 				Description: "A single application container",
-				Resolver:    fetchCloudrunServiceSpecTemplateSpecContainers,
+				Resolver:    fetchCloudrunServiceSpecTemplateContainers,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -617,13 +557,13 @@ func Services() *schema.Table {
 				},
 				Relations: []*schema.Table{
 					{
-						Name:        "gcp_cloudrun_service_spec_template_spec_container_env",
+						Name:        "gcp_cloudrun_service_spec_template_container_env",
 						Description: "EnvVar represents an environment variable present in a Container",
-						Resolver:    fetchCloudrunServiceSpecTemplateSpecContainerEnvs,
+						Resolver:    fetchCloudrunServiceSpecTemplateContainerEnvs,
 						Columns: []schema.Column{
 							{
-								Name:        "service_spec_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_containers table (FK)",
+								Name:        "service_spec_template_container_cq_id",
+								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -688,113 +628,13 @@ func Services() *schema.Table {
 						},
 					},
 					{
-						Name:        "gcp_cloudrun_service_spec_template_spec_container_env_from",
-						Description: "Not supported by Cloud Run EnvFromSource represents the source of a set of ConfigMaps",
-						Resolver:    fetchCloudrunServiceSpecTemplateSpecContainerEnvFroms,
-						Columns: []schema.Column{
-							{
-								Name:        "service_spec_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "config_map_ref_local_object_reference_name",
-								Description: "Name of the referent",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ConfigMapRef.LocalObjectReference.Name"),
-							},
-							{
-								Name:        "config_map_ref_name",
-								Description: "The ConfigMap to select from",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("ConfigMapRef.Name"),
-							},
-							{
-								Name:        "config_map_ref_optional",
-								Description: "Specify whether the ConfigMap must be defined",
-								Type:        schema.TypeBool,
-								Resolver:    schema.PathResolver("ConfigMapRef.Optional"),
-							},
-							{
-								Name:        "prefix",
-								Description: "An optional identifier to prepend to each key in the ConfigMap",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "secret_ref_local_object_reference_name",
-								Description: "Name of the referent",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("SecretRef.LocalObjectReference.Name"),
-							},
-							{
-								Name:        "secret_ref_name",
-								Description: "The Secret to select from",
-								Type:        schema.TypeString,
-								Resolver:    schema.PathResolver("SecretRef.Name"),
-							},
-							{
-								Name:        "secret_ref_optional",
-								Description: "Specify whether the Secret must be defined",
-								Type:        schema.TypeBool,
-								Resolver:    schema.PathResolver("SecretRef.Optional"),
-							},
-						},
-					},
-					{
-						Name:        "gcp_cloudrun_service_spec_template_spec_container_liveness_probe_http_get_http_headers",
-						Description: "Not supported by Cloud Run HTTPHeader describes a custom header to be used in HTTP probes",
-						Resolver:    fetchCloudrunServiceSpecTemplateSpecContainerLivenessProbeHttpGetHttpHeaders,
-						Columns: []schema.Column{
-							{
-								Name:        "service_spec_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "The header field name",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "value",
-								Description: "The header field value",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "gcp_cloudrun_service_spec_template_spec_container_startup_probe_http_get_http_headers",
-						Description: "Not supported by Cloud Run HTTPHeader describes a custom header to be used in HTTP probes",
-						Resolver:    fetchCloudrunServiceSpecTemplateSpecContainerStartupProbeHttpGetHttpHeaders,
-						Columns: []schema.Column{
-							{
-								Name:        "service_spec_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_containers table (FK)",
-								Type:        schema.TypeUUID,
-								Resolver:    schema.ParentIdResolver,
-							},
-							{
-								Name:        "name",
-								Description: "The header field name",
-								Type:        schema.TypeString,
-							},
-							{
-								Name:        "value",
-								Description: "The header field value",
-								Type:        schema.TypeString,
-							},
-						},
-					},
-					{
-						Name:        "gcp_cloudrun_service_spec_template_spec_container_volume_mounts",
+						Name:        "gcp_cloudrun_service_spec_template_container_volume_mounts",
 						Description: "VolumeMount describes a mounting of a Volume within a container",
-						Resolver:    fetchCloudrunServiceSpecTemplateSpecContainerVolumeMounts,
+						Resolver:    fetchCloudrunServiceSpecTemplateContainerVolumeMounts,
 						Columns: []schema.Column{
 							{
-								Name:        "service_spec_template_spec_container_cq_id",
-								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_containers table (FK)",
+								Name:        "service_spec_template_container_cq_id",
+								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_containers table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -823,9 +663,9 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_cloudrun_service_spec_template_spec_volumes",
+				Name:        "gcp_cloudrun_service_spec_template_volumes",
 				Description: "Volume represents a named volume in a container",
-				Resolver:    fetchCloudrunServiceSpecTemplateSpecVolumes,
+				Resolver:    fetchCloudrunServiceSpecTemplateVolumes,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -835,7 +675,7 @@ func Services() *schema.Table {
 					},
 					{
 						Name:        "config_map_default_mode",
-						Description: "Mode bits to use on created files by default Must be a value between 0 and 0777",
+						Description: "Integer representation of mode bits to use on created files by default",
 						Type:        schema.TypeBigInt,
 						Resolver:    schema.PathResolver("ConfigMap.DefaultMode"),
 					},
@@ -858,7 +698,7 @@ func Services() *schema.Table {
 					},
 					{
 						Name:        "secret_default_mode",
-						Description: "Mode bits to use on created files by default Must be a value between 0000 and 0777",
+						Description: "Integer representation of mode bits to use on created files by default",
 						Type:        schema.TypeBigInt,
 						Resolver:    schema.PathResolver("Secret.DefaultMode"),
 					},
@@ -877,13 +717,13 @@ func Services() *schema.Table {
 				},
 				Relations: []*schema.Table{
 					{
-						Name:        "gcp_cloudrun_service_spec_template_spec_volume_config_map_items",
+						Name:        "gcp_cloudrun_service_spec_template_volume_config_map_items",
 						Description: "Maps a string key to a path within a volume",
-						Resolver:    fetchCloudrunServiceSpecTemplateSpecVolumeConfigMapItems,
+						Resolver:    fetchCloudrunServiceSpecTemplateVolumeConfigMapItems,
 						Columns: []schema.Column{
 							{
-								Name:        "service_spec_template_spec_volume_cq_id",
-								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_volumes table (FK)",
+								Name:        "service_spec_template_volume_cq_id",
+								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_volumes table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -894,7 +734,7 @@ func Services() *schema.Table {
 							},
 							{
 								Name:        "mode",
-								Description: "Mode bits to use on this file, must be a value between 0000 and 0777",
+								Description: "Mode bits to use on this file, must be a value between 01 and 0777 (octal)",
 								Type:        schema.TypeBigInt,
 							},
 							{
@@ -905,13 +745,13 @@ func Services() *schema.Table {
 						},
 					},
 					{
-						Name:        "gcp_cloudrun_service_spec_template_spec_volume_secret_items",
+						Name:        "gcp_cloudrun_service_spec_template_volume_secret_items",
 						Description: "Maps a string key to a path within a volume",
-						Resolver:    fetchCloudrunServiceSpecTemplateSpecVolumeSecretItems,
+						Resolver:    fetchCloudrunServiceSpecTemplateVolumeSecretItems,
 						Columns: []schema.Column{
 							{
-								Name:        "service_spec_template_spec_volume_cq_id",
-								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_volumes table (FK)",
+								Name:        "service_spec_template_volume_cq_id",
+								Description: "Unique CloudQuery ID of gcp_cloudrun_service_spec_template_volumes table (FK)",
 								Type:        schema.TypeUUID,
 								Resolver:    schema.ParentIdResolver,
 							},
@@ -922,7 +762,7 @@ func Services() *schema.Table {
 							},
 							{
 								Name:        "mode",
-								Description: "Mode bits to use on this file, must be a value between 0000 and 0777",
+								Description: "Mode bits to use on this file, must be a value between 01 and 0777 (octal)",
 								Type:        schema.TypeBigInt,
 							},
 							{
@@ -1113,7 +953,7 @@ func fetchCloudrunServiceSpecTemplateMetadataOwnerReferences(ctx context.Context
 	res <- r.Spec.Template.Metadata.OwnerReferences
 	return nil
 }
-func fetchCloudrunServiceSpecTemplateSpecContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+func fetchCloudrunServiceSpecTemplateContainers(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*run.Service)
 	if r == nil || r.Spec == nil || r.Spec.Template == nil || r.Spec.Template.Spec == nil {
 		return nil
@@ -1121,7 +961,7 @@ func fetchCloudrunServiceSpecTemplateSpecContainers(ctx context.Context, meta sc
 	res <- r.Spec.Template.Spec.Containers
 	return nil
 }
-func fetchCloudrunServiceSpecTemplateSpecContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+func fetchCloudrunServiceSpecTemplateContainerEnvs(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*run.Container)
 	if r == nil {
 		return nil
@@ -1129,31 +969,7 @@ func fetchCloudrunServiceSpecTemplateSpecContainerEnvs(ctx context.Context, meta
 	res <- r.Env
 	return nil
 }
-func fetchCloudrunServiceSpecTemplateSpecContainerEnvFroms(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r := parent.Item.(*run.Container)
-	if r == nil {
-		return nil
-	}
-	res <- r.EnvFrom
-	return nil
-}
-func fetchCloudrunServiceSpecTemplateSpecContainerLivenessProbeHttpGetHttpHeaders(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r := parent.Item.(*run.Container)
-	if r == nil || r.LivenessProbe == nil || r.LivenessProbe.HttpGet == nil {
-		return nil
-	}
-	res <- r.LivenessProbe.HttpGet.HttpHeaders
-	return nil
-}
-func fetchCloudrunServiceSpecTemplateSpecContainerStartupProbeHttpGetHttpHeaders(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
-	r := parent.Item.(*run.Container)
-	if r == nil || r.StartupProbe == nil || r.StartupProbe.HttpGet == nil {
-		return nil
-	}
-	res <- r.StartupProbe.HttpGet.HttpHeaders
-	return nil
-}
-func fetchCloudrunServiceSpecTemplateSpecContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+func fetchCloudrunServiceSpecTemplateContainerVolumeMounts(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*run.Container)
 	if r == nil {
 		return nil
@@ -1161,7 +977,7 @@ func fetchCloudrunServiceSpecTemplateSpecContainerVolumeMounts(ctx context.Conte
 	res <- r.VolumeMounts
 	return nil
 }
-func fetchCloudrunServiceSpecTemplateSpecVolumes(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+func fetchCloudrunServiceSpecTemplateVolumes(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*run.Service)
 	if r == nil || r.Spec == nil || r.Spec.Template == nil || r.Spec.Template.Spec == nil {
 		return nil
@@ -1169,7 +985,7 @@ func fetchCloudrunServiceSpecTemplateSpecVolumes(ctx context.Context, meta schem
 	res <- r.Spec.Template.Spec.Volumes
 	return nil
 }
-func fetchCloudrunServiceSpecTemplateSpecVolumeConfigMapItems(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+func fetchCloudrunServiceSpecTemplateVolumeConfigMapItems(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*run.Volume)
 	if r == nil || r.ConfigMap == nil {
 		return nil
@@ -1177,7 +993,7 @@ func fetchCloudrunServiceSpecTemplateSpecVolumeConfigMapItems(ctx context.Contex
 	res <- r.ConfigMap.Items
 	return nil
 }
-func fetchCloudrunServiceSpecTemplateSpecVolumeSecretItems(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
+func fetchCloudrunServiceSpecTemplateVolumeSecretItems(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*run.Volume)
 	if r == nil || r.Secret == nil {
 		return nil
