@@ -1,10 +1,10 @@
 
-# Table: gcp_cloudrun_service_spec_template_spec_container_env
+# Table: gcp_cloudrun_service_spec_template_container_env
 EnvVar represents an environment variable present in a Container
 ## Columns
 | Name        | Type           | Description  |
 | ------------- | ------------- | -----  |
-|service_spec_template_spec_container_cq_id|uuid|Unique CloudQuery ID of gcp_cloudrun_service_spec_template_spec_containers table (FK)|
+|service_spec_template_container_cq_id|uuid|Unique CloudQuery ID of gcp_cloudrun_service_spec_template_containers table (FK)|
 |name|text|Name of the environment variable|
 |value|text|Variable references $(VAR_NAME) are expanded using the previous defined environment variables in the container and any route environment variables|
 |value_from_config_map_key_ref_key|text|The key to select|

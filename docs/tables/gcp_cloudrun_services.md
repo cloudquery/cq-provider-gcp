@@ -8,12 +8,7 @@ Service acts as a top-level container that manages a set of Routes and Configura
 |api_version|text|The API version for this call such as "servingknativedev/v1"|
 |kind|text|The kind of resource, in this case "Service"|
 |metadata_annotations|jsonb|Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata|
-|metadata_cluster_name|text|Not supported by Cloud Run The name of the cluster which the object belongs to|
 |metadata_creation_timestamp|text|CreationTimestamp is a timestamp representing the server time when this object was created|
-|metadata_deletion_grace_period_seconds|bigint|Not supported by Cloud Run Number of seconds allowed for this object to gracefully terminate before it will be removed from the system|
-|metadata_deletion_timestamp|text|Not supported by Cloud Run DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted|
-|metadata_finalizers|text[]|Not supported by Cloud Run Must be empty before the object is deleted from the registry|
-|metadata_generate_name|text|Not supported by Cloud Run GenerateName is an optional prefix, used by the server, to generate a unique name ONLY IF the Name field has not been provided|
 |metadata_generation|bigint|A sequence number representing a specific generation of the desired state|
 |metadata_labels|jsonb|Map of string keys and values that can be used to organize and categorize (scope and select) objects|
 |metadata_name|text|Name must be unique within a namespace, within a Cloud Run region|
@@ -22,12 +17,7 @@ Service acts as a top-level container that manages a set of Routes and Configura
 |metadata_self_link|text|SelfLink is a URL representing this object Populated by the system|
 |metadata_uid|text|UID is the unique in time and space value for this object|
 |spec_template_metadata_annotations|jsonb|Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata|
-|spec_template_metadata_cluster_name|text|Not supported by Cloud Run The name of the cluster which the object belongs to|
 |spec_template_metadata_creation_timestamp|text|CreationTimestamp is a timestamp representing the server time when this object was created|
-|spec_template_metadata_deletion_grace_period_seconds|bigint|Not supported by Cloud Run Number of seconds allowed for this object to gracefully terminate before it will be removed from the system|
-|spec_template_metadata_deletion_timestamp|text|Not supported by Cloud Run DeletionTimestamp is RFC 3339 date and time at which this resource will be deleted|
-|spec_template_metadata_finalizers|text[]|Not supported by Cloud Run Must be empty before the object is deleted from the registry|
-|spec_template_metadata_generate_name|text|Not supported by Cloud Run GenerateName is an optional prefix, used by the server, to generate a unique name ONLY IF the Name field has not been provided|
 |spec_template_metadata_generation|bigint|A sequence number representing a specific generation of the desired state|
 |spec_template_metadata_labels|jsonb|Map of string keys and values that can be used to organize and categorize (scope and select) objects|
 |spec_template_metadata_name|text|Name must be unique within a namespace, within a Cloud Run region|

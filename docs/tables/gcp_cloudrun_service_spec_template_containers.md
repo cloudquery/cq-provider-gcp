@@ -1,5 +1,5 @@
 
-# Table: gcp_cloudrun_service_spec_template_spec_containers
+# Table: gcp_cloudrun_service_spec_template_containers
 A single application container
 ## Columns
 | Name        | Type           | Description  |
