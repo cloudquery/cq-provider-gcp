@@ -96,6 +96,14 @@ resource "gcp" "cloudrun" "services" {
   ##################################################################
   # Relations
   ##################################################################
+  relation "gcp" "cloudrun" "metadata_owner_references" {
+    ignore_in_tests = true
+  }
+
+  relation "gcp" "cloudrun" "spec_template_metadata_owner_references" {
+    ignore_in_tests = true
+  }
+
   relation "gcp" "cloudrun" "spec_template_spec_volumes" {
     path = "google.golang.org/api/run/v1.Volume"
     description = "Volume represents a named volume in a container"

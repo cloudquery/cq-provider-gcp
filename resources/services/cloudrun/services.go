@@ -192,9 +192,10 @@ func Services() *schema.Table {
 		},
 		Relations: []*schema.Table{
 			{
-				Name:        "gcp_cloudrun_service_metadata_owner_references",
-				Description: "OwnerReference contains enough information to let you identify an owning object",
-				Resolver:    fetchCloudrunServiceMetadataOwnerReferences,
+				Name:          "gcp_cloudrun_service_metadata_owner_references",
+				Description:   "OwnerReference contains enough information to let you identify an owning object",
+				Resolver:      fetchCloudrunServiceMetadataOwnerReferences,
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
@@ -235,9 +236,10 @@ func Services() *schema.Table {
 				},
 			},
 			{
-				Name:        "gcp_cloudrun_service_spec_template_metadata_owner_references",
-				Description: "OwnerReference contains enough information to let you identify an owning object",
-				Resolver:    fetchCloudrunServiceSpecTemplateMetadataOwnerReferences,
+				Name:          "gcp_cloudrun_service_spec_template_metadata_owner_references",
+				Description:   "OwnerReference contains enough information to let you identify an owning object",
+				Resolver:      fetchCloudrunServiceSpecTemplateMetadataOwnerReferences,
+				IgnoreInTests: true,
 				Columns: []schema.Column{
 					{
 						Name:        "service_cq_id",
