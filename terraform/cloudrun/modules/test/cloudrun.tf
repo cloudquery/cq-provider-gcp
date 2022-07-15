@@ -32,6 +32,14 @@ resource "google_cloud_run_service" "default" {
     spec {
       containers {
         image = "us-docker.pkg.dev/cloudrun/container/hello"
+        command = ["/server"]
+        resources {
+          limits = {
+            cpu = "1000m"
+            memory = "512Mi"
+          }
+          requests = {}
+        }
         volume_mounts {
           name = "a-volume"
           mount_path = "/secrets"
@@ -67,6 +75,9 @@ resource "google_cloud_run_service" "default" {
       annotations = {
         "autoscaling.knative.dev/maxScale"      = "1"
         "run.googleapis.com/client-name"        = "terraform"
+      }
+      labels = {
+        "key" = "value"
       }
     }
   }
