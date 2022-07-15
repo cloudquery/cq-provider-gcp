@@ -291,9 +291,10 @@ func Services() *schema.Table {
 						Resolver:    schema.ParentIdResolver,
 					},
 					{
-						Name:        "args",
-						Description: "Arguments to the entrypoint",
-						Type:        schema.TypeStringArray,
+						Name:          "args",
+						Description:   "Arguments to the entrypoint",
+						Type:          schema.TypeStringArray,
+						IgnoreInTests: true,
 					},
 					{
 						Name: "command",
@@ -310,10 +311,11 @@ func Services() *schema.Table {
 						Type:        schema.TypeString,
 					},
 					{
-						Name:        "liveness_probe_exec_command",
-						Description: "Command is the command line to execute inside the container, the working directory for the command is root ('/') in the container's filesystem",
-						Type:        schema.TypeStringArray,
-						Resolver:    schema.PathResolver("LivenessProbe.Exec.Command"),
+						Name:          "liveness_probe_exec_command",
+						Description:   "Command is the command line to execute inside the container, the working directory for the command is root ('/') in the container's filesystem",
+						Type:          schema.TypeStringArray,
+						Resolver:      schema.PathResolver("LivenessProbe.Exec.Command"),
+						IgnoreInTests: true,
 					},
 					{
 						Name:        "liveness_probe_failure_threshold",
@@ -386,10 +388,11 @@ func Services() *schema.Table {
 						Type:        schema.TypeJSON,
 					},
 					{
-						Name:        "readiness_probe_exec_command",
-						Description: "Command is the command line to execute inside the container, the working directory for the command is root ('/') in the container's filesystem",
-						Type:        schema.TypeStringArray,
-						Resolver:    schema.PathResolver("ReadinessProbe.Exec.Command"),
+						Name:          "readiness_probe_exec_command",
+						Description:   "Command is the command line to execute inside the container, the working directory for the command is root ('/') in the container's filesystem",
+						Type:          schema.TypeStringArray,
+						Resolver:      schema.PathResolver("ReadinessProbe.Exec.Command"),
+						IgnoreInTests: true,
 					},
 					{
 						Name:        "readiness_probe_failure_threshold",
@@ -404,10 +407,11 @@ func Services() *schema.Table {
 						Resolver:    schema.PathResolver("ReadinessProbe.HttpGet.Host"),
 					},
 					{
-						Name:        "readiness_probe_http_get_http_headers",
-						Description: "Custom headers to set in the request",
-						Type:        schema.TypeJSON,
-						Resolver:    schema.PathResolver("ReadinessProbe.HttpGet.HttpHeaders"),
+						Name:          "readiness_probe_http_get_http_headers",
+						Description:   "Custom headers to set in the request",
+						Type:          schema.TypeJSON,
+						Resolver:      schema.PathResolver("ReadinessProbe.HttpGet.HttpHeaders"),
+						IgnoreInTests: true,
 					},
 					{
 						Name:        "readiness_probe_http_get_path",
@@ -464,10 +468,11 @@ func Services() *schema.Table {
 						Resolver:    schema.PathResolver("Resources.Limits"),
 					},
 					{
-						Name:        "resources_requests",
-						Description: "Only memory and CPU are supported",
-						Type:        schema.TypeJSON,
-						Resolver:    schema.PathResolver("Resources.Requests"),
+						Name:          "resources_requests",
+						Description:   "Only memory and CPU are supported",
+						Type:          schema.TypeJSON,
+						Resolver:      schema.PathResolver("Resources.Requests"),
+						IgnoreInTests: true,
 					},
 					{
 						Name:        "security_context_run_as_user",
@@ -476,10 +481,11 @@ func Services() *schema.Table {
 						Resolver:    schema.PathResolver("SecurityContext.RunAsUser"),
 					},
 					{
-						Name:        "startup_probe_exec_command",
-						Description: "Command is the command line to execute inside the container, the working directory for the command is root ('/') in the container's filesystem",
-						Type:        schema.TypeStringArray,
-						Resolver:    schema.PathResolver("StartupProbe.Exec.Command"),
+						Name:          "startup_probe_exec_command",
+						Description:   "Command is the command line to execute inside the container, the working directory for the command is root ('/') in the container's filesystem",
+						Type:          schema.TypeStringArray,
+						Resolver:      schema.PathResolver("StartupProbe.Exec.Command"),
+						IgnoreInTests: true,
 					},
 					{
 						Name:        "startup_probe_failure_threshold",

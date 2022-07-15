@@ -115,6 +115,15 @@ resource "gcp" "cloudrun" "services" {
     description = "A single application container"
     rename = "spec_template_containers"
 
+    ignore_in_tests = [
+      "readiness_probe_http_get_http_headers",
+      "readiness_probe_exec_command",
+      "startup_probe_exec_command",
+      "args",
+      "resources_requests",
+      "liveness_probe_exec_command",
+    ]
+
     column "ports" {
       type = "json"
       generate_resolver = false
