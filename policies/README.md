@@ -3,7 +3,7 @@ CloudQuery SQL Policies for GCP
 
 ## Policies and Compliance Frameworks Available
 
-- [GCP CIS V1.2.0](./sql/cis_v1.2.0/policy.sql)
+- [GCP CIS v1.2.0](./sql/cis_v1.2.0/policy.sql)
 
 ## Running
 
