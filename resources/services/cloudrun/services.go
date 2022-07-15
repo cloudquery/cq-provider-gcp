@@ -725,9 +725,10 @@ func Services() *schema.Table {
 				},
 				Relations: []*schema.Table{
 					{
-						Name:        "gcp_cloudrun_service_spec_template_volume_config_map_items",
-						Description: "Maps a string key to a path within a volume",
-						Resolver:    fetchCloudrunServiceSpecTemplateVolumeConfigMapItems,
+						Name:          "gcp_cloudrun_service_spec_template_volume_config_map_items",
+						Description:   "Maps a string key to a path within a volume",
+						Resolver:      fetchCloudrunServiceSpecTemplateVolumeConfigMapItems,
+						IgnoreInTests: true,
 						Columns: []schema.Column{
 							{
 								Name:        "service_spec_template_volume_cq_id",

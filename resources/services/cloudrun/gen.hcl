@@ -108,6 +108,10 @@ resource "gcp" "cloudrun" "services" {
     path = "google.golang.org/api/run/v1.Volume"
     description = "Volume represents a named volume in a container"
     rename = "spec_template_volumes"
+
+    relation "gcp" "cloudrun" "config_map_items" {
+      ignore_in_tests = true
+    }
   }
 
   relation "gcp" "cloudrun" "spec_template_spec_containers" {
@@ -115,14 +119,15 @@ resource "gcp" "cloudrun" "services" {
     description = "A single application container"
     rename = "spec_template_containers"
 
-    ignore_in_tests = [
-      "readiness_probe_http_get_http_headers",
-      "readiness_probe_exec_command",
-      "startup_probe_exec_command",
-      "args",
-      "resources_requests",
-      "liveness_probe_exec_command",
-    ]
+    # TODO: add this once https://github.com/cloudquery/cq-gen/pull/106 is merged in:
+#    ignore_columns_in_tests = [
+#      "readiness_probe_http_get_http_headers",
+#      "readiness_probe_exec_command",
+#      "startup_probe_exec_command",
+#      "args",
+#      "resources_requests",
+#      "liveness_probe_exec_command",
+#    ]
 
     column "ports" {
       type = "json"
