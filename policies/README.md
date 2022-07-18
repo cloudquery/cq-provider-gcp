@@ -3,7 +3,7 @@ CloudQuery SQL Policies for GCP
 
 ## Policies and Compliance Frameworks Available
 
-- [GCP CIS v1.2.0](./sql/cis_v1.2.0/policy.sql)
+- [GCP CIS v1.2.0](./cis_v1.2.0/policy.sql)
 
 ## Running
 
@@ -11,7 +11,7 @@ You can execute policies with `psql`. For example:
 
 ```bash
 # Execute the whole CIS Policy
-psql -U postgres -f  ./sql/cis_v1.2.0/policy.sql
+psql -U postgres -f  ./cis_v1.2.0/policy.sql
 ```
 
 This will create all the results in `gcp_policy_results` table which you can query directly, connect to any BI system (Grafana, Preset, AWS QuickSight, PowerBI, ...).
