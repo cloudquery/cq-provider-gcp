@@ -16,7 +16,6 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/resources/services/resource_manager"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/sql"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/storage"
-	"github.com/cloudquery/cq-provider-sdk/cqproto"
 	"github.com/cloudquery/cq-provider-sdk/provider"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 )
@@ -74,8 +73,8 @@ func Provider() *provider.Provider {
 			"bigquery.datasets":     bigquery.BigqueryDatasets(),
 			"kubernetes.clusters":   kubernetes.Clusters(),
 		},
-		Config: func(f cqproto.ConfigFormat) provider.Config {
-			return client.NewConfig(f)
+		Config: func() provider.Config {
+			return &client.Config{}
 		},
 	}
 }
