@@ -119,15 +119,14 @@ resource "gcp" "cloudrun" "services" {
     description = "A single application container"
     rename = "spec_template_containers"
 
-    # TODO: add this once https://github.com/cloudquery/cq-gen/pull/106 is merged in:
-#    ignore_columns_in_tests = [
-#      "readiness_probe_http_get_http_headers",
-#      "readiness_probe_exec_command",
-#      "startup_probe_exec_command",
-#      "args",
-#      "resources_requests",
-#      "liveness_probe_exec_command",
-#    ]
+    ignore_columns_in_tests = [
+      "readiness_probe_http_get_http_headers",
+      "readiness_probe_exec_command",
+      "startup_probe_exec_command",
+      "args",
+      "resources_requests",
+      "liveness_probe_exec_command",
+    ]
 
     column "ports" {
       type = "json"
