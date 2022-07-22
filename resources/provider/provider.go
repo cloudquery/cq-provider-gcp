@@ -15,9 +15,9 @@ import (
 	"github.com/cloudquery/cq-provider-gcp/resources/services/logging"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/monitoring"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/resource_manager"
+	"github.com/cloudquery/cq-provider-gcp/resources/services/security"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/sql"
 	"github.com/cloudquery/cq-provider-gcp/resources/services/storage"
-	"github.com/cloudquery/cq-provider-sdk/cqproto"
 	"github.com/cloudquery/cq-provider-sdk/provider"
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 )
@@ -72,12 +72,13 @@ func Provider() *provider.Provider {
 			"resource_manager.folders":     resource_manager.ResourceManagerFolders(),
 			"resource_manager.projects":    resource_manager.ResourceManagerProjects(),
 			"sql.instances":                sql.SQLInstances(),
+			"security.secrets":             security.Secrets(),
 			"storage.buckets":              storage.StorageBuckets(),
 			"storage.metrics":              storage.Metrics(),
 			// "serviceusage.services":        serviceusage.Services(),
 		},
-		Config: func(f cqproto.ConfigFormat) provider.Config {
-			return client.NewConfig(f)
+		Config: func() provider.Config {
+			return &client.Config{}
 		},
 	}
 }

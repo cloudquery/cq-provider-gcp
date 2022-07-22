@@ -42,7 +42,7 @@ For complex fields or fields that require further API calls, you can defined you
 
 #### Implementing Resolver Functions
 
-A few important things to note when adding functions that call the AWS API:
+A few important things to note when adding functions that call the GCP API:
 
 - If possible, always use an API call that allows you to fetch many resources at once
 - Take pagination into account. Ensure you fetch **all** of the resources
