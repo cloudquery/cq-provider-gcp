@@ -12,13 +12,8 @@ import (
 	"github.com/cloudquery/cq-provider-sdk/provider/schema"
 	"github.com/hashicorp/go-hclog"
 	crmv1 "google.golang.org/api/cloudresourcemanager/v1"
-	"google.golang.org/api/cloudresourcemanager/v3"
 	"google.golang.org/api/option"
 )
-
-const defaultProjectIdName = "<CHANGE_THIS_TO_YOUR_PROJECT_ID>"
-
-const serviceAccountEnvKey = "CQ_SERVICE_ACCOUNT_KEY_JSON"
 
 type Client struct {
 	projects []string
@@ -30,6 +25,11 @@ type Client struct {
 	// this is set by table client multiplexer
 	ProjectId string
 }
+
+const (
+	defaultProjectIdName = "<CHANGE_THIS_TO_YOUR_PROJECT_ID>"
+	serviceAccountEnvKey = "CQ_SERVICE_ACCOUNT_KEY_JSON"
+)
 
 func NewGcpClient(log hclog.Logger, bo BackoffSettings, projects []string, services *Services) *Client {
 	c := &Client{

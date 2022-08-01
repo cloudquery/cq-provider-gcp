@@ -3,45 +3,13 @@ package client
 import (
 	"context"
 
-	"google.golang.org/api/bigquery/v2"
-	"google.golang.org/api/cloudbilling/v1"
-	"google.golang.org/api/cloudfunctions/v1"
 	kms "google.golang.org/api/cloudkms/v1"
-	"google.golang.org/api/cloudresourcemanager/v3"
-	"google.golang.org/api/compute/v1"
-	"google.golang.org/api/container/v1"
-	"google.golang.org/api/dns/v1"
 	domains "google.golang.org/api/domains/v1beta1"
-	"google.golang.org/api/iam/v1"
-	"google.golang.org/api/logging/v2"
-	"google.golang.org/api/monitoring/v3"
 	"google.golang.org/api/option"
-	"google.golang.org/api/redis/v1"
-	"google.golang.org/api/run/v1"
-	"google.golang.org/api/secretmanager/v1"
-	"google.golang.org/api/serviceusage/v1"
 	sql "google.golang.org/api/sqladmin/v1beta4"
-	"google.golang.org/api/storage/v1"
 )
 
 type GcpService string
-
-const (
-	BigQueryService             GcpService = "bigquery.googleapis.com"
-	CloudBillingService         GcpService = "cloudbilling.googleapis.com"
-	CloudFunctionsService       GcpService = "cloudfunctions.googleapis.com"
-	CloudKmsService             GcpService = "cloudkms.googleapis.com"
-	CloudResourceManagerService GcpService = "cloudresourcemanager.googleapis.com"
-	ComputeService              GcpService = "compute.googleapis.com"
-	DnsService                  GcpService = "dns.googleapis.com"
-	DomainsService              GcpService = "domains.googleapis.com"
-	IamService                  GcpService = "iam.googleapis.com"
-	LoggingService              GcpService = "logging.googleapis.com"
-	RedisService                GcpService = "redis.googleapis.com"
-	MonitoringService           GcpService = "monitoring.googleapis.com"
-	SqlAdminService             GcpService = "sqladmin.googleapis.com"
-	StorageService              GcpService = "storage-api.googleapis.com"
-)
 
 type Services struct {
 	BigQuery        *bigquery.Service
@@ -63,6 +31,23 @@ type Services struct {
 	Sql             *sql.Service
 	Storage         *storage.Service
 }
+
+const (
+	BigQueryService             GcpService = "bigquery.googleapis.com"
+	CloudBillingService         GcpService = "cloudbilling.googleapis.com"
+	CloudFunctionsService       GcpService = "cloudfunctions.googleapis.com"
+	CloudKmsService             GcpService = "cloudkms.googleapis.com"
+	CloudResourceManagerService GcpService = "cloudresourcemanager.googleapis.com"
+	ComputeService              GcpService = "compute.googleapis.com"
+	DnsService                  GcpService = "dns.googleapis.com"
+	DomainsService              GcpService = "domains.googleapis.com"
+	IamService                  GcpService = "iam.googleapis.com"
+	LoggingService              GcpService = "logging.googleapis.com"
+	RedisService                GcpService = "redis.googleapis.com"
+	MonitoringService           GcpService = "monitoring.googleapis.com"
+	SqlAdminService             GcpService = "sqladmin.googleapis.com"
+	StorageService              GcpService = "storage-api.googleapis.com"
+)
 
 func initServices(ctx context.Context, options []option.ClientOption) (*Services, error) {
 	bigQuerySvc, err := bigquery.NewService(ctx, options...)
