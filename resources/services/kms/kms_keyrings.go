@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
-	"github.com/cloudquery/cq-provider-sdk/provider/diag"
-	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	"github.com/cloudquery/cq-provider-sdk/helpers"
+	"github.com/cloudquery/cq-provider-sdk/schema"
 	"google.golang.org/api/cloudkms/v1"
 )
 
@@ -18,12 +18,12 @@ type KeyRing struct {
 
 func KmsKeyrings() *schema.Table {
 	return &schema.Table{
-		Name:                 "gcp_kms_keyrings",
-		Description:          "A KeyRing is a toplevel logical grouping of CryptoKeys.",
-		Resolver:             fetchKmsKeyrings,
-		Multiplex:            client.ProjectMultiplex,
-		IgnoreError:          client.IgnoreErrorHandler,
-		DeleteFilter:         client.DeleteProjectFilter,
+		Name:        "gcp_kms_keyrings",
+		Description: "A KeyRing is a toplevel logical grouping of CryptoKeys.",
+		Resolver:    fetchKmsKeyrings,
+		Multiplex:   client.ProjectMultiplex,
+		IgnoreError: client.IgnoreErrorHandler,
+
 		PostResourceResolver: client.AddGcpMetadata,
 		Options:              schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "location", "name"}},
 		Columns: []schema.Column{
@@ -247,18 +247,17 @@ func fetchKmsKeyrings(ctx context.Context, meta schema.ClientMeta, parent *schem
 	c := meta.(*client.Client)
 	locations, err := getAllKmsLocations(ctx, c)
 	if err != nil {
-		return diag.WrapError(fmt.Errorf("failed to get kms locations. %w", err))
+		return helpers.WrapError(fmt.Errorf("failed to get kms locations. %w", err))
 	}
 	nextPageToken := ""
 	for _, l := range locations {
 		call := c.Services.Kms.Projects.Locations.KeyRings.List(l.Name)
 		for {
 			call.PageToken(nextPageToken)
-			list, err := c.RetryingDo(ctx, call)
+			resp, err := call.Do()
 			if err != nil {
-				return diag.WrapError(err)
+				return helpers.WrapError(err)
 			}
-			resp := list.(*cloudkms.ListKeyRingsResponse)
 
 			rings := make([]*KeyRing, len(resp.KeyRings))
 			for i, k := range resp.KeyRings {
@@ -284,11 +283,10 @@ func fetchKmsKeyringCryptoKeys(ctx context.Context, meta schema.ClientMeta, pare
 	call := c.Services.Kms.Projects.Locations.KeyRings.CryptoKeys.List(keyRing.Name)
 	for {
 		call.PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		resp, err := call.Do()
 		if err != nil {
-			return diag.WrapError(err)
+			return helpers.WrapError(err)
 		}
-		resp := list.(*cloudkms.ListCryptoKeysResponse)
 
 		res <- resp.CryptoKeys
 
@@ -302,29 +300,27 @@ func fetchKmsKeyringCryptoKeys(ctx context.Context, meta schema.ClientMeta, pare
 func resolveKmsKeyringCryptoKeyPolicy(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	client_ := meta.(*client.Client)
 	p := resource.Item.(*cloudkms.CryptoKey)
-	call := client_.Services.Kms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(p.Name)
-	item, err := client_.RetryingDo(ctx, call)
+	resp, err := client_.Services.Kms.Projects.Locations.KeyRings.CryptoKeys.GetIamPolicy(p.Name).Do()
 	if err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
-	resp := item.(*cloudkms.Policy)
 
 	var policy map[string]interface{}
 	data, err := json.Marshal(resp)
 	if err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 	if err := json.Unmarshal(data, &policy); err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 
-	return diag.WrapError(resource.Set(c.Name, policy))
+	return helpers.WrapError(resource.Set(c.Name, policy))
 }
 
 func resolveKmsKeyringCryptKeyLocation(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	keyRing := resource.Parent.Item.(*KeyRing)
 	// CryptoKey location is the same as it's keyring location
-	return diag.WrapError(resource.Set(c.Name, keyRing.Location))
+	return helpers.WrapError(resource.Set(c.Name, keyRing.Location))
 }
 
 // ====================================================================================================================
@@ -336,12 +332,10 @@ func getAllKmsLocations(ctx context.Context, c *client.Client) ([]*cloudkms.Loca
 	call := c.Services.Kms.Projects.Locations.List("projects/" + c.ProjectId)
 	nextPageToken := ""
 	for {
-		call.PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		resp, err := call.PageToken(nextPageToken).Do()
 		if err != nil {
-			return nil, diag.WrapError(err)
+			return nil, helpers.WrapError(err)
 		}
-		resp := list.(*cloudkms.ListLocationsResponse)
 
 		locations = append(locations, resp.Locations...)
 

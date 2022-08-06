@@ -5,20 +5,20 @@ import (
 	"encoding/json"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
-	"github.com/cloudquery/cq-provider-sdk/provider/diag"
-	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	"github.com/cloudquery/cq-provider-sdk/helpers"
+	"github.com/cloudquery/cq-provider-sdk/schema"
 	"google.golang.org/api/compute/v1"
 )
 
 func ComputeURLMaps() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_url_maps",
-		Description:  "Represents a URL Map resource",
-		Resolver:     fetchComputeUrlMaps,
-		Multiplex:    client.ProjectMultiplex,
-		IgnoreError:  client.IgnoreErrorHandler,
-		DeleteFilter: client.DeleteProjectFilter,
-		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
+		Name:        "gcp_compute_url_maps",
+		Description: "Represents a URL Map resource",
+		Resolver:    fetchComputeUrlMaps,
+		Multiplex:   client.ProjectMultiplex,
+		IgnoreError: client.IgnoreErrorHandler,
+
+		Options: schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{
 			{
 				Name:     "project_id",
@@ -497,12 +497,10 @@ func fetchComputeUrlMaps(ctx context.Context, meta schema.ClientMeta, parent *sc
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Compute.UrlMaps.List(c.ProjectId).PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		output, err := c.Services.Compute.UrlMaps.List(c.ProjectId).PageToken(nextPageToken).Do()
 		if err != nil {
-			return diag.WrapError(err)
+			return helpers.WrapError(err)
 		}
-		output := list.(*compute.UrlMapList)
 
 		res <- output.Items
 
@@ -522,13 +520,13 @@ func resolveComputeURLMapHeaderActionRequestHeadersToAdd(ctx context.Context, me
 	var j []interface{}
 	data, err := json.Marshal(r.HeaderAction.RequestHeadersToAdd)
 	if err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 	if err := json.Unmarshal(data, &j); err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 
-	return diag.WrapError(resource.Set(c.Name, j))
+	return helpers.WrapError(resource.Set(c.Name, j))
 }
 func resolveComputeURLMapHeaderActionResponseHeadersToAdd(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	r := resource.Item.(*compute.UrlMap)
@@ -539,13 +537,13 @@ func resolveComputeURLMapHeaderActionResponseHeadersToAdd(ctx context.Context, m
 	var j []interface{}
 	data, err := json.Marshal(r.HeaderAction.ResponseHeadersToAdd)
 	if err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 	if err := json.Unmarshal(data, &j); err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 
-	return diag.WrapError(resource.Set(c.Name, j))
+	return helpers.WrapError(resource.Set(c.Name, j))
 }
 func fetchComputeUrlMapWeightedBackendServices(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*compute.UrlMap)
@@ -561,13 +559,13 @@ func resolveComputeURLMapWeightedBackendServiceHeaderAction(ctx context.Context,
 	var j map[string]interface{}
 	data, err := json.Marshal(r.HeaderAction)
 	if err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 	if err := json.Unmarshal(data, &j); err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 
-	return diag.WrapError(resource.Set(c.Name, j))
+	return helpers.WrapError(resource.Set(c.Name, j))
 }
 func fetchComputeUrlMapHostRules(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*compute.UrlMap)
@@ -592,52 +590,52 @@ func resolveComputeURLMapPathMatcherDefaultRouteAction(ctx context.Context, meta
 	var j map[string]interface{}
 	data, err := json.Marshal(r.DefaultRouteAction)
 	if err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 	if err := json.Unmarshal(data, &j); err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 
-	return diag.WrapError(resource.Set(c.Name, j))
+	return helpers.WrapError(resource.Set(c.Name, j))
 }
 func resolveComputeURLMapPathMatcherHeaderAction(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	r := resource.Item.(*compute.PathMatcher)
 	var j map[string]interface{}
 	data, err := json.Marshal(r.HeaderAction)
 	if err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 	if err := json.Unmarshal(data, &j); err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 
-	return diag.WrapError(resource.Set(c.Name, j))
+	return helpers.WrapError(resource.Set(c.Name, j))
 }
 func resolveComputeURLMapPathMatcherPathRules(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	r := resource.Item.(*compute.PathMatcher)
 	var j []interface{}
 	data, err := json.Marshal(r.PathRules)
 	if err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 	if err := json.Unmarshal(data, &j); err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 
-	return diag.WrapError(resource.Set(c.Name, j))
+	return helpers.WrapError(resource.Set(c.Name, j))
 }
 func resolveComputeURLMapPathMatcherRouteRules(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	r := resource.Item.(*compute.PathMatcher)
 	var j []interface{}
 	data, err := json.Marshal(r.RouteRules)
 	if err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 	if err := json.Unmarshal(data, &j); err != nil {
-		return diag.WrapError(err)
+		return helpers.WrapError(err)
 	}
 
-	return diag.WrapError(resource.Set(c.Name, j))
+	return helpers.WrapError(resource.Set(c.Name, j))
 }
 func fetchComputeUrlMapTests(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*compute.UrlMap)
@@ -659,5 +657,5 @@ func resolveComputeURLMapTestHeaders(ctx context.Context, meta schema.ClientMeta
 		j[h.Name] = h.Value
 	}
 
-	return diag.WrapError(resource.Set(c.Name, j))
+	return helpers.WrapError(resource.Set(c.Name, j))
 }

@@ -4,20 +4,20 @@ import (
 	"context"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
-	"github.com/cloudquery/cq-provider-sdk/provider/diag"
-	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	"github.com/cloudquery/cq-provider-sdk/helpers"
+	"github.com/cloudquery/cq-provider-sdk/schema"
 	"google.golang.org/api/compute/v1"
 )
 
 func ComputeImages() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_images",
-		Description:  "Represents an Image resource  You can use images to create boot disks for your VM instances",
-		Resolver:     fetchComputeImages,
-		Multiplex:    client.ProjectMultiplex,
-		IgnoreError:  client.IgnoreErrorHandler,
-		DeleteFilter: client.DeleteProjectFilter,
-		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
+		Name:        "gcp_compute_images",
+		Description: "Represents an Image resource  You can use images to create boot disks for your VM instances",
+		Resolver:    fetchComputeImages,
+		Multiplex:   client.ProjectMultiplex,
+		IgnoreError: client.IgnoreErrorHandler,
+
+		Options: schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",
@@ -303,12 +303,10 @@ func fetchComputeImages(ctx context.Context, meta schema.ClientMeta, parent *sch
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Compute.Images.List(c.ProjectId).PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		output, err := c.Services.Compute.Images.List(c.ProjectId).PageToken(nextPageToken).Do()
 		if err != nil {
-			return diag.WrapError(err)
+			return helpers.WrapError(err)
 		}
-		output := list.(*compute.ImageList)
 
 		res <- output.Items
 		if output.NextPageToken == "" {
@@ -324,5 +322,5 @@ func resolveComputeImageGuestOsFeatures(ctx context.Context, meta schema.ClientM
 	for i, v := range r.GuestOsFeatures {
 		res[i] = v.Type
 	}
-	return diag.WrapError(resource.Set("guest_os_features", res))
+	return helpers.WrapError(resource.Set("guest_os_features", res))
 }

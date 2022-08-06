@@ -4,20 +4,20 @@ import (
 	"context"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
-	"github.com/cloudquery/cq-provider-sdk/provider/diag"
-	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	"github.com/cloudquery/cq-provider-sdk/helpers"
+	"github.com/cloudquery/cq-provider-sdk/schema"
 	"google.golang.org/api/compute/v1"
 )
 
 func ComputeInstances() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_instances",
-		Description:  "Represents an Instance resource  An instance is a virtual machine that is hosted on Google Cloud Platform For more information, read Virtual Machine Instances",
-		Resolver:     fetchComputeInstances,
-		Multiplex:    client.ProjectMultiplex,
-		IgnoreError:  client.IgnoreErrorHandler,
-		DeleteFilter: client.DeleteProjectFilter,
-		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
+		Name:        "gcp_compute_instances",
+		Description: "Represents an Instance resource  An instance is a virtual machine that is hosted on Google Cloud Platform For more information, read Virtual Machine Instances",
+		Resolver:    fetchComputeInstances,
+		Multiplex:   client.ProjectMultiplex,
+		IgnoreError: client.IgnoreErrorHandler,
+
+		Options: schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",
@@ -726,12 +726,10 @@ func fetchComputeInstances(ctx context.Context, meta schema.ClientMeta, parent *
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Compute.Instances.AggregatedList(c.ProjectId).PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		output, err := c.Services.Compute.Instances.AggregatedList(c.ProjectId).PageToken(nextPageToken).Do()
 		if err != nil {
-			return diag.WrapError(err)
+			return helpers.WrapError(err)
 		}
-		output := list.(*compute.InstanceAggregatedList)
 
 		var instances []*compute.Instance
 		for _, items := range output.Items {
@@ -751,7 +749,7 @@ func resolveComputeInstanceGuestAccelerators(ctx context.Context, meta schema.Cl
 	for _, v := range r.GuestAccelerators {
 		res[v.AcceleratorType] = v.AcceleratorCount
 	}
-	return diag.WrapError(resource.Set("guest_accelerators", res))
+	return helpers.WrapError(resource.Set("guest_accelerators", res))
 }
 func resolveComputeInstanceMetadataItems(ctx context.Context, meta schema.ClientMeta, resource *schema.Resource, c schema.Column) error {
 	r := resource.Item.(*compute.Instance)
@@ -761,7 +759,7 @@ func resolveComputeInstanceMetadataItems(ctx context.Context, meta schema.Client
 			res[v.Key] = *v.Value
 		}
 	}
-	return diag.WrapError(resource.Set("metadata_items", res))
+	return helpers.WrapError(resource.Set("metadata_items", res))
 }
 func fetchComputeInstanceDisks(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*compute.Instance)
@@ -774,7 +772,7 @@ func resolveComputeInstanceDiskGuestOsFeatures(ctx context.Context, meta schema.
 	for i, v := range r.GuestOsFeatures {
 		res[i] = v.Type
 	}
-	return diag.WrapError(resource.Set("guest_os_features", res))
+	return helpers.WrapError(resource.Set("guest_os_features", res))
 }
 func fetchComputeInstanceNetworkInterfaces(ctx context.Context, meta schema.ClientMeta, parent *schema.Resource, res chan<- interface{}) error {
 	r := parent.Item.(*compute.Instance)

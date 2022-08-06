@@ -9,13 +9,12 @@ import (
 	"google.golang.org/grpc/backoff"
 )
 
-// Config defines Provider Configuration
-type Config struct {
-	ProjectFilter         string   `yaml:"project_filter,omitempty" hcl:"project_filter,optional"` // Deprecated
-	ProjectIDs            []string `yaml:"project_ids,omitempty" hcl:"project_ids,optional"`
-	FolderIDs             []string `yaml:"folder_ids,omitempty" hcl:"folder_ids,optional"`
-	FolderMaxDepth        uint     `yaml:"folders_max_depth,omitempty" hcl:"folders_max_depth,optional"`
-	ServiceAccountKeyJSON string   `yaml:"service_account_key_json,omitempty" hcl:"service_account_key_json,optional"`
+// Spec defines GCP source plugin Spec
+type Spec struct {
+	ProjectIDs            []string `yaml:"project_ids,omitempty" json:"project_ids"`
+	FolderIDs             []string `yaml:"folder_ids,omitempty" json:"folder_ids"`
+	FolderMaxDepth        uint     `yaml:"folders_max_depth,omitempty" json:"folders_max_depth"`
+	ServiceAccountKeyJSON string   `yaml:"service_account_key_json,omitempty" json:"service_account_key_json"`
 
 	BaseDelay         int     `yaml:"backoff_base_delay,omitempty" hcl:"backoff_base_delay,optional" default:"-1"`
 	Multiplier        float64 `yaml:"backoff_multiplier,omitempty" hcl:"backoff_multiplier,optional"`
@@ -31,31 +30,7 @@ type BackoffSettings struct {
 	MaxRetries int
 }
 
-func (Config) Example() string {
-	return `
-Optional. List of folders to get projects from. Required permission: resourcemanager.projects.list
-folder_ids:
-  - "organizations/<ORG_ID>"
-  - "folders/<FOLDER_ID>"
-Optional. Maximum level of folders to recurse into
-folders_max_depth: 5
-Optional. If not specified either using all projects accessible.
-project_ids:
-  - "<CHANGE_THIS_TO_YOUR_PROJECT_ID>"
-Optional. ServiceAccountKeyJSON passed as value instead of a file path, can be passed also via env: CQ_SERVICE_ACCOUNT_KEY_JSON
-service_account_key_json: <YOUR_JSON_SERVICE_ACCOUNT_KEY_DATA>
-Optional. GRPC Retry/backoff configuration, time units in seconds. Documented in https://github.com/grpc/grpc/blob/master/doc/connection-backoff.md
-backoff_base_delay: 1
-backoff_multiplier: 1.6
-backoff_max_delay: 120
-backoff_jitter: 0.2
-backoff_min_connect_timeout = 0
-Optional. Max amount of retries for retrier, defaults to max 3 retries.
-max_retries: 3
-`
-}
-
-func (c Config) ClientOptions() []option.ClientOption {
+func (c Spec) ClientOptions() []option.ClientOption {
 	p := grpc.ConnectParams{
 		Backoff: c.Backoff().Backoff,
 	}
@@ -67,7 +42,7 @@ func (c Config) ClientOptions() []option.ClientOption {
 	}
 }
 
-func (c Config) Backoff() BackoffSettings {
+func (c Spec) Backoff() BackoffSettings {
 	b := BackoffSettings{
 		Backoff:    backoff.DefaultConfig,
 		MaxRetries: 3,
