@@ -1,10 +1,13 @@
 package client
 
 import (
+	"context"
+	"fmt"
 	"testing"
 
 	"github.com/cloudquery/cq-provider-sdk/plugins"
 	"github.com/cloudquery/cq-provider-sdk/schema"
+	"github.com/cloudquery/cq-provider-sdk/spec"
 )
 
 type TestOptions struct {
@@ -15,21 +18,31 @@ func GcpMockTestHelper(t *testing.T, table *schema.Table, createService func() (
 	t.Helper()
 
 	table.IgnoreInTests = false
-
-	providertest.TestResource(t, providertest.ResourceTestCase{
-		Provider: &plugins.SourcePlugin{
+	cfg := `
+tables: ["*"]
+`
+	plugins.TestResource(t, plugins.ResourceTestCase{
+		Plugin: &plugins.SourcePlugin{
 			Name:    "gcp_mock_test_provider",
 			Version: "development",
-			// Configure: func(logger hclog.Logger, i interface{}) (schema.ClientMeta, diag.Diagnostics) {
-			// 	svc, err := createService()
-			// 	if err != nil {
-			// 		return nil, diag.FromError(err, diag.INTERNAL)
-			// 	}
-			// 	c := NewGcpClient(logging.New(&hclog.LoggerOptions{
-			// 		Level: hclog.Warn,
-			// 	}), BackoffSettings{}, []string{"testProject"}, svc)
-			// 	return c, nil
-			// },
+			Configure: func(ctx context.Context, p *plugins.SourcePlugin, s spec.SourceSpec) (schema.ClientMeta, error) {
+				svc, err := createService()
+				if err != nil {
+					return nil, err
+				}
+				var gcpSpec Spec
+				if err := s.Spec.Decode(&gcpSpec); err != nil {
+					return nil, fmt.Errorf("failed to decode gcp spec: %w", err)
+				}
+				c := &Client{
+					plugin:   p,
+					logger:   p.Logger,
+					Services: svc,
+					projects: []string{"testProject"},
+				}
+
+				return c, nil
+			},
 			Tables: []*schema.Table{
 				table,
 			},
@@ -37,6 +50,6 @@ func GcpMockTestHelper(t *testing.T, table *schema.Table, createService func() (
 			// 	return &Config{}
 			// },
 		},
-		Config: "",
+		Config: cfg,
 	})
 }
