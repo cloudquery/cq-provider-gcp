@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
-	"github.com/cloudquery/cq-provider-sdk/provider/diag"
-	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	"github.com/cloudquery/cq-provider-sdk/helpers"
+	"github.com/cloudquery/cq-provider-sdk/schema"
 	"google.golang.org/api/bigquery/v2"
 )
 
@@ -115,5 +115,5 @@ func resolveBigqueryDatasetAccessTargetTypes(ctx context.Context, meta schema.Cl
 	if p.Dataset == nil {
 		return nil
 	}
-	return diag.WrapError(resource.Set(c.Name, p.Dataset.TargetTypes))
+	return helpers.WrapError(resource.Set(c.Name, p.Dataset.TargetTypes))
 }

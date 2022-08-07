@@ -37,7 +37,7 @@ resource "gcp" "compute" "instance_groups" {
   column "creation_timestamp" {
     type = "timestamp"
     resolver "dateResolver" {
-      path          = "github.com/cloudquery/cq-provider-sdk/provider/schema.DateResolver"
+      path          = "github.com/cloudquery/cq-provider-sdk/schema.DateResolver"
       path_resolver = true
     }
   }

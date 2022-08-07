@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
-	"github.com/cloudquery/cq-provider-sdk/provider/diag"
-	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	"github.com/cloudquery/cq-provider-sdk/helpers"
+	"github.com/cloudquery/cq-provider-sdk/schema"
 	"google.golang.org/api/cloudbilling/v1"
 )
 
@@ -249,12 +249,10 @@ func fetchCloudbillingServices(ctx context.Context, meta schema.ClientMeta, pare
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.CloudBilling.Services.List().PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		output, err := c.Services.CloudBilling.Services.List().PageToken(nextPageToken).Do()
 		if err != nil {
-			return diag.WrapError(err)
+			return helpers.WrapError(err)
 		}
-		output := list.(*cloudbilling.ListServicesResponse)
 
 		res <- output.Services
 
@@ -270,12 +268,10 @@ func fetchCloudbillingServiceSkus(ctx context.Context, meta schema.ClientMeta, p
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.CloudBilling.Services.Skus.List(r.Name).PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		output, err := c.Services.CloudBilling.Services.Skus.List(r.Name).PageToken(nextPageToken).Do()
 		if err != nil {
-			return diag.WrapError(err)
+			return helpers.WrapError(err)
 		}
-		output := list.(*cloudbilling.ListSkusResponse)
 
 		res <- output.Skus
 

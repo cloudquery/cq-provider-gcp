@@ -40,7 +40,7 @@ resource "gcp" "serviceusage" "services" {
   userDefinedColumn "name" {
     type = "string"
     resolver "pathResolver" {
-      path   = "github.com/cloudquery/cq-provider-sdk/provider/schema.PathResolver"
+      path   = "github.com/cloudquery/cq-provider-sdk/schema.PathResolver"
       params = ["Config.Name"]
     }
   }

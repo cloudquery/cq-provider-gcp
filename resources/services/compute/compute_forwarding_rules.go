@@ -4,20 +4,20 @@ import (
 	"context"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
-	"github.com/cloudquery/cq-provider-sdk/provider/diag"
-	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	"github.com/cloudquery/cq-provider-sdk/helpers"
+	"github.com/cloudquery/cq-provider-sdk/schema"
 	"google.golang.org/api/compute/v1"
 )
 
 func ComputeForwardingRules() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_forwarding_rules",
-		Description:  "Represents a Forwarding Rule resource  Forwarding rule resources in GCP can be either regional or global.",
-		Resolver:     fetchComputeForwardingRules,
-		Multiplex:    client.ProjectMultiplex,
-		IgnoreError:  client.IgnoreErrorHandler,
-		DeleteFilter: client.DeleteProjectFilter,
-		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
+		Name:        "gcp_compute_forwarding_rules",
+		Description: "Represents a Forwarding Rule resource  Forwarding rule resources in GCP can be either regional or global.",
+		Resolver:    fetchComputeForwardingRules,
+		Multiplex:   client.ProjectMultiplex,
+		IgnoreError: client.IgnoreErrorHandler,
+
+		Options: schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",
@@ -175,12 +175,10 @@ func fetchComputeForwardingRules(ctx context.Context, meta schema.ClientMeta, pa
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Compute.ForwardingRules.AggregatedList(c.ProjectId).PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		output, err := c.Services.Compute.ForwardingRules.AggregatedList(c.ProjectId).PageToken(nextPageToken).Do()
 		if err != nil {
-			return diag.WrapError(err)
+			return helpers.WrapError(err)
 		}
-		output := list.(*compute.ForwardingRuleAggregatedList)
 
 		var forwardingRules []*compute.ForwardingRule
 		for _, item := range output.Items {

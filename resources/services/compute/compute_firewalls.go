@@ -4,20 +4,20 @@ import (
 	"context"
 
 	"github.com/cloudquery/cq-provider-gcp/client"
-	"github.com/cloudquery/cq-provider-sdk/provider/diag"
-	"github.com/cloudquery/cq-provider-sdk/provider/schema"
+	"github.com/cloudquery/cq-provider-sdk/helpers"
+	"github.com/cloudquery/cq-provider-sdk/schema"
 	"google.golang.org/api/compute/v1"
 )
 
 func ComputeFirewalls() *schema.Table {
 	return &schema.Table{
-		Name:         "gcp_compute_firewalls",
-		Description:  "Represents a Firewall Rule resource  Firewall rules allow or deny ingress traffic to, and egress traffic from your instances For more information, read Firewall rules",
-		Resolver:     fetchComputeFirewalls,
-		IgnoreError:  client.IgnoreErrorHandler,
-		Multiplex:    client.ProjectMultiplex,
-		DeleteFilter: client.DeleteProjectFilter,
-		Options:      schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
+		Name:        "gcp_compute_firewalls",
+		Description: "Represents a Firewall Rule resource  Firewall rules allow or deny ingress traffic to, and egress traffic from your instances For more information, read Firewall rules",
+		Resolver:    fetchComputeFirewalls,
+		IgnoreError: client.IgnoreErrorHandler,
+		Multiplex:   client.ProjectMultiplex,
+
+		Options: schema.TableCreationOptions{PrimaryKeys: []string{"project_id", "id"}},
 		Columns: []schema.Column{
 			{
 				Name:        "project_id",
@@ -190,12 +190,10 @@ func fetchComputeFirewalls(ctx context.Context, meta schema.ClientMeta, parent *
 	c := meta.(*client.Client)
 	nextPageToken := ""
 	for {
-		call := c.Services.Compute.Firewalls.List(c.ProjectId).PageToken(nextPageToken)
-		list, err := c.RetryingDo(ctx, call)
+		output, err := c.Services.Compute.Firewalls.List(c.ProjectId).PageToken(nextPageToken).Do()
 		if err != nil {
-			return diag.WrapError(err)
+			return helpers.WrapError(err)
 		}
-		output := list.(*compute.FirewallList)
 
 		res <- output.Items
 		if output.NextPageToken == "" {
